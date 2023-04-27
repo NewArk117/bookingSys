@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 from PyQt5 import QtCore, QtGui, QtWidgets
 from manageAccController import manageAccController
 from manageProfController import manageProfController
+from logOutController import logOutController
 
 class adminUI(QWidget):
     def __init__(self, stackedWidget):
@@ -21,24 +22,24 @@ class adminUI(QWidget):
         #Buttons
         self.pushButton1= QPushButton("Manage Accounts")
         self.pushButton2= QPushButton("Manage Profiles")
+        self.pushButton3= QPushButton("Logout")
 
         self.pushButton1.clicked.connect(self.callMAcc)
         self.pushButton2.clicked.connect(self.callMProf)
+        self.pushButton3.clicked.connect(self.logOut)
         
-        layoutMain.addWidget(self.pushButton1)
-        layoutMain.addWidget(self.pushButton2)
+        layoutMain.addWidget(self.pushButton1, 0, 1)
+        layoutMain.addWidget(self.pushButton2, 1, 1)
+        layoutMain.addWidget(self.pushButton3, 2, 1)
 
         #-----------------------------------------------------------------
         self.setLayout(layoutMain)
-
-    def mAcc(self):
-        self.stackedWidget2.setCurrentIndex(1)
-
-    def mProfile(self):
-        self.stackedWidget2.setCurrentIndex(2)
         
     def callMAcc(self):
         manageAccController.manAcc(self, self.stackedWidget)
 
     def callMProf(self):
         manageProfController.manProf(self, self.stackedWidget)
+
+    def logOut(self):
+        logOutController.loggingOut(self, self.stackedWidget)
