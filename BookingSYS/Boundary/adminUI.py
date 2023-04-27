@@ -6,6 +6,7 @@ from manageAccController import manageAccController
 from manageProfController import manageProfController
 from logOutController import logOutController
 
+#widget index 2
 class adminUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()

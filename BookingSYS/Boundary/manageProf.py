@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 from PyQt5 import QtCore, QtGui, QtWidgets
 from backButtonController import backButtonController
 
+#widget index 4
 class manageProf(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -27,6 +28,7 @@ class manageProf(QWidget):
         #self.pushButton1.clicked.connect(self.processHist)
         #self.pushButton2.clicked.connect(self.viewHist)
         self.backButton.clicked.connect(self.goBack)
+        self.buttonCreate2.clicked.connect(self.goCreateProf)
 
         layoutProf.addWidget(self.textBox2,1 ,0 ,4 ,1)
         layoutProf.addWidget(self.labelProf,0,0)
@@ -40,3 +42,6 @@ class manageProf(QWidget):
 
     def goBack(self):
         backButtonController.backButtonC(self, self.stackedWidget)
+    
+    def goCreateProf(self):
+        self.stackedWidget.setCurrentIndex(6)

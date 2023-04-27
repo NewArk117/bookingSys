@@ -7,5 +7,5 @@ class backButtonController:
     def backButtonC(self, stackedWidget):
         self.stackedWidget = stackedWidget
         print("in Controller")
-        newStaff = backB()
-        staff22 = newStaff.fuc(self.stackedWidget)
+        backB().fuc(self.stackedWidget)
+        

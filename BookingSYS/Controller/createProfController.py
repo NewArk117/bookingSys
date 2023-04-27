@@ -1,11 +1,11 @@
 import sys 
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from profManage import profManage
+from profCreate import profCreate
 
-class manageProfController:
-    def manProf(self, stackedWidget):
+class createProfController:
+    def createProf(self, stackedWidget, profilename, systemR):
         self.stackedWidget = stackedWidget
         print("in Controller")
-        profManage().fuc(self.stackedWidget)
-        
+        profCreate().fuc(self.stackedWidget, profilename,systemR)
+       

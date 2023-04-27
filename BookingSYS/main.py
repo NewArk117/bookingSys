@@ -5,6 +5,10 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QLineEdi
 sys.path.append('./Boundary')
 from loginUI import loginUI
 from adminUI import adminUI
+from manageAcc import manageAcc
+from manageProf import manageProf
+from createAccUI import createAccUI
+from createProfUI import createProfUI
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,10 +35,25 @@ class MainWindow(QMainWindow):
         self.stackedWidget.addWidget(self.pageMain)
 
 
-        #login page from another class
-        self.pageLogin = loginUI(self.stackedWidget)
+        #CREATE OBJECT OF THE UI HERE ======
+        self.pageLogin = loginUI(self.stackedWidget) #1
         self.stackedWidget.addWidget(self.pageLogin)
-        
+
+        self.admin = adminUI(self.stackedWidget)#2
+        self.stackedWidget.addWidget(self.admin)
+
+        self.manageAcc = manageAcc(self.stackedWidget)#3
+        self.stackedWidget.addWidget(self.manageAcc)
+
+        self.manageProf = manageProf(self.stackedWidget)#4
+        self.stackedWidget.addWidget(self.manageProf)
+
+        self.createAccUI = createAccUI(self.stackedWidget)#5
+        self.stackedWidget.addWidget(self.createAccUI)
+
+        self.createProfUI = createProfUI(self.stackedWidget)#6
+        self.stackedWidget.addWidget(self.createProfUI)
+
 
     def adminLog(self):
         self.stackedWidget.setCurrentIndex(1)

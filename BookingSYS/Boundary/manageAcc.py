@@ -3,7 +3,9 @@ sys.path.append('./Controller')
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QStackedWidget, QGridLayout, QMessageBox, QListWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
 from backButtonController import backButtonController
+from createAccController import createAccController
 
+#widget index 3
 class manageAcc(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -29,6 +31,7 @@ class manageAcc(QWidget):
         #self.pushButton1.clicked.connect(self.processHist)
         #self.pushButton2.clicked.connect(self.viewHist)
         self.backButton.clicked.connect(self.goBack)
+        self.buttonCreate.clicked.connect(self.goCreateAcc)
 
         layoutAcc.addWidget(self.textBox1,1 ,0 ,4 ,1)
         layoutAcc.addWidget(self.labelAcc,0,0)
@@ -42,3 +45,6 @@ class manageAcc(QWidget):
 
     def goBack(self):
         backButtonController.backButtonC(self, self.stackedWidget)
+
+    def goCreateAcc(self):
+        self.stackedWidget.setCurrentIndex(5)

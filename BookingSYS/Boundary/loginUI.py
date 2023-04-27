@@ -1,11 +1,11 @@
 import sys 
 sys.path.append('./Controller')
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Controller')
-from adminLoginController import adminLoginController
+from loginController import loginController
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QStackedWidget, QGridLayout
 
-
+#widget index 1
 class loginUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -40,13 +40,13 @@ class loginUI(QWidget):
 
         # get the username and password
         
-
+        
 
     def login(self):
         username = self.username_edit.text()
         password = self.password_edit.text()
         #print("This is the username" + username)
         #print("This is the pw" + password)
-        adminLoginController.addStaff(self, self.stackedWidget, username, password)
+        loginController.checkLogin(self, self.stackedWidget, username, password)
         self.username_edit.clear()
         self.password_edit.clear()

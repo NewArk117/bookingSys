@@ -3,16 +3,15 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 
 sys.path.append('./Boundary')
 from adminUI import adminUI
-class admin:
+class login:
     def fuc(self,stackedWidget,usrname, pw):
         self.stackedWidget = stackedWidget
         self.usrname = usrname
         self.pw = pw
-        print("in admin")
+        print("in login entity")
+        #check what user is logging in
         if self.usrname == 'admin':
             if self.pw == 'password':
-                admin1 = adminUI(self.stackedWidget)
-                self.stackedWidget.addWidget(admin1)
                 self.stackedWidget.setCurrentIndex(2)
             else:
                 print("Wrong password")
