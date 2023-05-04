@@ -1,10 +1,17 @@
+#Import to use SQL database
+import sqlite3
+
+#GUI imports
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QListWidgetItem
+from PyQt5 import QtGui
+
+#Import links to different scripts in Controller
 import sys 
 sys.path.append('./Controller')
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QStackedWidget, QGridLayout, QMessageBox, QListWidget
-from PyQt5 import QtCore, QtGui, QtWidgets
 from backButtonController import backButtonController
 
-#widget index 4
+#Admin profile main page GUI
 class manageProf(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -25,8 +32,6 @@ class manageProf(QWidget):
         self.buttonEdit2 = QPushButton("Edit Profile")
         self.backButton = QPushButton("Back")
 
-        #self.pushButton1.clicked.connect(self.processHist)
-        #self.pushButton2.clicked.connect(self.viewHist)
         self.backButton.clicked.connect(self.goBack)
         self.buttonCreate2.clicked.connect(self.goCreateProf)
 
@@ -39,9 +44,52 @@ class manageProf(QWidget):
 
         self.setLayout(layoutProf)
 
+         # Connect to the database
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        
+        # Create a cursor object from the connection
+        cursor = conn.cursor()
+        
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute("SELECT * FROM userProfile JOIN admin ON userProfile.userID = admin.userID ")
+        
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        # Iterate over the rows and populate the list widget with the data
+        for row in rows:
+            item = QListWidgetItem(str(row[1]))
+            self.textBox2.addItem(item)
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        #QTimer to periodically refresh the list widget
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.refreshAcc)
+        self.timer.start(1000) # refresh every 1 second
 
     def goBack(self):
         backButtonController.backButtonC(self, self.stackedWidget)
     
     def goCreateProf(self):
         self.stackedWidget.setCurrentIndex(6)
+
+    def refreshAcc(self):
+        # connect to the database
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+
+        # execute a query to retrieve data from the database
+        cursor = conn.execute("SELECT * FROM userProfile JOIN admin ON userProfile.userID = admin.userID ")
+
+        # clear the list widget
+        self.textBox2.clear()
+
+        # populate the list widget with data from the query
+        for row in cursor:
+            item = QListWidgetItem(str(row[1]))
+            self.textBox2.addItem(item)
+
+        # close the database connection
+        conn.close()

@@ -1,25 +1,23 @@
+#GUI Imports
+from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout
+from PyQt5 import QtGui
+
+#Import links to different scripts in Controller
 import sys 
 sys.path.append('./Controller')
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QStackedWidget, QGridLayout, QMessageBox, QListWidget
-from PyQt5 import QtCore, QtGui, QtWidgets
 from manageAccController import manageAccController
 from manageProfController import manageProfController
 from logOutController import logOutController
 
-#widget index 2
+#Admin home page
 class adminUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
-
         self.stackedWidget = stackedWidget
-
-        self.setWindowTitle('Admin')
-        font = QtGui.QFont()
-        font.setPointSize(16)
         
-
-        # create the layout for main -----------------------------------
+        # create the layout for main
         layoutMain = QGridLayout()
+        
         #Buttons
         self.pushButton1= QPushButton("Manage Accounts")
         self.pushButton2= QPushButton("Manage Profiles")
@@ -33,7 +31,6 @@ class adminUI(QWidget):
         layoutMain.addWidget(self.pushButton2, 1, 1)
         layoutMain.addWidget(self.pushButton3, 2, 1)
 
-        #-----------------------------------------------------------------
         self.setLayout(layoutMain)
         
     def callMAcc(self):

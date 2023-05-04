@@ -1,11 +1,9 @@
 import sys 
 sys.path.append( './Entity' )
-#sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from profCreate import profCreate
+from account import Account
 
 class createProfController:
-    def createProf(self, stackedWidget, profilename, systemR):
+    def createProf(self, stackedWidget, userID, name, DOB, accType):
         self.stackedWidget = stackedWidget
-        print("in Controller")
-        profCreate().fuc(self.stackedWidget, profilename,systemR)
+        Account().createProfile(self.stackedWidget, userID, name, DOB, accType)
        

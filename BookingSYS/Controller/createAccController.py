@@ -1,11 +1,10 @@
 import sys 
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from accCreate import accCreate
+from account import Account
 
 class createAccController:
-    def createAcc(self, stackedWidget, fname, lname, age, username, password, accType):
+    def createAcc(self, stackedWidget, accType, username, password):
         self.stackedWidget = stackedWidget
-        print("in Controller")
-        accCreate().fuc(self.stackedWidget, fname, lname, age, username, password, accType)
+        Account().createInfo(self.stackedWidget, accType,username, password)
         

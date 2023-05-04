@@ -1,10 +1,13 @@
+#GUI imports
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QGridLayout
+from PyQt5 import QtGui
+
+#Import links to different scripts in Controller
 import sys 
 sys.path.append('./Controller')
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QStackedWidget, QGridLayout, QMessageBox, QListWidget
-from PyQt5 import QtCore, QtGui, QtWidgets
 from createProfController import createProfController
 
-#wigdet index 5
+#Create new account GUI
 class createProfUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -19,11 +22,29 @@ class createProfUI(QWidget):
         layout = QGridLayout()
 
         #Buttons
-        self.profileName_label = QLabel('Profile Name:')
-        self.profileName_edit = QLineEdit()
-        self.systemR_label = QLabel('System rights:')
-        self.systemR_edit = QLineEdit()
+        self.userID_label = QLabel('Account ID:')
+        self.userID_edit = QLineEdit()
+
+        self.name_label = QLabel('Name:')
+        self.name_edit = QLineEdit()
+
+        self.DOB_label = QLabel('DOB(DDMMYYYY):')
+        self.DOB_edit = QLineEdit()
+
+        self.accType_label = QLabel('Account Type:')
+        self.accType_edit = QLineEdit()
         
+        layout.addWidget(self.userID_label,1, 1)
+        layout.addWidget(self.userID_edit,1,2)
+
+        layout.addWidget(self.name_label,2,1)
+        layout.addWidget(self.name_edit,2,2)
+
+        layout.addWidget(self.DOB_label,3,1)
+        layout.addWidget(self.DOB_edit,3,2)
+
+        layout.addWidget(self.accType_label,4,1)
+        layout.addWidget(self.accType_edit,4,2)
 
         self.createButton = QPushButton('Create')
         self.backButton = QPushButton ('Back')
@@ -31,10 +52,6 @@ class createProfUI(QWidget):
         self.backButton.clicked.connect(self.goBack)
         self.createButton.clicked.connect(self.createProfile)
 
-        layout.addWidget(self.profileName_label,1, 1)
-        layout.addWidget(self.profileName_edit,1,2)
-        layout.addWidget(self.systemR_label,2,1)
-        layout.addWidget(self.systemR_edit,2,2)
         layout.addWidget(self.createButton,8 ,1)
         layout.addWidget(self.backButton, 8, 3)
         
@@ -45,7 +62,8 @@ class createProfUI(QWidget):
 
     #call this function to go to the entity, entity should have the SQL statements to create the account. parse the variables into the function
     def createProfile(self):
-        profilename = self.profileName_edit.text()
-        systemR = self.systemR_edit.text()
-
-        createProfController.createProf(self,self.stackedWidget,profilename, systemR)
+        userID = self.userID_edit.text()
+        name = self.name_edit.text()
+        DOB = self.DOB_edit.text()
+        accType = self.accType_edit.text()
+        createProfController.createProf(self,self.stackedWidget,userID, name, DOB, accType)
