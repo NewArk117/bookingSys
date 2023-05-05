@@ -4,7 +4,7 @@ sys.path.append( './Entity' )
 from account import Account
 
 class createAccController:
-    def createAcc(self, stackedWidget, accType, username, password):
+    def createAcc(self, stackedWidget, accType, username, password, permission):
         self.stackedWidget = stackedWidget
-        Account().createInfo(self.stackedWidget, accType,username, password)
+        Account().createInfo(self.stackedWidget, accType,username, password, permission)
         

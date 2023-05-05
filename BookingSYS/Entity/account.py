@@ -18,7 +18,7 @@ class Account:
         cursor = conn.cursor()
 
         #SQL Statement
-        sql = "SELECT * FROM admin WHERE userName = ? AND password = ?"
+        sql = "SELECT * FROM account WHERE userName = ? AND password = ?"
         value1 = usrname
         value2 = pw
 
@@ -52,7 +52,7 @@ class Account:
         if reply == QMessageBox.Yes:
             self.stackedWidget.setCurrentIndex(1)
 
-    def createInfo(self,stackedWidget, userID, userName, password):
+    def createInfo(self,stackedWidget, userID, userName, password, permission):
         self.stackedWidget = stackedWidget
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -60,9 +60,9 @@ class Account:
         # Get a cursor object
         cursor = conn.cursor()
 
-        # Insert a new record into the "admin" table
-        sql = "INSERT INTO admin (userID, userName, password) VALUES (?, ?, ?)"
-        data = (userID, userName, password)
+        # Insert a new record into the account table
+        sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
+        data = (userID, userName, password, permission)
         cursor.execute(sql, data)
 
         # Commit the transaction
@@ -90,4 +90,4 @@ class Account:
 
         # Close the database connection
         conn.close()
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(3)

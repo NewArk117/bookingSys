@@ -58,7 +58,7 @@ class createProfUI(QWidget):
         self.setLayout(layout)
 
     def goBack(self):
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(3)
 
     #call this function to go to the entity, entity should have the SQL statements to create the account. parse the variables into the function
     def createProfile(self):
@@ -67,3 +67,8 @@ class createProfUI(QWidget):
         DOB = self.DOB_edit.text()
         accType = self.accType_edit.text()
         createProfController.createProf(self,self.stackedWidget,userID, name, DOB, accType)
+
+        self.userID_edit.clear()
+        self.name_edit.clear()
+        self.DOB_edit.clear()
+        self.accType_edit.clear()

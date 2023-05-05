@@ -7,16 +7,11 @@ conn = sqlite3.connect('SilverVillageUserAcc.db')
 cursor = conn.cursor()
 
 # Create a new table in the database
-#admin
-cursor.execute('''CREATE TABLE IF NOT EXISTS admin 
+cursor.execute('''CREATE TABLE IF NOT EXISTS account 
                  (userID TEXT PRIMARY KEY,
                   userName TEXT,
-                  password TEXT)''')
-
-cursor.execute('''CREATE TABLE IF NOT EXISTS customer 
-                 (userID TEXT PRIMARY KEY,
-                  userName TEXT,
-                  password TEXT)''')
+                  password TEXT,
+                  permission TEXT)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS userProfile 
                  (userID TEXT PRIMARY KEY,

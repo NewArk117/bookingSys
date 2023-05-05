@@ -29,6 +29,8 @@ class createAccUI(QWidget):
         self.username_edit = QLineEdit()
         self.password_label = QLabel('New password:')
         self.password_edit = QLineEdit()
+        self.permission_label = QLabel('Account Type:')
+        self.permission_edit = QLineEdit()
         
 
         self.createButton = QPushButton('Create')
@@ -43,6 +45,8 @@ class createAccUI(QWidget):
         layout.addWidget(self.password_edit,5,2)
         layout.addWidget(self.accType_label,6,1)
         layout.addWidget(self.accType_edit,6,2)
+        layout.addWidget(self.permission_label,7,1)
+        layout.addWidget(self.permission_edit,7,2)
         layout.addWidget(self.createButton,8 ,1)
         layout.addWidget(self.backButton, 8, 3)
         
@@ -56,5 +60,10 @@ class createAccUI(QWidget):
         username = self.username_edit.text()
         password = self.password_edit.text()
         accType = self.accType_edit.text()
-
-        createAccController.createAcc(self,self.stackedWidget, accType, username, password)
+        permission = self.permission_edit.text()
+        createAccController.createAcc(self,self.stackedWidget, accType, username, password,permission)
+        
+        self.username_edit.clear()
+        self.password_edit.clear()
+        self.accType_edit.clear()
+        self.permission_edit.clear()
