@@ -9,8 +9,9 @@ import sys
 sys.path.append('./Boundary')
 
 class Account:
-    def login(self,stackedWidget, usrname, pw):
+    def login(self,stackedWidget, usrname, pw, acctype):
         self.stackedWidget = stackedWidget
+        self.acctype = acctype
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
@@ -30,7 +31,10 @@ class Account:
         for row in rows:
             if row[1] == usrname:
                 if row[2] == pw:
-                    self.stackedWidget.setCurrentIndex(2)
+                    if acctype == 'admin':
+                        self.stackedWidget.setCurrentIndex(2)
+                    else:
+                        self.stackedWidget.setCurrentIndex(6)
                 else:
                     print("Wrong password")
             #if else to check with usrname and pw with database, if match then go to customer UI

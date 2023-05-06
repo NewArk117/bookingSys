@@ -9,9 +9,10 @@ from loginController import loginController
 
 #Admin Login 
 class loginUI(QWidget):
-    def __init__(self, stackedWidget):
+    def __init__(self, stackedWidget, acctype=None):
         super().__init__()
         self.stackedWidget = stackedWidget
+        self.acctype = acctype
 
        #Create the login form
         self.username_label = QLabel('Username:')
@@ -44,9 +45,10 @@ class loginUI(QWidget):
     def login(self):
         username = self.username_edit.text()
         password = self.password_edit.text()
+        acctype = self.acctype
 
         #Calls the loginController
-        loginController.checkLogin(self, self.stackedWidget, username, password)
+        loginController.checkLogin(self, self.stackedWidget, username, password, acctype)
 
         self.username_edit.clear()
         self.password_edit.clear()

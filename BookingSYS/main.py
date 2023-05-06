@@ -10,9 +10,12 @@ import sys
 sys.path.append('./Boundary')
 from loginUI import loginUI
 from adminUI import adminUI
+from customerInfoUI import customerInfoUI
+from customerUI import customerUI
 from manageAcc import manageAcc
 from createAccUI import createAccUI
 from createProfUI import createProfUI
+from purchaseUI import purchaseUI
 
 #Main class
 class MainWindow(QMainWindow):
@@ -41,7 +44,7 @@ class MainWindow(QMainWindow):
         #Customer button
         custButton = QPushButton('Customer')
         custButton.setMinimumSize(200, 30)
-        custButton.clicked.connect(self.adminLog)
+        custButton.clicked.connect(self.cusLog)
 
         #Button layout and initalization
         self.hlayout = QHBoxLayout()
@@ -69,15 +72,29 @@ class MainWindow(QMainWindow):
         self.manageAcc = manageAcc(self.stackedWidget)#3
         self.stackedWidget.addWidget(self.manageAcc)
 
-        self.createAccUI = createAccUI(self.stackedWidget)#5
+        self.createAccUI = createAccUI(self.stackedWidget)#4
         self.stackedWidget.addWidget(self.createAccUI)
 
-        self.createProfUI = createProfUI(self.stackedWidget)#6
+        self.createProfUI = createProfUI(self.stackedWidget)#5
         self.stackedWidget.addWidget(self.createProfUI)
+
+        self.customerUI = customerUI(self.stackedWidget) #6
+        self.stackedWidget.addWidget(self.customerUI)
+
+        self.purchaseUI = purchaseUI(self.stackedWidget)#7
+        self.stackedWidget.addWidget(self.purchaseUI)
+
+        self.customerInfoUI = customerInfoUI(self.stackedWidget) #8
+        self.stackedWidget.addWidget(self.customerInfoUI)
 
     #Go to admin login page
     def adminLog(self):
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentWidget(self.pageLogin)
+        self.pageLogin.acctype = "admin"
+
+    def cusLog(self):
+        self.stackedWidget.setCurrentWidget(self.pageLogin)
+        self.pageLogin.acctype = "customer"
 
 if __name__ == '__main__':
     subprocess.run(["python", "SilverVillageDB.py"])
