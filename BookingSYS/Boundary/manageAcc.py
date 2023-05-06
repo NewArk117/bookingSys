@@ -31,10 +31,9 @@ class manageAcc(QWidget):
         self.buttonCreateAcc= QPushButton("Create Account")
         self.buttonDeleteAcc = QPushButton("Delete Account")
         self.buttonEditAcc = QPushButton("Edit Account")
-        
         self.custBox = QListWidget()
         self.backButton = QPushButton("Back")
-        
+
         self.backButton.clicked.connect(self.goBack)
         self.buttonCreateAcc.clicked.connect(self.goCreateAcc)
 
@@ -48,6 +47,7 @@ class manageAcc(QWidget):
         layoutAcc.addWidget(self.buttonEditAcc, 0, 3)
         layoutAcc.addWidget(self.backButton, 5, 1)
         
+
         #Profile
         self.buttonCreate2= QPushButton("Create Profile")
         self.buttonDelete2 = QPushButton("Delete Profile")
@@ -165,8 +165,13 @@ class manageAcc(QWidget):
 
     def perform_action(self):
         selected_item = self.staffBox.currentItem()
+        selected_item2 = self.custBox.currentItem()
 
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
-            viewProfileController.viewProfile(self, self.stackedWidget,item_name)
+            viewProfileController.viewProfile(self, self.stackedWidget, item_name)
+
+        elif selected_item2 is not None:
+            item_name2 = selected_item2.text()
+            viewProfileController.viewProfile(self, self.stackedWidget, item_name2)

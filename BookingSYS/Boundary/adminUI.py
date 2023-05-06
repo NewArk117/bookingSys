@@ -5,8 +5,6 @@ from PyQt5 import QtGui
 #Import links to different scripts in Controller
 import sys 
 sys.path.append('./Controller')
-from manageAccController import manageAccController
-from manageProfController import manageProfController
 from logOutController import logOutController
 
 #Admin home page
@@ -31,10 +29,10 @@ class adminUI(QWidget):
         self.setLayout(layoutMain)
         
     def callMAcc(self):
-        manageAccController.manAcc(self, self.stackedWidget)
+        self.stackedWidget.setCurrentIndex(3)
 
     def callMProf(self):
-        manageProfController.manProf(self, self.stackedWidget)
+        self.stackedWidget.setCurrentIndex(4)
 
     def logOut(self):
         logOutController.loggingOut(self, self.stackedWidget)
