@@ -26,7 +26,6 @@ class UserProfile:
 
         for row in rows:
             message_box = QMessageBox()
-            print(row[0])
             message_box.setText("Account ID: " + str(row[0]) + "\n" + "Name: " + str(row[1]) + "\n" + "Date of Birth: " + str(row[2]) + "\n" + "Account Type: " + str(row[3]))
             message_box.setWindowTitle(str(row[0]))
             message_box.exec_()
