@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         self.addHall = addHalls(self.stackedWidget)#17
         self.stackedWidget.addWidget(self.addHall)
 
-        self.stackedWidget.setCurrentIndex(9)
+        self.stackedWidget.setCurrentIndex(0)
 
     #Go to admin login page
     def adminLog(self):
