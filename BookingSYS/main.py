@@ -17,6 +17,9 @@ from createAccUI import createAccUI
 from createProfUI import createProfUI
 from purchaseUI import purchaseUI
 
+from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls
+
+
 #Main class
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -86,6 +89,35 @@ class MainWindow(QMainWindow):
 
         self.customerInfoUI = customerInfoUI(self.stackedWidget) #8
         self.stackedWidget.addWidget(self.customerInfoUI)
+
+        self.managerUI = managerUI(self.stackedWidget) #9
+        self.stackedWidget.addWidget(self.managerUI)
+
+        self.manageMoviesUI = manageMoviesUI(self.stackedWidget) #10
+        self.stackedWidget.addWidget(self.manageMoviesUI)
+
+        self.manageHallsUI = manageHallsUI(self.stackedWidget) #11
+        self.stackedWidget.addWidget(self.manageHallsUI)
+
+        self.manageFBUI = manageFBUI(self.stackedWidget) #12
+        self.stackedWidget.addWidget(self.manageFBUI)
+
+        self.manageTicTypeUI = manageTicTypeUI(self.stackedWidget) #13
+        self.stackedWidget.addWidget(self.manageTicTypeUI)
+
+        self.addMovies = addMovies(self.stackedWidget)#14
+        self.stackedWidget.addWidget(self.addMovies)
+
+        self.addTic = addTic(self.stackedWidget)#15
+        self.stackedWidget.addWidget(self.addTic)
+
+        self.addFB = addFnB(self.stackedWidget)#16
+        self.stackedWidget.addWidget(self.addFB)
+
+        self.addHall = addHalls(self.stackedWidget)#17
+        self.stackedWidget.addWidget(self.addHall)
+
+        self.stackedWidget.setCurrentIndex(9)
 
     #Go to admin login page
     def adminLog(self):

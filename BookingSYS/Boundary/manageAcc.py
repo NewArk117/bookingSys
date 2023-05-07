@@ -120,10 +120,10 @@ class manageAcc(QWidget):
         self.stackedWidget.setCurrentIndex(2)
 
     def goCreateAcc(self):
-        self.stackedWidget.setCurrentIndex(5)
+        self.stackedWidget.setCurrentIndex(4)
 
     def goCreateProf(self):
-        self.stackedWidget.setCurrentIndex(6)
+        self.stackedWidget.setCurrentIndex(5)
 
     def editAcc(self):
         selected_item = self.staffBox.currentItem()
