@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton,  QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QPushButton,  QVBoxLayout
 from logOutController import logOutController
 
 class customerUI(QWidget):
@@ -12,25 +12,34 @@ class customerUI(QWidget):
         self.buy_button = QPushButton('Purchase Movie Tickets')
         self.buy_button.clicked.connect(self.buy_movie_tickets)
 
-        self.info_button = QPushButton('Personal Information')
+        self.buy_food_button = QPushButton('Purchase F&B')
+        self.buy_food_button.clicked.connect(self.buy_food)
+
+        self.info_button = QPushButton('Account Information')
         self.info_button.clicked.connect(self.show_personal_info)
+
 
         self.logout_button = QPushButton('Logout')
         self.logout_button.clicked.connect(self.logOut)
 
-
         layout = QVBoxLayout()
         layout.addWidget(self.buy_button)
+        layout.addWidget(self.buy_food_button)
         layout.addWidget(self.info_button)
         layout.addWidget(self.logout_button)
 
         self.setLayout(layout)
 
+
     def buy_movie_tickets(self):
         self.stackedWidget.setCurrentIndex(7)
+
+    def buy_food(self):
+        self.stackedWidget.setCurrentIndex(18)
 
     def show_personal_info(self):
         self.stackedWidget.setCurrentIndex(8)
 
     def logOut(self):
         logOutController.loggingOut(self, self.stackedWidget)
+
