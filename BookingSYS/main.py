@@ -15,7 +15,8 @@ from customerUI import customerUI
 from manageAcc import manageAcc
 from createAccUI import createAccUI
 from createProfUI import createProfUI
-from purchaseUI import purchaseUI
+from purchaseTicUI import purchaseTicUI
+from purchaseFoodUI import purchaseFoodUI
 
 from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls
 
@@ -84,8 +85,8 @@ class MainWindow(QMainWindow):
         self.customerUI = customerUI(self.stackedWidget) #6
         self.stackedWidget.addWidget(self.customerUI)
 
-        self.purchaseUI = purchaseUI(self.stackedWidget)#7
-        self.stackedWidget.addWidget(self.purchaseUI)
+        self.purchaseTicUI = purchaseTicUI(self.stackedWidget)#7
+        self.stackedWidget.addWidget(self.purchaseTicUI)
 
         self.customerInfoUI = customerInfoUI(self.stackedWidget) #8
         self.stackedWidget.addWidget(self.customerInfoUI)
@@ -116,6 +117,9 @@ class MainWindow(QMainWindow):
 
         self.addHall = addHalls(self.stackedWidget)#17
         self.stackedWidget.addWidget(self.addHall)
+
+        self.purchaseFoodUI = purchaseFoodUI(self.stackedWidget) #18
+        self.stackedWidget.addWidget(self.purchaseFoodUI)
 
         self.stackedWidget.setCurrentIndex(0)
 
