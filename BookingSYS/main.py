@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         title.setPixmap(pixmap)
 
         #Admin button
-        adminButton = QPushButton('Admin')
+        adminButton = QPushButton('Staff')
         adminButton.setMinimumSize(200, 30)
         adminButton.clicked.connect(self.adminLog)
        
@@ -126,11 +126,9 @@ class MainWindow(QMainWindow):
     #Go to admin login page
     def adminLog(self):
         self.stackedWidget.setCurrentWidget(self.pageLogin)
-        self.pageLogin.acctype = "admin"
 
     def cusLog(self):
         self.stackedWidget.setCurrentWidget(self.pageLogin)
-        self.pageLogin.acctype = "customer"
 
 if __name__ == '__main__':
     subprocess.run(["python", "SilverVillageDB.py"])
