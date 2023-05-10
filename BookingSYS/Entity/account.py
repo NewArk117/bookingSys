@@ -4,6 +4,7 @@ import sqlite3
 #GUI Imports
 from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
 from PyQt5.QtCore import Qt
+
 #Import links to different scripts in Boundary
 import sys 
 sys.path.append('./Boundary')
@@ -58,7 +59,7 @@ class Account:
         if reply == QMessageBox.Yes:
             self.stackedWidget.setCurrentIndex(1)
 
-    def createInfo(self,stackedWidget, userID, userName, password, permission):
+    def createAccount(self,stackedWidget, userID, userName, password, permission):
         self.stackedWidget = stackedWidget
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -78,6 +79,7 @@ class Account:
         conn.close()
         self.stackedWidget.setCurrentIndex(3)
 
+        
     def createProfile(self,stackedWidget, userID, name, DOB, accType):
         self.stackedWidget = stackedWidget
         

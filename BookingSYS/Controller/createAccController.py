@@ -6,5 +6,5 @@ from account import Account
 class createAccController:
     def createAcc(self, stackedWidget, accType, username, password, permission):
         self.stackedWidget = stackedWidget
-        Account().createInfo(self.stackedWidget, accType,username, password, permission)
+        Account().createAccount(self.stackedWidget, accType,username, password, permission)
         
