@@ -1,10 +1,10 @@
 import sys 
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from manage import Manage
+from ticketType import ticketType
 
-class delTicsController:
-    def delTicsC(self, stackedWidget, ticList):
+class delTicTypeController:
+    def delTicTypeC(self, stackedWidget, ticList):
         self.stackedWidget = stackedWidget
         self.ticList = ticList
-        Manage().delTics(self.stackedWidget, self.ticList)
+        ticketType().delTicType(self.stackedWidget, self.ticList)

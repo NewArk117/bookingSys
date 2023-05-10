@@ -25,15 +25,17 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS movies
                   timeSlot TEXT)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS hall 
-                 (hall_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                 (hallName TEXT PRIMARY KEY,
+                 rows INT,
+                 columns INT,
                   capacity INT,
                   isAccessible BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS seat 
-                 (seat_ID INT PRIMARY KEY,
-                  hall_ID INT
-                  seatNumber TEXT,
-                  isAvailable BOOLEAN)''')
+                (seat_No TEXT PRIMARY KEY,
+                hallName TEXT,
+                isAvailable BOOLEAN,
+                FOREIGN KEY (hallName) REFERENCES hall(hallName))''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS food 
                  (foodName TEXT PRIMARY KEY,
@@ -63,7 +65,7 @@ conn.close()
 
 """
 cursor.execute('''CREATE TABLE IF NOT EXISTS hall 
-                (hall_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                (hall_ID INT,
                 capacity INT,
                 isAccessible BOOLEAN)''')
 
