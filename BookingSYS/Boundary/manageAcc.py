@@ -10,6 +10,8 @@ import sys
 sys.path.append('./Controller')
 from viewProfController import viewProfileController
 from editAccController import editAccountController
+from editProfController import editProfileController
+
 #Admin account main page GUI
 class manageAcc(QWidget):
     def __init__(self, stackedWidget):
@@ -35,6 +37,7 @@ class manageAcc(QWidget):
         self.buttonCreateAcc.clicked.connect(self.goCreateAcc)
         self.buttonEditAcc.clicked.connect(self.editAcc)
         
+
         layoutAcc.addWidget(self.labelStaff, 0, 0)
         layoutAcc.addWidget(self.staffBox, 1, 0)
         layoutAcc.addWidget(self.labelCust, 2, 0)
@@ -53,7 +56,7 @@ class manageAcc(QWidget):
 
         self.buttonCreate2.clicked.connect(self.goCreateProf)
         self.buttonViewProfile.clicked.connect(self.perform_action)
-
+        self.buttonEdit2.clicked.connect(self.editProf)
         layoutAcc.addWidget(self.buttonCreate2, 3 ,1)
         layoutAcc.addWidget(self.buttonDelete2, 3 ,2)
         layoutAcc.addWidget(self.buttonEdit2, 3 ,3)
@@ -137,6 +140,19 @@ class manageAcc(QWidget):
         elif selected_item2 is not None:
             item_name2 = selected_item2.text()
             editAccountController.editAccount(self, self.stackedWidget, item_name2)
+
+    def editProf(self):
+        selected_item = self.staffBox.currentItem()
+        selected_item2 = self.custBox.currentItem()
+
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            editProfileController.editProfile(self, self.stackedWidget, item_name)
+
+        elif selected_item2 is not None:
+            item_name2 = selected_item2.text()
+            editProfileController.editProfile(self, self.stackedWidget, item_name2)
 
     def refreshStaffAcc(self):
         # connect to the database
