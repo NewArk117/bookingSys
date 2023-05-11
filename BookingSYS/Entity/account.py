@@ -97,27 +97,6 @@ class Account:
             # Close the database connection
             conn.close()
 
-        
-    def createProfile(self,stackedWidget, userID, name, DOB, accType):
-        self.stackedWidget = stackedWidget
-        
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-
-        # Get a cursor object
-        cursor = conn.cursor()
-
-        # Insert a new record into the "admin" table
-        sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
-        data = (userID, name, DOB, accType)
-        cursor.execute(sql, data)
-
-        # Commit the transaction
-        conn.commit()
-
-        # Close the database connection
-        conn.close()
-        self.stackedWidget.setCurrentIndex(3)
-
     def editAccount(self, stackedWidget, item_name):
         self.stackedWidget = stackedWidget
         widget = QWidget()
