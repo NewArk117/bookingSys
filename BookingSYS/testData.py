@@ -137,8 +137,6 @@ for i in range(10):
         cursor.execute(sql, data) 
 
     
-
-
 # Insert 100 customer into the "account" table
 someCust = randomCust()
 someCustPassword = randomCustPassword()
@@ -154,10 +152,25 @@ staffName = ["Gianna Hess", "Ryan Velasquez", "Alexander OlsenMoses", "FlowersGi
              "Vincent Gregory", "Velazquez Sydnee", "Nelson Isabell", "Murphy Ashly", "Pruitt Kelsey",
              "Long Antony", "Hester Carla", "Woods Tess", "Davidson Tanya", "Rogers Mohammad", "Kerr Jackson"]
 sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
-for i in range(15):  
-    data = ("staff"+str(i), staffName[i], someDates1[i],"staff")
-
-    cursor.execute(sql, data)
+for i in range(10):  
+    if i == 0:
+        data = ("owner1", staffName[i], someDates1[i],"cinemaOwner")
+        cursor.execute(sql, data) 
+    elif i == 1:
+        data = ("manager1", staffName[i], someDates1[i], "cinemaManager")
+        cursor.execute(sql, data) 
+    elif i == 2:
+        data = ("admin1", staffName[i], someDates1[i], "sysAdmin")
+        cursor.execute(sql, data) 
+    elif i == 3:
+        data = ("customerTest", staffName[i], someDates1[i], "customer")
+        cursor.execute(sql, data) 
+    elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
+        data = ("manager"+ str(i-2), staffName[i], someDates1[i], "cinemaManager")
+        cursor.execute(sql, data) 
+    else:
+        data = ("admin"+ str(i-7), staffName[i],someDates1[i],"sysAdmin")
+        cursor.execute(sql, data) 
 
 # Insert random profiles for customer into the "User profile"
 someDates2 = randomDateCust()
