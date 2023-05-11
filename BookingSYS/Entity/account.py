@@ -2,7 +2,7 @@
 import sqlite3
 
 #GUI Imports
-from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
+from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QListWidgetItem
 from PyQt5.QtCore import Qt
 #Import links to different scripts in Boundary
 import sys 
@@ -26,22 +26,19 @@ class Account:
         # Execute the SQL query with the values
         cursor.execute(sql, (value1, value2))
 
-        rows = cursor.fetchall()
-        
-        for row in rows:
-            if row[1] == usrname:
-                if row[2] == pw:
-                    if row[3] == 'sysAdmin':
-                        self.stackedWidget.setCurrentIndex(2)
-                    elif row[3] == 'customer':
-                        self.stackedWidget.setCurrentIndex(6)
-                    elif row[3] == 'cinemaManager':
-                        self.stackedWidget.setCurrentIndex(9)
-                else:
-                    print("Wrong password")
-            #if else to check with usrname and pw with database, if match then go to customer UI
-            else:
-                print('Invalid username')
+        row = cursor.fetchone()
+        widget1 = QWidget()
+        if row:
+            QMessageBox.information(widget1,"Login Successful", "You have successfully logged in.")
+            if row[3] == 'sysAdmin':
+                self.stackedWidget.setCurrentIndex(2)
+            elif row[3] == 'customer':
+                self.stackedWidget.setCurrentIndex(6)
+            elif row[3] == 'cinemaManager':
+                self.stackedWidget.setCurrentIndex(9)
+        else:
+            QMessageBox.warning(widget1,"Login Error", "Wrong Username or Password.")
+                    
 
         #Close Transaction 
         cursor.close()
@@ -56,51 +53,51 @@ class Account:
                                     QMessageBox.No)
         
         if reply == QMessageBox.Yes:
-            self.stackedWidget.setCurrentIndex(1)
+            self.stackedWidget.setCurrentIndex(0)
 
-    def createInfo(self,stackedWidget, userID, userName, password, permission):
+    def createAccount(self,stackedWidget, userID, userName, password, permission):
         self.stackedWidget = stackedWidget
-
+        widget2 = QWidget()
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
         # Get a cursor object
         cursor = conn.cursor()
+        checkUser = []
+        checkID = []
+        checkPw = []
+        checkPer = []
+        cursor.execute("SELECT * FROM account")
+        rows = cursor.fetchall()
+        for row in rows:
+            checkID.append(row[0])
+            checkUser.append(row[1])
+            checkPw.append(row[2])
+            checkPer.append(row[3])
 
         # Insert a new record into the account table
         sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
         data = (userID, userName, password, permission)
-        cursor.execute(sql, data)
+        if data[0] == "" or data[1] == "" or data[2] == "" or data[3] == "":
+            QMessageBox.information(widget2,"Invalid Input", "A column is empty please fill up all the details")
+        elif data[0] in checkID:
+            QMessageBox.information(widget2,"Invalid Input", "ID already in used")
+        elif data[1] in checkUser:
+            QMessageBox.information(widget2,"Invalid Input", "Username already in used")
+        elif data[2] in checkUser:
+            QMessageBox.information(widget2,"Invalid Input", "Password already in used")
+        else:
+            cursor.execute(sql, data)
+            self.stackedWidget.setCurrentIndex(3)
 
-        # Commit the transaction
-        conn.commit()
+            # Commit the transaction
+            conn.commit()
 
-        # Close the database connection
-        conn.close()
-        self.stackedWidget.setCurrentIndex(3)
-
-    def createProfile(self,stackedWidget, userID, name, DOB, accType):
-        self.stackedWidget = stackedWidget
-        
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-
-        # Get a cursor object
-        cursor = conn.cursor()
-
-        # Insert a new record into the "admin" table
-        sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
-        data = (userID, name, DOB, accType)
-        cursor.execute(sql, data)
-
-        # Commit the transaction
-        conn.commit()
-
-        # Close the database connection
-        conn.close()
-        self.stackedWidget.setCurrentIndex(3)
+            # Close the database connection
+            conn.close()
 
     def editAccount(self, stackedWidget, item_name):
         self.stackedWidget = stackedWidget
-
+        widget = QWidget()
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
         # Get a cursor object
@@ -148,12 +145,57 @@ class Account:
 
             if result == QMessageBox.Ok:
                 texts = [line_edit.text() for line_edit in widget.findChildren(QLineEdit)]
-                comments = [line_edit.toPlainText() for line_edit in widget.findChildren(QTextEdit) if line_edit.objectName() == 'comments']
+
                 conn = sqlite3.connect('SilverVillageUserAcc.db')
                 c = conn.cursor()
                 sql1 = "DELETE FROM account WHERE account.userID = ?"
-                value2 = row[0]
                 c.execute(sql1,(row[0],))
+                
                 c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
+                
                 conn.commit()
                 conn.close()
+
+    def viewAccount(self, stackedWidget):
+        # Connect to the database
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        
+        # Create a cursor object from the connection
+        cursor = conn.cursor()
+        
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute("SELECT * FROM account WHERE permission = 'sysAdmin' OR permission = 'staff' or permission = 'cinemaOwner' or permission = 'cinemaManager'")
+        
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        # Iterate over the rows and populate the list widget with the data
+        for row in rows:
+            item = QListWidgetItem(str(row[0]))
+            self.staffBox.addItem(item)
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        #Show Database on textbox
+        # Connect to the database
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        
+        # Create a cursor object from the connection
+        cursor = conn.cursor()
+        
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute("SELECT * FROM account WHERE permission = 'customer'")
+        
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        # Iterate over the rows and populate the list widget with the data
+        for row in rows:
+            item = QListWidgetItem(str(row[0]))
+            self.custBox.addItem(item)
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()

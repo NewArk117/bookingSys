@@ -32,7 +32,7 @@ def randomCustPassword():
 def randomStaff():
     random_names = []
     random_numbers = []
-    for i in range(15):
+    for i in range(10):
         random_numbers.append(str(random.randrange(1, 1000)).zfill(3))
     
     for i in range(15):
@@ -46,7 +46,7 @@ def randomStaff():
 #Generate random staff password
 def randomStaffPassword():
     random_password = []
-    for i in range(15):
+    for i in range(10):
         chars = string.ascii_letters + string.digits
         password = ''.join(random.choice(chars) for i in range(8))
         random_password.append(password)
@@ -116,30 +116,28 @@ cursor = conn.cursor()
 someStaff = randomStaff()
 someStaffPassword = randomStaffPassword()
 sql = "INSERT INTO account (userID, userName, password,permission) VALUES (?, ?, ?, ?)"
-for i in range(15):  
-    data = ("staff"+str(i), someStaff[i], someStaffPassword[i],"staff")
+for i in range(10):  
+    if i == 0:
+        data = ("owner1", "owner", "password","cinemaOwner")
+        cursor.execute(sql, data) 
+    elif i == 1:
+        data = ("manager1", "manager", "password", "cinemaManager")
+        cursor.execute(sql, data) 
+    elif i == 2:
+        data = ("admin1", "admin", "password", "sysAdmin")
+        cursor.execute(sql, data) 
+    elif i == 3:
+        data = ("customerTest", "customer", "password", "customer")
+        cursor.execute(sql, data) 
+    elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
+        data = ("manager"+ str(i-2), someStaff[i], someStaffPassword[i], "cinemaManager")
+        cursor.execute(sql, data) 
+    else:
+        data = ("admin"+ str(i-7), someStaff[i],someStaffPassword[i],"sysAdmin")
+        cursor.execute(sql, data) 
 
-    cursor.execute(sql, data)
+    
 
-#Insert 1 staff into the "account" table
-sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-data = ("staffTest", "staff", "password", "staff")
-cursor.execute(sql, data)
-
-#Insert 1 admin into the "account" table
-sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-data = ("admin1", "admin", "password", "sysAdmin")
-cursor.execute(sql, data)
-
-#Insert 1 manager into the "account" table
-sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-data = ("manager1", "manager", "password", "cinemaManager")
-cursor.execute(sql, data)
-
-#Insert 1 owner into the "account" table
-sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-data = ("owner1", "owner", "password", "cinemaOwner")
-cursor.execute(sql, data)
 
 # Insert 100 customer into the "account" table
 someCust = randomCust()
@@ -149,11 +147,6 @@ for i in range(100):
     data = ("cust"+str(i), someCust[i], someCustPassword[i],"customer")
 
     cursor.execute(sql, data)
-
-#Insert 1 customer into the "account" table
-sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-data = ("customerTest", "customer", "password", "customer")
-cursor.execute(sql, data)
 
 # Insert random profiles for staff into the "User profile"
 someDates1 = randomDateStaff()

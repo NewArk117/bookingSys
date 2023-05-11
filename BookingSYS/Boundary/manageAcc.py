@@ -11,6 +11,7 @@ sys.path.append('./Controller')
 from viewProfController import viewProfileController
 from editAccController import editAccountController
 from editProfController import editProfileController
+from viewAccController import viewAccountController
 
 #Admin account main page GUI
 class manageAcc(QWidget):
@@ -63,49 +64,8 @@ class manageAcc(QWidget):
         layoutAcc.addWidget(self.buttonViewProfile, 4 ,1)
         self.setLayout(layoutAcc)
 
-        #Show Database on textbox
-        # Connect to the database
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        
-        # Create a cursor object from the connection
-        cursor = conn.cursor()
-        
-        # Execute the SQL query to retrieve data from the table
-        cursor.execute("SELECT * FROM account WHERE permission = 'sysAdmin' OR permission = 'staff' or permission = 'cinemaOwner' or permission = 'cinemaManager'")
-        
-        # Fetch all the rows that match the query
-        rows = cursor.fetchall()
 
-        # Iterate over the rows and populate the list widget with the data
-        for row in rows:
-            item = QListWidgetItem(str(row[0]))
-            self.staffBox.addItem(item)
-
-        # Close the cursor and the database connection
-        cursor.close()
-        conn.close()
-        
-        # Connect to the database
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        
-        # Create a cursor object from the connection
-        cursor = conn.cursor()
-        
-        # Execute the SQL query to retrieve data from the table
-        cursor.execute("SELECT * FROM account WHERE permission = 'customer'")
-        
-        # Fetch all the rows that match the query
-        rows = cursor.fetchall()
-
-        # Iterate over the rows and populate the list widget with the data
-        for row in rows:
-            item = QListWidgetItem(str(row[0]))
-            self.custBox.addItem(item)
-
-        # Close the cursor and the database connection
-        cursor.close()
-        conn.close()
-        
+    
         #QTimer to periodically refresh the list widget
         self.timer1 = QTimer()
         self.timer1.timeout.connect(self.refreshStaffAcc)
@@ -115,6 +75,7 @@ class manageAcc(QWidget):
         self.timer2 = QTimer()
         self.timer2.timeout.connect(self.refreshCustAcc)
         self.timer2.start(5000) # refresh every 5 second
+
 
     def deleteAcc(self):
         backButtonController.backButtonC(self, self.stackedWidget)
@@ -202,3 +163,6 @@ class manageAcc(QWidget):
         elif selected_item2 is not None:
             item_name2 = selected_item2.text()
             viewProfileController.viewProfile(self, self.stackedWidget, item_name2)
+
+    def viewAcc(self):
+        viewAccountController.viewAccount(self,self.stackedWidget)

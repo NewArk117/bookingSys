@@ -1,9 +1,9 @@
 import sys 
 sys.path.append( './Entity' )
-from account import Account
+from userProfile import UserProfile
 
 class createProfController:
     def createProf(self, stackedWidget, userID, name, DOB, accType):
         self.stackedWidget = stackedWidget
-        Account().createProfile(self.stackedWidget, userID, name, DOB, accType)
+        UserProfile().createProfile(self.stackedWidget, userID, name, DOB, accType)
        

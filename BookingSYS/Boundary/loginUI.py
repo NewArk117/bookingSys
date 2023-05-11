@@ -38,8 +38,6 @@ class loginUI(QWidget):
         #Set the layout for the window to the stackedWidget
         self.setLayout(layoutLogin)
 
-
-        
     #Get the username and password
     def login(self):
         username = self.username_edit.text()
