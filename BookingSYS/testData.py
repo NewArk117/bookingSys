@@ -176,6 +176,13 @@ for i in range(len(someMovie)):
     data = (i, someMovie[i][0], someMovie[i][1])
     cursor.execute(sql, data)
 
+sql = "INSERT INTO hall (capacity, isAccessible) VALUES (?, ?)"
+data = (150,0)
+cursor.execute(sql, data)
+
+sql = "INSERT INTO hall (capacity, isAccessible) VALUES (?, ?)"
+data = (150,1)
+cursor.execute(sql, data)
 # Commit the transaction
 conn.commit()
 

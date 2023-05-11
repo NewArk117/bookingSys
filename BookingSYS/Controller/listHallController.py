@@ -1,9 +1,9 @@
 import sys 
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from manage import Manage
+from cinemaHall import cinemaHall
 
-class listTicketController:
-    def listTicC(self, stackedWidget,list):
+class listHallController:
+    def listHallC(self, stackedWidget,list):
         self.stackedWidget = stackedWidget
-        Manage().showTicType(self.stackedWidget, list)
+        cinemaHall().listManagerHall(self.stackedWidget, list)

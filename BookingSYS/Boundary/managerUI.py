@@ -1,5 +1,5 @@
 #GUI imports
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox, QVBoxLayout
 from PyQt5 import QtGui
 from PyQt5.QtCore import QStringListModel, Qt, QTimer
 import sqlite3
@@ -7,18 +7,21 @@ import sqlite3
 import sys 
 sys.path.append('./Controller')
 from delMoviesController import delMoviesController
-from delTicsController import delTicsController
+from delTicTypeController import delTicTypeController
 from delHallsController import delHallsController
 from delFBController import delFBController
 
-from addTicController import addTicController
+from addTicTypeController import addTicTypeController
 from addFBController import addFBController
+from addHallController import addHallController
 
-from listTicketController import listTicketController
+from listTicTypeController import listTicTypeController
 from listFBController import listFBController
+from listHallController import listHallController
 
-from editTicsController import editTicsController
+from editTicTypeController import editTicTypeController
 from editFBController import editFBController
+from editHallController import editHallController
 
 #Create new account GUI
 class managerUI(QWidget):
@@ -137,15 +140,15 @@ class manageTicTypeUI(QWidget):
         self.listTics()
 
     def delTics(self):
-        delTicsController.delTicsC(self, self.stackedWidget, self.ticketList)
+        delTicTypeController.delTicTypeC(self, self.stackedWidget, self.ticketList)
         self.listTics()
 
     def editTics1(self, dialog, name, price, name2, price2 ):
-        editTicsController.editTicsC(self, dialog, self.stackedWidget, name, price, name2, price2 )
+        editTicTypeController.editTicTypeC(self, dialog, self.stackedWidget, name, price, name2, price2 )
         self.listTics()
 
     def listTics(self):
-        listTicketController.listTicC(self, self.stackedWidget, self.ticketList )
+        listTicTypeController.listTicTypeC(self, self.stackedWidget, self.ticketList )
     
     def editTics(self):
         self.dialog = QDialog(self)
@@ -266,6 +269,7 @@ class manageHallsUI(QWidget):
 
         self.label1 = QLabel("Manage Halls")
         self.hallList = QListWidget()
+        self.listHalls()
         self.addButton = QPushButton("Add")
         self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
@@ -281,9 +285,10 @@ class manageHallsUI(QWidget):
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addHall)
         self.delButton.clicked.connect(self.delHall)
+        self.editButton.clicked.connect(self.editHallUI)
 
         self.setLayout(layout)
-
+        self.stackedWidget.currentChanged.connect(self.listHalls)
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -292,6 +297,82 @@ class manageHallsUI(QWidget):
 
     def delHall(self):
         delHallsController.delHallsC(self, self.stackedWidget, self.hallList)
+    
+    def listHalls(self):
+        listHallController.listHallC(self, self.stackedWidget, self.hallList )
+
+    def editHall(self,  dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
+        x = editHallController.editHallC(self,self.stackedWidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2)
+        if x:
+            self.listHalls()
+        #print(name2)
+        #print(rows2)
+        #print(columns2)
+        #print(avail2)
+    def editHallUI(self):
+        self.dialog = QDialog(self)
+        self.dialog.setWindowTitle("Edit Hall")
+
+        font = QtGui.QFont()
+        font.setPointSize(20)
+
+        layout = QGridLayout(self.dialog)
+        #self.getOldTicket()
+        try:
+            items = self.hallList.currentItem()
+            if items:
+                name = items.text().split()[0]
+                rows = items.text().split()[1]
+                columns = items.text().split()[2]
+                capacity = items.text().split()[3]
+                avail = items.text().split()[4]
+
+                self.name_label = QLabel('Hall Name:')
+                self.name_edit = QLineEdit()
+                self.name_edit.setPlaceholderText(name)
+
+                self.rows_label = QLabel('Number of rows:')
+                self.rows_edit = QLineEdit()
+                self.rows_edit.setPlaceholderText(rows)
+
+                self.column_label = QLabel('Number of columns:')
+                self.column_edit = QLineEdit()
+                self.column_edit.setPlaceholderText(columns)
+
+                self.avail_label = QLabel('Availability:')
+                self.avail_edit = QLineEdit()
+                self.avail_edit.setPlaceholderText(avail)
+
+                #print (name + rows + columns + capacity + availString)
+
+                self.backButton = QPushButton("Back")
+                self.submitButton = QPushButton("Submit")
+
+                layout.addWidget(self.name_label,0,0)
+                layout.addWidget(self.name_edit,0,1)
+
+                layout.addWidget(self.rows_label, 1, 0)
+                layout.addWidget(self.rows_edit, 1, 1)
+
+                layout.addWidget(self.column_label,2,0)
+                layout.addWidget(self.column_edit,2,1)
+
+                layout.addWidget(self.avail_label, 3, 0)
+                layout.addWidget(self.avail_edit, 3, 1)
+
+
+                layout.addWidget(self.backButton,5, 0 )
+                layout.addWidget(self.submitButton,5 ,2)
+                
+                self.backButton.clicked.connect(self.dialog.reject)
+                self.submitButton.clicked.connect(lambda: (self.editHall(self.dialog, name, rows, columns , avail ,self.name_edit.text(), self.rows_edit.text(),self.column_edit.text(), self.avail_edit.text())))
+
+                self.dialog.exec_()
+            else:
+                raise ValueError("No hall selected")
+        except ValueError as e:
+            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+
 
 class manageFBUI(QWidget):
     def __init__(self, stackedWidget):
@@ -472,30 +553,43 @@ class addHalls(QWidget):
 
         layout = QGridLayout()
 
-        self.name_label = QLabel('Type Name:')
+        self.name_label = QLabel('Hall Name:')
         self.name_edit = QLineEdit()
 
-        self.price_label = QLabel('Ticket Price:')
-        self.price_edit = QLineEdit()
+        self.rows_label = QLabel('Number of rows:')
+        self.rows_edit = QLineEdit()
+
+        self.column_label = QLabel('Number of columns:')
+        self.column_edit = QLineEdit()
+
 
         self.backButton = QPushButton("Back")
         self.submitButton = QPushButton("Submit")
 
         layout.addWidget(self.name_label,0,0)
         layout.addWidget(self.name_edit,0,1)
-        layout.addWidget(self.price_label, 1, 0)
-        layout.addWidget(self.price_edit, 1, 1)
+        layout.addWidget(self.rows_label,2,0)
+        layout.addWidget(self.rows_edit,2,1)
+        layout.addWidget(self.column_label, 3, 0)
+        layout.addWidget(self.column_edit, 3, 1)
 
         layout.addWidget(self.backButton,7, 0 )
         layout.addWidget(self.submitButton,7 ,2)
 
         self.backButton.clicked.connect(self.goBack)
-
+        self.submitButton.clicked.connect(self.addHall)
 
         self.setLayout(layout)
 
     def goBack(self):
         self.stackedWidget.setCurrentIndex(11)
+
+    def addHall(self):
+        name = self.name_edit.text()
+        rows = self.rows_edit.text()
+        column = self.column_edit.text()
+        
+        addHallController.addHallC(self, self.stackedWidget, name, rows, column)
 
 class addFnB(QWidget):
     def __init__(self, stackedWidget):
@@ -721,3 +815,49 @@ class no:
                 print("ok")
         except ValueError as e:
             QMessageBox.warning(self, 'Error', str(e))
+
+class cinemaHallUI(QWidget):
+    def __init__(self, stackedWidget):
+        super().__init__()
+        
+        # Define the number of rows and columns of seats
+        rows = 8
+        cols = 8
+        
+        # Create a grid layout to hold the seats
+        grid = QGridLayout()
+        hallName = QLabel("Hall 1")
+        screen = QLabel("Screen")
+        randomBtn = QPushButton("Random")
+        grid.addWidget(hallName, 0, 1, 1, cols)
+        grid.addWidget(screen, 1 ,1, 1, cols)
+        screen.setAlignment(Qt.AlignCenter)
+        screen.setFixedSize(cols*100,20)
+        hallName.setAlignment(Qt.AlignCenter)
+        hallName.setFixedSize(cols*100,20)
+        
+        # List of alphabets for row labels
+        row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+
+        
+        # Add a label for each row
+        for i in range(rows):
+            label = QLabel(row_labels[i])
+            label.setAlignment(Qt.AlignCenter)
+            grid.addWidget(label, i+2, 0)
+        
+        # Add a button for each seat in the grid
+        for row in range(rows):
+            for col in range(cols):
+                seat = QPushButton(f"Seat {row_labels[row]}-{col+1}")
+                grid.addWidget(seat, row+2, col+1)
+                seat.clicked.connect(lambda _, row=row, col=col: self.on_seat_selected(row, col))
+        
+        grid.addWidget(randomBtn, rows + 4, 0)
+
+        self.setLayout(grid)
+
+    def on_seat_selected(self, row, col):
+        print(f"Seat {chr(row+65)}-{col+1} selected")
+
+    #def addHall(self,stackedwidget):

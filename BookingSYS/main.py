@@ -18,7 +18,7 @@ from createProfUI import createProfUI
 from purchaseTicUI import purchaseTicUI
 from purchaseFoodUI import purchaseFoodUI
 
-from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls
+from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls, cinemaHallUI
 
 
 #Main class
@@ -121,7 +121,10 @@ class MainWindow(QMainWindow):
         self.purchaseFoodUI = purchaseFoodUI(self.stackedWidget) #18
         self.stackedWidget.addWidget(self.purchaseFoodUI)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.hallUI = cinemaHallUI(self.stackedWidget)#19
+        self.stackedWidget.addWidget(self.hallUI)
+
+        #self.stackedWidget.setCurrentIndex(11)
 
     #Go to admin login page
     def adminLog(self):

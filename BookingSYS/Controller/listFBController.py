@@ -1,9 +1,9 @@
 import sys 
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
-from manage import Manage
+from fnb import FnB
 
 class listFBController:
     def listFBC(self, stackedWidget,list):
         self.stackedWidget = stackedWidget
-        Manage().showFB(self.stackedWidget, list)
+        FnB().listManagerFB(self.stackedWidget, list)
