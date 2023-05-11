@@ -24,17 +24,36 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS movies
                   movieName TEXT,
                   timeSlot TEXT)''')
 
+
 cursor.execute('''CREATE TABLE IF NOT EXISTS hall 
                  (hallName TEXT PRIMARY KEY,
                  rows INT,
                  columns INT,
                   capacity INT,
-                  isAccessible BOOLEAN)''')
+                  isAvailable BOOLEAN)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS hallshowtime 
+                (hallName TEXT,
+                showtime INT,
+                isAvailable BOOLEAN,
+                PRIMARY KEY(hallName, showtime),
+                FOREIGN KEY(hallName) REFERENCES hall(hallName))''')
+#manager test
+cursor.execute('''CREATE TABLE IF NOT EXISTS movie
+                 (movieName TEXT,
+                  genre TEXT,
+                  showtime INT,
+                  hallName TEXT,
+                  PRIMARY KEY(movieName, showtime),
+                  FOREIGN KEY(hallName) REFERENCES hallshowtime(hallName),
+                  FOREIGN KEY(showtime) REFERENCES hallshowtime(showtime)
+                  )''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS seat 
-                (seat_No TEXT PRIMARY KEY,
+                (seat_No TEXT,
                 hallName TEXT,
                 isAvailable BOOLEAN,
+                PRIMARY KEY (seat_No, hallName)
                 FOREIGN KEY (hallName) REFERENCES hall(hallName))''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS food 
@@ -70,7 +89,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS hall
                 isAccessible BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS movie
-                (movieName TEXT PRIMARY KEY AUTOINCREMENT,
+                (movieName TEXT PRIMARY KEY,
                 genre TEXT)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS ticketType 

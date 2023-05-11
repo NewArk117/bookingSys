@@ -55,7 +55,11 @@ class cinemaHall:
         message = message + self.seats
         #print(message)
 
+        showtimes = ["1330", "1530", "1730", "1930", "2130"]
+
         try:   
+
+
             confirm = QMessageBox.question(self.stackedWidget, 'Add Cinema Hall', message ,
                                             QMessageBox.Yes | QMessageBox.No)
             if confirm == QMessageBox.Yes:
@@ -64,15 +68,14 @@ class cinemaHall:
                 # Get a cursor object
                 cursor = conn.cursor()
 
-                for row in range(rows):
-                    for col in range(columns):
-                        seatNo = "" + row_labels[row] + "-" + str(col+1)
-                        sql = "INSERT INTO seat (seat_No, hallName, isAvailable) VALUES (?, ? , ?)"
-                        data =(seatNo, name, 1)
-                        cursor.execute(sql, data)
+                self.addSeats(name, rows, columns)
 
-                
-                sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAccessible) VALUES (?, ?, ?, ? ,?)"
+                for time in showtimes:
+                    sql1 = "INSERT INTO hallshowtime (hallName, showtime, isAvailable) VALUES (?, ?, ?)"
+                    data1 = (name,time, 1)
+                    cursor.execute(sql1, data1)
+
+                sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
                 capacity = rows * columns
                 data2 = (name, rows, columns, capacity, 1)
                 cursor.execute(sql2, data2)
@@ -113,7 +116,7 @@ class cinemaHall:
                 capacity = int(rows2) * int(columns2)
                 # Update an existing record in hall
 
-                sql = "UPDATE hall SET hallName = ?, rows = ?, columns = ?, capacity = ?, isAccessible = ? WHERE hallName = ?"
+                sql = "UPDATE hall SET hallName = ?, rows = ?, columns = ?, capacity = ?, isAvailable = ? WHERE hallName = ?"
                 data = (name2, rows2, columns2, capacity, avail2, name)
                 cursor.execute(sql, data)
 
