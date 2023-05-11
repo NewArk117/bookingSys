@@ -36,7 +36,7 @@ class FnB:
 
                     conn.commit()
                     conn.close()
-                    self.showFB(self.stackedWidget, self.fbList) 
+                    self.listManagerFB(self.stackedWidget, self.fbList) 
             except ValueError as e:
                 QMessageBox.warning(self.stackedWidget, 'Error', str(e))
                 print(str(e))

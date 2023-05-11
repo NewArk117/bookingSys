@@ -123,6 +123,10 @@ class MainWindow(QMainWindow):
         self.hallUI = cinemaHallUI(self.stackedWidget)#19
         self.stackedWidget.addWidget(self.hallUI)
 
+
+        #self.stackedWidget.setCurrentIndex(10)
+
+
     #Go to admin login page
     def adminLog(self):
         self.stackedWidget.setCurrentWidget(self.pageLogin)
