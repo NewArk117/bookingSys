@@ -1,5 +1,5 @@
 import sqlite3
-
+import datetime
 #GUI Imports
 from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
 from PyQt5.QtCore import Qt
@@ -8,40 +8,33 @@ import sys
 sys.path.append('./Boundary')
 
 class movie:
-    def delMovie(self, stackedWidget, moviesList):
-        self.stackedWidget = stackedWidget
-        self.moviesList = moviesList
-        items = [self.moviesList.item(i).text() for i in range(self.moviesList.count())]
-        items_str = ' '.join(items)
-        try:
-            if not items_str:
-                raise ValueError("No movies selected")
-            message = f'Are you sure you want to remove {items_str} ?'     
-            confirm = QMessageBox.question(self, 'Remove movie', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                print("ok")
-                #insert sql to remove movie here 
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
 
-    def addMovie(self, stackedWidget, name , genre ,list):
+    def addMovie(self, stackedWidget, name , genre ,list, startDate, endDate):
         self.stackedWidget = stackedWidget
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-        
+
+        startDateList = list[0]
+        endDateList = list[-1]
+        startDate = startDateList[1]
+        endDate = endDateList[1]
+        hall = startDateList[2]
+
+        showtimes = ["1330", "1530", "1730", "1930", "2130"]
+
+
+        for x in showtimes:
+            sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate) VALUES (?, ?, ?,?, ? ,?)"
+            data2 = (name, genre, int(x), hall, startDate, endDate)
+            cursor.execute(sql2, data2)
+
         for x in list:
             time = int(x[0])
-            hall = str(x[1])
-            print("This is time " + str(time) + " This is hall " + hall)
-            sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName) VALUES (?, ?, ?,?)"
-            data2 = (name, genre, time, hall)
-            cursor.execute(sql2, data2)
-            conn.commit()
-
-            sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ?"
-            data3 = (0, hall, time)
+            date = x[1]
+            hall = str(x[2])
+        
+            sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND date = ?"
+            data3 = (0, hall, time , date)
             cursor.execute(sql3, data3)
             conn.commit()
 
@@ -53,15 +46,24 @@ class movie:
         self.stackedWidget.setCurrentIndex(10)
     
     
-    def listManagerMovie(self, stackWidget, list):
+    def listManagerMovie(self, stackWidget, list, num):
         self.list = list
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT DISTINCT movieName, genre FROM movie')
+
+        if num == 1:
+            sql = "SELECT DISTINCT movieName, genre FROM movie"
+        else:
+            sql = "SELECT * FROM movie"
+
+        cursor.execute(sql)
         movie_data = cursor.fetchall()
         movie_strings = []
         for row in movie_data:
-            movie_string = '{:<20}\t{:<30}'.format(row[0], row[1])
+            if num == 0:
+                movie_string = '{:<20}\t{:<40}\t{:<50}'.format(row[0], row[1], row[2])
+            else:
+                movie_string = '{:<20}\t{:<30}'.format(row[0], row[1])
             movie_strings.append(movie_string)
         self.list.clear()
         self.list.addItems(movie_strings)
@@ -70,16 +72,14 @@ class movie:
     def delMovie(self, stackedWidget, movieList):
             self.stackedWidget = stackedWidget
             self.movieList = movieList
-            items = [self.movieList.item(i).text() for i in range(self.movieList.count())]
-            for item in items:
-                words = item.split()
-                moviename = words[0]
-                print(moviename)
-            items_str = ' '.join(' '.join(items).split())     
+            items = self.movieList.currentItem()
+                 
 
             try:
-                if not items_str:
-                    raise ValueError("No F&B selected")
+                if not items:
+                    raise ValueError("No Movie selected")
+                else:
+                    moviename = items.text()[:20].strip() 
                 message = f'Are you sure you want to remove {moviename} ?'     
                 confirm = QMessageBox.question(self.stackedWidget, 'Remove Movie', message ,
                                                 QMessageBox.Yes | QMessageBox.No)
@@ -89,16 +89,28 @@ class movie:
                     conn = sqlite3.connect('SilverVillageUserAcc.db')
                     cursor = conn.cursor()
 
-                    sql = "SELECT showtime, hallname FROM movie WHERE movieName = ?"
+                    sql = "SELECT showtime , hallname, startDate, endDate FROM movie WHERE movieName = ?"
                     data = (moviename,)
                     cursor.execute(sql, data)
                     movie_data = cursor.fetchall()
                     for row in movie_data:
                         time = row[0]
                         hall = row[1]
-                        sql2 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ?"
-                        data2 = (1, hall, time)
-                        cursor.execute(sql2, data2)
+                        startdate = row[2]
+                        enddate = datetime.datetime.strptime(row[3], '%Y-%m-%d')
+
+                        datelist = []
+                        delta = datetime.timedelta(days=1)
+                        #currentDate = startdate
+                        currentDate = datetime.datetime.strptime(startdate, '%Y-%m-%d')
+                        while currentDate <= enddate:
+                            datelist.append(currentDate)
+                            currentDateStr = currentDate.strftime('%Y-%m-%d')
+                            print(currentDateStr)
+                            sql2 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND  date = ?"
+                            data2 = (1, hall, time, currentDateStr)
+                            cursor.execute(sql2, data2)
+                            currentDate += delta
 
                     sql3 = "DELETE FROM movie WHERE movieName = ? "
                     data3 = (moviename,)
@@ -107,7 +119,7 @@ class movie:
                     conn.commit()
                     conn.close()
 
-                    self.listManagerMovie(self.stackedWidget, self.movieList) 
+                    self.listManagerMovie(self.stackedWidget, self.movieList, 1) 
 
             except ValueError as e:
                 QMessageBox.warning(self.stackedWidget, 'Error', str(e))

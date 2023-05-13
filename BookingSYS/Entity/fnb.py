@@ -11,15 +11,14 @@ class FnB:
     def delFB(self, stackedWidget, fbList):
             self.stackedWidget = stackedWidget
             self.fbList = fbList
-            items = [self.fbList.item(i).text() for i in range(self.fbList.count())]
-            for item in items:
-                words = item.split()
-                foodname = words[0]
-                price = words[1]
-            items_str = ' '.join(' '.join(items).split())     
-
+            
+            items = self.fbList.currentItem()
+            foodname = items.text()[:20].strip() 
+            price = items.text()[21:30].strip()
+            quantity = items.text()[31:50].strip()
+            print(foodname)
             try:
-                if not items_str:
+                if not items:
                     raise ValueError("No F&B selected")
                 message = f'Are you sure you want to remove {foodname} ?'     
                 confirm = QMessageBox.question(self.stackedWidget, 'Remove F&B', message ,
@@ -41,9 +40,9 @@ class FnB:
                 QMessageBox.warning(self.stackedWidget, 'Error', str(e))
                 print(str(e))
 
-    def addFB(self, stackedWidget, name , price):
+    def addFB(self, stackedWidget, name , price, quantity):
         self.stackedWidget = stackedWidget
-        message = f'Add F&B named:{name} \nPrice:{price} '
+        message = f'Add F&B named:{name} \nPrice:{price}\nQuantity{quantity} '
         try:   
             confirm = QMessageBox.question(self.stackedWidget, 'Add F&B', message ,
                                             QMessageBox.Yes | QMessageBox.No)
@@ -55,7 +54,7 @@ class FnB:
 
                 # Insert a new record into the account table
                 sql = "INSERT INTO food (foodname, price, quantity) VALUES (?, ?, ?)"
-                data = (name, price, 10)
+                data = (name, price, quantity)
                 cursor.execute(sql, data)
 
                 # Commit the transaction
@@ -84,10 +83,10 @@ class FnB:
         self.list.addItems(fb_strings)
         conn.close()
 
-    def editFB(self, dialog, stackedwidget, name1 , price1, name2, price2):
+    def editFB(self, dialog, stackedwidget, name1 , price1,quantity1, name2, price2, quantity2):
         self.stackedWidget = stackedwidget
         self.dialog = dialog
-        message = f'Confirm to update(?)\nOld Item:{name1}\nOld Price:{price1}\nTo\nNew Name:{name2}\nNew Price:{price2}'
+        message = f'Confirm to update(?)\nOld Item:{name1}\nOld Price:{price1}\nOld Quantity:{quantity1}\nTo\nNew Name:{name2}\nNew Price:{price2}\nNew Quantity:{quantity2}'
         try:   
             confirm = QMessageBox.question(self.stackedWidget, 'Update F&B', message ,
                                             QMessageBox.Yes | QMessageBox.No)
@@ -96,8 +95,8 @@ class FnB:
                 cursor = conn.cursor()
 
                 # Update an existing record in the ticketType table
-                sql = "UPDATE food SET foodname = ?, price = ? WHERE foodname = ? AND price = ?"
-                data = (name2, price2, name1, price1)
+                sql = "UPDATE food SET foodname = ?, price = ?, quantity = ? WHERE foodname = ? AND price = ? AND quantity = ?"
+                data = (name2, price2, quantity1, name1, price1, quantity2)
                 cursor.execute(sql, data)
 
                 # Commit the transaction

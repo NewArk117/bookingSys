@@ -1,10 +1,12 @@
 #GUI imports
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox, QVBoxLayout, QDateEdit
 from PyQt5 import QtGui
-from PyQt5.QtCore import QStringListModel, Qt, QTimer
+from PyQt5.QtCore import QStringListModel, Qt, QTimer, QDate
 import sqlite3
 #Import links to different scripts in Controller
 import sys 
+import calendar
+import datetime
 sys.path.append('./Controller')
 from FBController import delFBController, addFBController ,listFBController, editFBController
 from movieController import delMovieController, addMovieController, listMovieController, editMovieController
@@ -247,7 +249,7 @@ class manageMoviesUI(QWidget):
         delMovieController.delMovieC(self,self.stackedWidget, self.moviesList)
 
     def listMovie(self):
-        listMovieController.listMovieC(self, self.stackedWidget, self.moviesList)
+        listMovieController.listMovieC(self, self.stackedWidget, self.moviesList, 1)
 
     def editMovie(self,  dialog ,name1 , genre1, name2, genre2):
         x = editMovieController.editMovieC(self,self.stackedWidget, dialog ,name1, genre1, name2, genre2)
@@ -481,8 +483,8 @@ class manageFBUI(QWidget):
     def listFB(self):
         listFBController.listFBC(self, self.stackedWidget, self.fbList)
 
-    def editFB1(self, dialog, name, price, name2, price2 ):
-        editFBController.editFBC(self, dialog, self.stackedWidget, name, price, name2, price2 )
+    def editFB1(self, dialog, name, price,quantity, name2, price2 , quantity2):
+        editFBController.editFBC(self, dialog, self.stackedWidget, name, price, quantity, name2, price2, quantity2 )
         self.listFB()
 
 
@@ -502,8 +504,9 @@ class manageFBUI(QWidget):
             items = self.fbList.currentItem()
 
             if items:
-                name = items.text().split()[0]
-                price = items.text().split()[1]
+                name = items.text()[:20].strip() 
+                price = items.text()[21:30].strip()
+                quantity = items.text()[31:].strip()
 
                 layout = QGridLayout(self.dialog)
                 self.name1_label = QLabel('Old Item:')
@@ -512,6 +515,9 @@ class manageFBUI(QWidget):
 
                 self.price1_label = QLabel('Old Price:')
                 self.price1_edit = QLabel(price)
+
+                self.quantity1_label = QLabel('Old Quantity:')
+                self.quantity1_edit = QLabel(quantity)
 
 
                 self.name2_label = QLabel('New Name:')
@@ -523,6 +529,9 @@ class manageFBUI(QWidget):
                 self.price2_edit = QLineEdit()
                 #self.price2_edit.setPlaceholderText(self.oldprice)
                 
+                self.quantity2_label = QLabel('New Quantity:')
+                self.quantity2_edit = QLineEdit()
+
                 self.backButton = QPushButton("Back")
                 self.submitButton = QPushButton("Submit")
 
@@ -569,6 +578,20 @@ class addMovies(QWidget):
         self.genre_label = QLabel('Genre:')
         self.genre_edit = QLineEdit()
 
+        today = datetime.date.today()
+        default_date = QDate(today)  # May 1st, 2023
+        # Set the default date for endDateCal
+        #default_date = QDate.currentDate()  # Today's date
+
+        # Set up the date edit widgets
+        self.startDate = QLabel("Start date:")
+        self.startDateCal = QDateEdit()
+        self.startDateCal.setDate(default_date)
+
+        self.endDate = QLabel("End date:")
+        self.endDateCal = QDateEdit()
+        self.endDateCal.setDate(self.startDateCal.date().addMonths(1))
+
         self.backButton = QPushButton("Back")
         self.submitButton = QPushButton("Submit")
 
@@ -576,6 +599,10 @@ class addMovies(QWidget):
         layout.addWidget(self.name_edit,0,1)
         layout.addWidget(self.genre_label, 1, 0)
         layout.addWidget(self.genre_edit, 1, 1)
+        layout.addWidget(self.startDate, 2, 0)
+        layout.addWidget(self.startDateCal, 2, 1)
+        layout.addWidget(self.endDate, 3, 0)
+        layout.addWidget(self.endDateCal, 3, 1)
         layout.addWidget(self.backButton,9, 0 )
         layout.addWidget(self.submitButton,9 ,2)
 
@@ -590,7 +617,9 @@ class addMovies(QWidget):
     def addMovie(self):
         name = self.name_edit.text()
         genre = self.genre_edit.text()
-        addMovieController.addMoviesC(self,self.stackedWidget, name ,genre)
+        start_date = self.startDateCal.date().toPyDate()
+        end_date = self.endDateCal.date().toPyDate()
+        addMovieController.addMoviesC(self,self.stackedWidget, name ,genre, start_date, end_date)
         self.name_edit.clear()
         self.genre_edit.clear()
         
@@ -667,6 +696,9 @@ class addFnB(QWidget):
         self.price_label = QLabel('Item Price:')
         self.price_edit = QLineEdit()
 
+        self.quantity_label = QLabel('Quantity:')
+        self.quantity_edit = QLineEdit()
+
         self.backButton = QPushButton("Back")
         self.submitButton = QPushButton("Submit")
 
@@ -674,6 +706,8 @@ class addFnB(QWidget):
         layout.addWidget(self.name_edit,0,1)
         layout.addWidget(self.price_label, 1, 0)
         layout.addWidget(self.price_edit, 1, 1)
+        layout.addWidget(self.quantity_label, 2, 0)
+        layout.addWidget(self.quantity_edit, 2, 1)
 
         layout.addWidget(self.backButton,7, 0 )
         layout.addWidget(self.submitButton,7 ,2)
@@ -689,10 +723,12 @@ class addFnB(QWidget):
     def addFB(self):
         name = self.name_edit.text()
         price = self.price_edit.text()
-        addFBController.addFBC(self, self.stackedWidget, name ,price)
+        quantity = self.quantity_edit.text()
+        addFBController.addFBC(self, self.stackedWidget, name ,price, quantity)
 
         self.name_edit.clear()
         self.price_edit.clear()
+        self.quantity_edit.clear()
 
 
 class addTic(QWidget):
@@ -915,6 +951,6 @@ class cinemaHallUI(QWidget):
         self.setLayout(grid)
 
     def on_seat_selected(self, row, col):
-        print(f"Seat {chr(row+65)}-{col+1} selected")
+        print(f"Seat {chr(row+5)}-{col+1} selected")
 
     #def addHall(self,stackedwidget):

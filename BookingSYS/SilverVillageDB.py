@@ -29,14 +29,15 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS hall
                  (hallName TEXT PRIMARY KEY,
                  rows INT,
                  columns INT,
-                  capacity INT,
-                  isAvailable BOOLEAN)''')
+                capacity INT,
+                isAvailable BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS hallshowtime 
                 (hallName TEXT,
                 showtime INT,
                 isAvailable BOOLEAN,
-                PRIMARY KEY(hallName, showtime),
+                date DATE,
+                PRIMARY KEY(hallName, showtime, date),
                 FOREIGN KEY(hallName) REFERENCES hall(hallName))''')
 #manager test
 cursor.execute('''CREATE TABLE IF NOT EXISTS movie
@@ -44,6 +45,8 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS movie
                   genre TEXT,
                   showtime INT,
                   hallName TEXT,
+                  startdate DATE,
+                  enddate DATE,
                   PRIMARY KEY(movieName, showtime),
                   FOREIGN KEY(hallName) REFERENCES hallshowtime(hallName),
                   FOREIGN KEY(showtime) REFERENCES hallshowtime(showtime)
@@ -52,9 +55,12 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS movie
 cursor.execute('''CREATE TABLE IF NOT EXISTS seat 
                 (seat_No TEXT,
                 hallName TEXT,
+                showtime INT,
+                date DATE,
                 isAvailable BOOLEAN,
-                PRIMARY KEY (seat_No, hallName)
-                FOREIGN KEY (hallName) REFERENCES hall(hallName))''')
+                PRIMARY KEY (seat_No, hallName, showtime, date)
+                FOREIGN KEY (hallName) REFERENCES hall(hallName),
+                FOREIGN KEY (showtime, date) REFERENCES hall(showtime, date))''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS food 
                  (foodName TEXT PRIMARY KEY,

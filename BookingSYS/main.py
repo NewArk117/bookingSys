@@ -11,11 +11,10 @@ sys.path.append('./Boundary')
 from loginUI import loginUI
 from adminUI import adminUI
 from customerInfoUI import customerInfoUI
-from customerUI import customerUI
+from customerUI import customerUI, purchaseTicUI, purchaseTicUI2
 from manageAcc import manageAcc
 from createAccUI import createAccUI
 from createProfUI import createProfUI
-from purchaseTicUI import purchaseTicUI
 from purchaseFoodUI import purchaseFoodUI
 
 from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls, cinemaHallUI
@@ -124,7 +123,8 @@ class MainWindow(QMainWindow):
         self.hallUI = cinemaHallUI(self.stackedWidget)#19
         self.stackedWidget.addWidget(self.hallUI)
 
-        #self.stackedWidget.setCurrentIndex(10)
+
+        self.stackedWidget.setCurrentIndex(9)
 
     #Go to admin login page
     def adminLog(self):

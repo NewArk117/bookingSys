@@ -28,6 +28,7 @@ class manageAcc(QWidget):
         self.labelStaff= QLabel("Staff Accounts")
         self.labelCust= QLabel("Customer Accounts")
         self.staffBox = QListWidget()
+        self.refreshStaffAcc()
         self.buttonCreateAcc= QPushButton("Create Account")
         self.buttonDeleteAcc = QPushButton("Delete Account")
         self.buttonEditAcc = QPushButton("Edit Account")
@@ -65,16 +66,16 @@ class manageAcc(QWidget):
         self.setLayout(layoutAcc)
 
 
-    
+        self.stackedWidget.currentChanged.connect(self.refreshStaffAcc)
         #QTimer to periodically refresh the list widget
-        self.timer1 = QTimer()
-        self.timer1.timeout.connect(self.refreshStaffAcc)
-        self.timer1.start(5000) # refresh every 5 second
+        #self.timer1 = QTimer()
+        #self.timer1.timeout.connect(self.refreshStaffAcc)
+        #self.timer1.start(5000) # refresh every 5 second
 
         #QTimer to periodically refresh the list widget
-        self.timer2 = QTimer()
-        self.timer2.timeout.connect(self.refreshCustAcc)
-        self.timer2.start(5000) # refresh every 5 second
+        #self.timer2 = QTimer()
+        #self.timer2.timeout.connect(self.refreshCustAcc)
+        #self.timer2.start(5000) # refresh every 5 second
 
 
     def deleteAcc(self):
@@ -117,6 +118,8 @@ class manageAcc(QWidget):
 
     def refreshStaffAcc(self):
         # connect to the database
+
+        print("here")
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
         # execute a query to retrieve data from the database

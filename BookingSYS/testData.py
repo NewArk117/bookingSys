@@ -176,6 +176,101 @@ for i in range(len(someMovie)):
     data = (i, someMovie[i][0], someMovie[i][1])
     cursor.execute(sql, data)
 
+#Insert hall data sample
+def addHall(name, rows, columns, cursor):
+    row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    rows = int(rows)
+    columns = int(columns)
+
+    datelist = []
+    showtimes = ["1330", "1530", "1730", "1930", "2130"]
+    startDate = datetime.date(2023, 5, 1)
+    #startDate = date.today()
+    delta = datetime.timedelta(days=1)
+    endDate = datetime.date(2023, 11 , 30)
+    currentDate = startDate
+
+    while currentDate <= endDate:
+        datelist.append(currentDate)
+        currentDate += delta
+
+    for date1 in datelist:
+        for time in showtimes:
+            for rowx in range(rows):
+                for col in range(columns):
+                    seatNo = "" + row_labels[rowx] + "-" + str(col+1)
+                    sql = "INSERT INTO seat (seat_No, hallName, showtime, date ,isAvailable) VALUES (?, ? , ?, ? , ?)"
+                    data =(seatNo, name, time, date1, 1)
+                    cursor.execute(sql, data)
+            sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
+            data1 = (name,time,date1, 1)
+            cursor.execute(sql1, data1)
+
+    sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
+    capacity = rows * columns
+    data2 = (name, rows, columns, capacity, 1)
+    cursor.execute(sql2, data2)
+
+def addMovie(name, genre, hallname,cursor):
+    datelist = []
+    showtimes = ["1330", "1530", "1730", "1930", "2130"]
+    startDate = datetime.date(2023, 5, 1)
+    #startDate = date.today()
+    delta = datetime.timedelta(days=1)
+    endDate = datetime.date(2023, 6 , 30)
+    currentDate = startDate
+
+    while currentDate <= endDate:
+        datelist.append(currentDate)
+        currentDate += delta
+
+    list =[]
+    for x in showtimes:
+        list.append([x, hallname])
+
+    for x in list:
+        time = int(x[0])
+        hall = str(x[1])
+        print("This is time " + str(time) + " This is hall " + hall)
+        sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate) VALUES (?, ?, ?,?, ? ,?)"
+        data2 = (name, genre, time, hall, startDate, endDate)
+        cursor.execute(sql2, data2)
+        for date in datelist:
+            sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND date = ?"
+            data3 = (0, hall, time, date)
+            cursor.execute(sql3, data3)
+
+hallList = ["Hall-1", "Hall-2", "Hall-3", "Hall-4", "Hall-5"]
+movieList = [["Saw", "Thriller","Hall-1"], ["James Bond","Action","Hall-2" ],["Toy Story", "Family", "Hall-3"], ["Jumanji", "Adventure", "Hall-4"],  ["Avengers", "Action", "Hall-5"]]
+
+for x in hallList:
+    addHall(x, 5, 4, cursor)    
+
+for x in movieList:
+    addMovie(x[0], x[1], x[2], cursor)
+
+
+#add food
+def addFood( name, price, quantity, cursor):
+    # Insert a new record into the account table
+    sql = "INSERT INTO food (foodName, price, quantity) VALUES (?, ?, ?)"
+    data = (name, price, quantity)
+    cursor.execute(sql, data)
+
+addFood("Burger", 5.2, 10 , cursor)
+addFood("Coke", 2.5, 10, cursor)
+addFood("Popcorn", 6.0, 10, cursor)
+
+def addTicketType(name, price, cursor):
+    sql = "INSERT INTO ticketType (type, price) VALUES (?, ?)"
+    data = (name, price)
+    cursor.execute(sql, data)
+
+addTicketType("Adult", 12.0,cursor)
+addTicketType("Child", 10.0, cursor)
+addTicketType("Senior", 9.0, cursor)
+
+
 #sql = "INSERT INTO hall (capacity, isAccessible) VALUES (?, ?)"
 #data = (150,0)
 #cursor.execute(sql, data)

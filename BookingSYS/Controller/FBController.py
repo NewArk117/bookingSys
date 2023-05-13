@@ -5,13 +5,13 @@ from PyQt5.QtWidgets import QMessageBox
 from fnb import FnB
 
 class addFBController:
-    def addFBC(self, stackedWidget, name , price):
+    def addFBC(self, stackedWidget, name , price, quantity):
         self.stackedWidget = stackedWidget
         try:
-            if price.isnumeric():
-                FnB().addFB(self.stackedWidget, name ,price)
+            if price.isnumeric() and quantity.isnumeric():
+                FnB().addFB(self.stackedWidget, name ,price, quantity)
             else:
-                raise ValueError("Price is not numerical")
+                raise ValueError("Price/Quantity is not numerical")
         except ValueError as e:
             QMessageBox.warning(self, 'Error', str(e))
 
@@ -22,7 +22,7 @@ class delFBController:
         items = [item.text() for item in self.fbList.selectedItems()]
         try:
             if not items:
-                raise ValueError("Please select a hall.")
+                raise ValueError("Please select an item.")
             else:
                 FnB().delFB(self.stackedWidget, self.fbList)
         except ValueError as e:
@@ -30,7 +30,7 @@ class delFBController:
         
 
 class editFBController:
-    def editFBC(self,dialog, stackedwidget, oldname,oldprice, newname, newprice):
+    def editFBC(self,dialog, stackedwidget, oldname,oldprice,oldquant, newname, newprice, newquant):
         try:
             if newname and newprice:
                 FnB().editFB(dialog, stackedwidget, oldname,oldprice, newname, newprice)
