@@ -16,7 +16,6 @@ from manageAcc import manageAcc
 from createAccUI import createAccUI
 from createProfUI import createProfUI
 from purchaseFoodUI import purchaseFoodUI
-
 from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls, cinemaHallUI
 
 
@@ -28,7 +27,7 @@ class MainWindow(QMainWindow):
         #Set the window properties
         self.resize(600,600)
         self.setWindowTitle('Silver Village Inc')
-
+        
         #Stackedwidget to move from page to page
         self.stackedWidget = QStackedWidget()
         self.setCentralWidget(self.stackedWidget)
@@ -124,7 +123,12 @@ class MainWindow(QMainWindow):
         self.stackedWidget.addWidget(self.hallUI)
 
 
+<<<<<<< HEAD
         self.stackedWidget.setCurrentIndex(9)
+=======
+        #self.stackedWidget.setCurrentIndex(10)
+>>>>>>> a66c83f926be8579b808d68635016b716808911a
+
 
     #Go to admin login page
     def adminLog(self):

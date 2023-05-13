@@ -104,6 +104,17 @@ class Account:
 
         # Get a cursor object
         cursor = conn.cursor()
+        checkUser = []
+        checkID = []
+        checkPw = []
+        checkPer = []
+        cursor.execute("SELECT * FROM account")
+        rowChecker = cursor.fetchall()
+        for checker in rowChecker:
+            checkID.append(checker[0])
+            checkUser.append(checker[1])
+            checkPw.append(checker[2])
+            checkPer.append(checker[3])
 
         sql = "SELECT * FROM account WHERE userID = ?"
         value1 = item_name
@@ -142,21 +153,28 @@ class Account:
             widget = QWidget()
             widget.setLayout(layout)
             message_box.layout().addWidget(widget)
+            message_box.addButton(QMessageBox.Ok)
+            
+            while True:
+                result = message_box.exec_()
+                if result == QMessageBox.Ok:
+                    texts = [line_edit.text() for line_edit in widget.findChildren(QLineEdit)]
+                    if texts[0] == "" or texts[1] == "" or texts[2] == "":
+                        QMessageBox.information(widget,"Invalid Input", "A column is empty please fill up all the details")
+                    elif texts[0] in checkUser:
+                        QMessageBox.information(widget,"Invalid Input", "Username already in used")
+                    elif texts[1] in checkPw:
+                        QMessageBox.information(widget,"Invalid Input", "Password already in used")
+                    else:
+                        conn = sqlite3.connect('SilverVillageUserAcc.db')
+                        c = conn.cursor()
+                        sql1 = "DELETE FROM account WHERE account.userID = ?"
+                        c.execute(sql1,(row[0],))
+                        c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
 
-            result = message_box.exec_()
-
-            if result == QMessageBox.Ok:
-                texts = [line_edit.text() for line_edit in widget.findChildren(QLineEdit)]
-
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                c = conn.cursor()
-                sql1 = "DELETE FROM account WHERE account.userID = ?"
-                c.execute(sql1,(row[0],))
-                
-                c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
-                
-                conn.commit()
-                conn.close()
+                        conn.commit()
+                        conn.close()
+                        return False
 
     def viewAccount(self, stackedWidget):
         # Connect to the database
@@ -166,7 +184,7 @@ class Account:
         cursor = conn.cursor()
         
         # Execute the SQL query to retrieve data from the table
-        cursor.execute("SELECT * FROM account WHERE permission = 'sysAdmin' OR permission = 'staff' or permission = 'cinemaOwner' or permission = 'cinemaManager'")
+        cursor.execute("SELECT * FROM account")
         
         # Fetch all the rows that match the query
         rows = cursor.fetchall()
@@ -179,7 +197,7 @@ class Account:
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
-
+    """
         #Show Database on textbox
         # Connect to the database
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -188,7 +206,7 @@ class Account:
         cursor = conn.cursor()
         
         # Execute the SQL query to retrieve data from the table
-        cursor.execute("SELECT * FROM account WHERE permission = 'customer'")
+        cursor.execute("SELECT * FROM userProfile")
         
         # Fetch all the rows that match the query
         rows = cursor.fetchall()
@@ -201,3 +219,23 @@ class Account:
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
+        """
+    def searchAccount(self, stackedWidget, item_name):
+        self.stackedWidget = stackedWidget
+
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+  
+        sql = "SELECT * FROM account WHERE userID = ?"
+        value1 = item_name
+        cursor.execute(sql, (value1,))
+
+        rows = cursor.fetchall()
+        listItem = str(rows[0][0])
+        
+        # Iterate over the rows and populate the list widget with the data
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+        
+        return listItem
