@@ -2,7 +2,7 @@
 import sqlite3
 
 #GUI Imports
-from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
+from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QListWidgetItem
 
 #Import links to different scripts in Boundary
 import sys 
@@ -28,9 +28,32 @@ class UserProfile:
         # Close the database connection
         conn.close()
         self.stackedWidget.setCurrentIndex(3)
+
+    def viewAllProfile(self, stackedWidget, list):
+        self.list = list
+        #Show Database on textbox
+        # Connect to the database
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
         
+        # Create a cursor object from the connection
+        cursor = conn.cursor()
+        list.clear()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute("SELECT * FROM userProfile")
+        
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        # Iterate over the rows and populate the list widget with the data
+        for row in rows:
+            item = QListWidgetItem(str(row[0]))
+            self.list.addItem(item)
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
     def viewProfile(self, stackedWidget, item_name):
-        self.stackedWidget = stackedWidget
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object
         cursor = conn.cursor()

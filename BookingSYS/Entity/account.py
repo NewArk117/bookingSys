@@ -88,15 +88,12 @@ class Account:
             QMessageBox.information(widget2,"Invalid Input", "Password already in used")
         else:
             cursor.execute(sql, data)
-            self.stackedWidget.setCurrentIndex(3)
 
             # Commit the transaction
             conn.commit()
-
-
             # Close the database connection
             conn.close()
-
+            self.stackedWidget.setCurrentIndex(3)
     def editAccount(self, stackedWidget, item_name):
         self.stackedWidget = stackedWidget
         widget = QWidget()
@@ -176,13 +173,37 @@ class Account:
                         conn.close()
                         return False
 
-    def viewAccount(self, stackedWidget):
+    def viewAccount(self, stackedWidget, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = """SELECT * 
+                 FROM account 
+                 WHERE account.userID = ?"""
+        value1 = item_name
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        for row in rows:
+            message_box = QMessageBox()
+            message_box.setText("Account ID: " + str(row[0]) + "\n" + "Username: " + str(row[1]) + "\n" + "Password: " + str(row[2]) + "\n" + "Permission: " + str(row[3]))
+            message_box.setWindowTitle(str(row[0]))
+            message_box.exec_()
+        
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+    def viewAllAccount(self, stackedWidget, list):
+        self.list = list
         # Connect to the database
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         
         # Create a cursor object from the connection
         cursor = conn.cursor()
-        
+        list.clear()
         # Execute the SQL query to retrieve data from the table
         cursor.execute("SELECT * FROM account")
         
@@ -192,50 +213,52 @@ class Account:
         # Iterate over the rows and populate the list widget with the data
         for row in rows:
             item = QListWidgetItem(str(row[0]))
-            self.staffBox.addItem(item)
+            self.list.addItem(item)
 
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
-    """
-        #Show Database on textbox
-        # Connect to the database
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        
-        # Create a cursor object from the connection
-        cursor = conn.cursor()
-        
-        # Execute the SQL query to retrieve data from the table
-        cursor.execute("SELECT * FROM userProfile")
-        
-        # Fetch all the rows that match the query
-        rows = cursor.fetchall()
-
-        # Iterate over the rows and populate the list widget with the data
-        for row in rows:
-            item = QListWidgetItem(str(row[0]))
-            self.custBox.addItem(item)
-
-        # Close the cursor and the database connection
-        cursor.close()
-        conn.close()
-        """
-    def searchAccount(self, stackedWidget, item_name):
+    
+    def searchAccount(self, stackedWidget, item_name, list):
         self.stackedWidget = stackedWidget
+        self.list = list
 
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-  
-        sql = "SELECT * FROM account WHERE userID = ?"
-        value1 = item_name
-        cursor.execute(sql, (value1,))
+        if item_name != "":
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            cursor = conn.cursor()
+            list.clear()
+            sql = "SELECT * FROM account WHERE userID = ?"
+            value1 = item_name
+            cursor.execute(sql, (value1,))
+            
+            rows = cursor.fetchall()
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
 
-        rows = cursor.fetchall()
-        listItem = str(rows[0][0])
-        
-        # Iterate over the rows and populate the list widget with the data
-        # Close the cursor and the database connection
-        cursor.close()
-        conn.close()
-        
-        return listItem
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+        else:
+            self.list = list
+            # Connect to the database
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            
+            # Create a cursor object from the connection
+            cursor = conn.cursor()
+            list.clear()
+            # Execute the SQL query to retrieve data from the table
+            cursor.execute("SELECT * FROM account")
+            
+            # Fetch all the rows that match the query
+            rows = cursor.fetchall()
+
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()

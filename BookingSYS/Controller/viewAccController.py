@@ -3,7 +3,8 @@ sys.path.append( './Entity' )
 from account import Account
 
 class viewAccountController:
-    def viewAccount(self, stackedWidget):
+    def viewAccount(self, stackedWidget, item_name):
         self.stackedWidget = stackedWidget
-        Account().viewAccount(self.stackedWidget)
+        self.item_name = item_name
+        Account().viewAccount(self.stackedWidget,item_name)
         
