@@ -9,22 +9,37 @@ sys.path.append('./Boundary')
 
 class ticket:
 
-    def purchaseTic(self, stackedwidget , list):
-        self.stackedWidget = stackedwidget
-        self.movieList = list
-        try:
+    def purchaseTic(self, stackedWidget, movieName, genre, hallName, selectedDate, selectedTime,ticCount,seatList, totalCost, userID):
+        self.stackedWidget = stackedWidget
 
-            items = self.movieList.currentItem()
-            if items:
-                name = items.text()[:20].strip() 
-                genre = items.text()[21:51].strip()
-                time = items.text()[51:].strip()
-                print(name + " " + genre + " " + time)  
-            else:
-                raise ValueError("No movies selected")
-        except ValueError as e:
-                QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-                print(str(e))
+        print(movieName, genre, hallName, selectedDate, selectedTime,ticCount, seatList, totalCost, userID)
+        #try:
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        for x in seatList:
+            sql = "UPDATE seat SET isAvailable = ? WHERE seat_No = ? AND hallName = ? AND showtime = ? AND date = ?"
+            data = (0, x[0] , hallName, selectedTime, selectedDate )
+            cursor.execute(sql, data)
+
+            sql2 = "INSERT INTO ticket (userID ,movieName , hallName , seat_No ,showtime,date, type, price) VALUES (?, ?,?, ?,? ,?, ?, ?)"
+            data2 = (userID, movieName, hallName, x[0], selectedTime, selectedDate, x[1], x[2])
+            cursor.execute(sql2, data2)
+            
+        
+        conn.commit()
+        conn.close()
+        
+        current_widget_index = self.stackedWidget.currentIndex()
+        current_widget = self.stackedWidget.widget(current_widget_index)
+        self.stackedWidget.removeWidget(current_widget)
+        self.stackedWidget.setCurrentIndex(7)
+
+                
+           # raise ValueError("No movies selected")
+       # except ValueError as e:
+        #    QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+       #     print(str(e))
 
     def getTic(self, number):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -34,7 +49,7 @@ class ticket:
         self.ticketsList = QListWidget
         self.tictype = QComboBox
 
-        sql = "SELECT * FROM ticketType"
+        sql = "SELECT S* FROM ticketType"
         cursor.execute(sql)
         type_data = cursor.fetchall()
         type_box = []

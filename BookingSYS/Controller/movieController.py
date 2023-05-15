@@ -67,8 +67,8 @@ class addMovieController:
             
  
             conn.close()
-            print("This is hallNA" + str(self.hallNA))
-            print("This is hallYes" + str(self.hallYes))
+            #print("This is hallNA" + str(self.hallNA))
+            #print("This is hallYes" + str(self.hallYes))
 
 
             if len(self.hallNA) == len(showtimes2):

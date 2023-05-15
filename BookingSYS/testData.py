@@ -244,7 +244,7 @@ def addMovie(name, genre, hallname,cursor):
     for x in list:
         time = int(x[0])
         hall = str(x[1])
-        print("This is time " + str(time) + " This is hall " + hall)
+        #print("This is time " + str(time) + " This is hall " + hall)
         sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate) VALUES (?, ?, ?,?, ? ,?)"
         data2 = (name, genre, time, hall, startDate, endDate)
         cursor.execute(sql2, data2)
@@ -257,7 +257,7 @@ hallList = ["Hall-1", "Hall-2", "Hall-3", "Hall-4", "Hall-5"]
 movieList = [["Saw", "Thriller","Hall-1"], ["James Bond","Action","Hall-2" ],["Toy Story", "Family", "Hall-3"], ["Jumanji", "Adventure", "Hall-4"],  ["Avengers", "Action", "Hall-5"]]
 
 for x in hallList:
-    addHall(x, 5, 4, cursor)    
+    addHall(x, 5, 6, cursor)    
 
 for x in movieList:
     addMovie(x[0], x[1], x[2], cursor)
@@ -283,6 +283,21 @@ addTicketType("Adult", 12.0,cursor)
 addTicketType("Child", 10.0, cursor)
 addTicketType("Senior", 9.0, cursor)
 
+#Insert ticket data
+def purchaseTic( movieName, genre, hallName, selectedDate, selectedTime,ticCount,seatList, totalCost, userID, cursor):
+        #print(movieName, genre, hallName, selectedDate, selectedTime,ticCount, seatList, totalCost, userID)
+        for x in seatList:
+            sql = "UPDATE seat SET isAvailable = ? WHERE seat_No = ? AND hallName = ? AND showtime = ? AND date = ?"
+            data = (0, x[0] , hallName, selectedTime, selectedDate )
+            cursor.execute(sql, data)
+            sql2 = "INSERT INTO ticket (userID ,movieName , hallName , seat_No ,showtime,date, type, price) VALUES (?, ?,?, ?,? ,?, ?, ?)"
+            data2 = (userID, movieName, hallName, x[0], selectedTime, selectedDate, x[1], x[2])
+            cursor.execute(sql2, data2)
+
+purchaseTic("Saw ", "Thriller" ,"Hall-1" ,"2023-05-01", 1330 ,7,[['B-4', 'Adult', 12], ['C-4', 'Adult', 12], ['D-4', 'Adult', 12], ['D-5', 'Adult', 12], ['C-6', 'Adult', 12], ['C-3', 'Adult', 12], ['B-3', 'Adult', 12]] ,84 ,"customerTest", cursor)
+purchaseTic("James Bond" ,"Action ", "Hall-2",  "2023-06-20", 1730, 7, [['B-4', 'Adult', 12], ['C-4', 'Child', 10], ['C-2', 'Adult', 12], ['B-2', 'Adult', 12], ['B-3', 'Child', 10], ['D-3', 'Child', 10], ['E-4', 'Senior', 9]], 75 ,"customerTest",cursor)
+    #conn.commit()
+    #conn.close()
 
 #sql = "INSERT INTO hall (capacity, isAccessible) VALUES (?, ?)"
 #data = (150,0)

@@ -10,7 +10,7 @@ import sys
 sys.path.append('./Boundary')
 from loginUI import loginUI
 from adminUI import adminUI
-from customerInfoUI import customerInfoUI
+from customerInfoUI import customerInfoUI, ticketPurchasedUI
 from customerUI import customerUI, purchaseTicUI, purchaseTicUI2
 from manageAcc import manageAcc
 from createAccUI import createAccUI
@@ -122,12 +122,11 @@ class MainWindow(QMainWindow):
         self.hallUI = cinemaHallUI(self.stackedWidget)#19
         self.stackedWidget.addWidget(self.hallUI)
 
+        self.ticketPurchase = ticketPurchasedUI(self.stackedWidget)#20
+        self.stackedWidget.addWidget(self.ticketPurchase)
 
-<<<<<<< HEAD
-        self.stackedWidget.setCurrentIndex(9)
-=======
-        #self.stackedWidget.setCurrentIndex(10)
->>>>>>> a66c83f926be8579b808d68635016b716808911a
+
+        #self.stackedWidget.setCurrentIndex(7)
 
 
     #Go to admin login page
@@ -136,6 +135,7 @@ class MainWindow(QMainWindow):
 
     def cusLog(self):
         self.stackedWidget.setCurrentWidget(self.pageLogin)
+
 
 if __name__ == '__main__':
     subprocess.run(["python", "SilverVillageDB.py"])

@@ -79,7 +79,22 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS report
                   seatNumber TEXT,
                   isAvailable BOOLEAN)''')
 
-
+cursor.execute('''CREATE TABLE IF NOT EXISTS ticket 
+                 (ticket_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                  userID TEXT,
+                  movieName TEXT,
+                  hallName TEXT,
+                  seat_No TEXT,
+                  showtime INT,
+                  date DATE,
+                  type TEXT,
+                  price DECIMAL,
+                  FOREIGN KEY(userID) REFERENCES hallshowtime(userID),
+                  FOREIGN KEY(movieName) REFERENCES movie(movieName),
+                  FOREIGN KEY (hallName) REFERENCES hall(hallName),
+                  FOREIGN KEY (seat_No) REFERENCES seat(seat_No),
+                  FOREIGN KEY(showtime) REFERENCES hallshowtime(showtime),
+                  FOREIGN KEY(type) REFERENCES ticketType(type))''')
 
 
 # Commit the transaction
@@ -133,7 +148,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS ticket
                 type TEXT,
                 FOREIGN KEY (hall_ID) REFERENCES hall(hall_ID),
                 FOREIGN KEY (movieName) REFERENCES movie(movieName),
-                FOREIGN KEY (seat_ID) REFERENCES seat(seat_ID),
+                FOREIGN KEY (seat_ID, date) REFERENCES seat(seat_ID, date),
                 FOREIGN KEY (showtime_ID) REFERENCES showtime(showtime_ID),
                 FOREIGN KEY (type) REFERENCES ticketType(type))''')
 

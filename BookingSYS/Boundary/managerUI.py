@@ -944,13 +944,13 @@ class cinemaHallUI(QWidget):
             for col in range(cols):
                 seat = QPushButton(f"Seat {row_labels[row]}-{col+1}")
                 grid.addWidget(seat, row+2, col+1)
-                seat.clicked.connect(lambda _, row=row, col=col: self.on_seat_selected(row, col))
+                seat.clicked.connect(lambda _, row=row, col=col: self.on_seat_selected(row_labels[row], col))
         
         grid.addWidget(randomBtn, rows + 4, 0)
 
         self.setLayout(grid)
 
     def on_seat_selected(self, row, col):
-        print(f"Seat {chr(row+5)}-{col+1} selected")
+        print(f"Seat {row}-{col+1} selected")
 
     #def addHall(self,stackedwidget):

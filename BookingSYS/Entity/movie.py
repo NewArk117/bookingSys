@@ -51,17 +51,14 @@ class movie:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        if num == 1:
-            sql = "SELECT DISTINCT movieName, genre FROM movie"
-        else:
-            sql = "SELECT * FROM movie"
+        sql = "SELECT DISTINCT movieName, genre FROM movie"
 
         cursor.execute(sql)
         movie_data = cursor.fetchall()
         movie_strings = []
         for row in movie_data:
             if num == 0:
-                movie_string = '{:<20}\t{:<40}\t{:<50}'.format(row[0], row[1], row[2])
+                movie_string = '{:<20}\t{:<40}'.format(row[0], row[1])
             else:
                 movie_string = '{:<20}\t{:<30}'.format(row[0], row[1])
             movie_strings.append(movie_string)
@@ -106,7 +103,7 @@ class movie:
                         while currentDate <= enddate:
                             datelist.append(currentDate)
                             currentDateStr = currentDate.strftime('%Y-%m-%d')
-                            print(currentDateStr)
+                            #print(currentDateStr)
                             sql2 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND  date = ?"
                             data2 = (1, hall, time, currentDateStr)
                             cursor.execute(sql2, data2)
