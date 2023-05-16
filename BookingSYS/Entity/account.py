@@ -34,6 +34,8 @@ class Account:
             if row[3] == 'sysAdmin':
                 self.stackedWidget.setCurrentIndex(2)
             elif row[3] == 'customer':
+                widget = self.stackedWidget.widget(6)
+                widget.setID(row[0])
                 self.stackedWidget.setCurrentIndex(6)
             elif row[3] == 'cinemaManager':
                 self.stackedWidget.setCurrentIndex(9)

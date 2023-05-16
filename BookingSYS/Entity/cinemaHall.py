@@ -1,5 +1,6 @@
 import sqlite3
-
+import datetime
+from datetime import date
 #GUI Imports
 from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QPushButton
 from PyQt5.QtCore import Qt
@@ -55,7 +56,17 @@ class cinemaHall:
         message = message + self.seats
         #print(message)
 
+        datelist = []
         showtimes = ["1330", "1530", "1730", "1930", "2130"]
+        startDate = datetime.date(2023, 5, 1)
+        #startDate = date.today()
+        delta = datetime.timedelta(days=1)
+        endDate = datetime.date(2023, 11 , 30)
+        currentDate = startDate
+
+        while currentDate <= endDate:
+            datelist.append(currentDate)
+            currentDate += delta
 
         try:   
 
@@ -68,12 +79,13 @@ class cinemaHall:
                 # Get a cursor object
                 cursor = conn.cursor()
 
-                self.addSeats(name, rows, columns)
 
-                for time in showtimes:
-                    sql1 = "INSERT INTO hallshowtime (hallName, showtime, isAvailable) VALUES (?, ?, ?)"
-                    data1 = (name,time, 1)
-                    cursor.execute(sql1, data1)
+                for date1 in datelist:
+                    for time in showtimes:
+                        sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
+                        data1 = (name,time,date1, 1)
+                        cursor.execute(sql1, data1)
+                        self.addSeats(name, rows, columns, time ,date1)
 
                 sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
                 capacity = rows * columns
@@ -126,7 +138,21 @@ class cinemaHall:
                 # Close the database connection
                 conn.close()
 
-                self.addSeats(name2, rows2, columns2)
+                datelist = []
+                showtimes = ["1330", "1530", "1730", "1930", "2130"]
+                startDate = datetime.date(2023, 5, 1)
+                #startDate = date.today()
+                delta = datetime.timedelta(days=1)
+                endDate = datetime.date(2023, 11 , 30)
+                currentDate = startDate
+
+                while currentDate <= endDate:
+                    datelist.append(currentDate)
+                    currentDate += delta
+
+                for date1 in datelist:
+                    for time in showtimes:
+                        self.addSeats(name2, rows2, columns2, time, date1)
 
                 self.dialog.reject()
                 return True
@@ -171,7 +197,7 @@ class cinemaHall:
         # Close the database connection
         conn.close()
 
-    def addSeats(self, name , row, column):
+    def addSeats(self, name , row, column, showtime, date):
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
         rows = int(row)
         columns = int(column)
@@ -183,8 +209,8 @@ class cinemaHall:
         for rowx in range(rows):
             for col in range(columns):
                 seatNo = "" + row_labels[rowx] + "-" + str(col+1)
-                sql = "INSERT INTO seat (seat_No, hallName, isAvailable) VALUES (?, ? , ?)"
-                data =(seatNo, name, 1)
+                sql = "INSERT INTO seat (seat_No, hallName, showtime, date, isAvailable) VALUES (?, ? , ?, ?,?)"
+                data =(seatNo, name,showtime, date, 1)
                 cursor.execute(sql, data)
 
         # Commit the transaction
