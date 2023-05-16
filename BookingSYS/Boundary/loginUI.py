@@ -76,17 +76,17 @@ class loginUI(QWidget):
         # Set the layout for the register dialog
         register_dialog.setLayout(layout)
 
-        # Connect register button to a function
         register_button.clicked.connect(
-            lambda: self.process_registration(register_dialog, id_edit.text(), username_edit.text(),
+            lambda: self.process_registration(self.stackedWidget ,register_dialog, id_edit.text(), username_edit.text(),
                                               password_edit.text(),
                                               confirm_password_edit.text()))
 
         # Show the register dialog
         register_dialog.exec_()
 
-    def process_registration(self, dialog, id, username, password, confirm_password):
-        self.userRegController.process_registration(dialog, id, username, password, confirm_password)
+    def process_registration(self, stackedWidget, dialog, id, username, password, confirm_password):
+        self.stackedWidget = stackedWidget
+        self.userRegController.process_registration(self.stackedWidget, dialog, id, username, password, confirm_password)
 
     #Get the username and password
     def login(self):
