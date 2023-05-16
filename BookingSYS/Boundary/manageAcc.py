@@ -115,7 +115,6 @@ class manageAcc(QWidget):
             item_name = selected_item.text()
             editProfileController.editProfile(self, self.stackedWidget, item_name)
 
-
     def viewProfile(self):
         selected_item = self.profBox.currentItem()
         # If an item is selected, display its name

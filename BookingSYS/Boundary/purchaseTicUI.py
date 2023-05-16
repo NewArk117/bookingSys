@@ -5,7 +5,6 @@ from PyQt5.QtCore import QStringListModel, Qt
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, \
     QGridLayout, QComboBox, QListView, QAbstractItemView
 
-
 class purchaseTicUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
