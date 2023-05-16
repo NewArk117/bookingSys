@@ -1,9 +1,8 @@
 import sqlite3
-
-from PyQt5.QtCore import QStringListModel, Qt
-
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, \
-    QGridLayout, QComboBox, QListView, QAbstractItemView
+    QGridLayout, QComboBox, QTableWidget, QTableWidgetItem
+
 
 class purchaseTicUI(QWidget):
     def __init__(self, stackedWidget):
@@ -16,15 +15,13 @@ class purchaseTicUI(QWidget):
         self.welcome_label = QLabel('Welcome, customer!')
         self.welcome_label.setStyleSheet('font-size: 20px;')
 
-        self.genres_list = ['Comedy', 'Action', 'Love', 'Horror', 'Sci-fi']
-        self.sort_options = ['New', 'Hottest']
+        self.genres_list = ['Love', 'Thriller', 'Action', 'Family', 'Adventure', 'Sci-fi', 'Crime']
 
         self.genre_label = QLabel('Movie type:')
         self.genre_combobox = QComboBox()
         self.genre_combobox.addItems(self.genres_list)
-        self.sort_label = QLabel('Sort by:')
-        self.sort_combobox = QComboBox()
-        self.sort_combobox.addItems(self.sort_options)
+
+        self.genre_combobox.currentIndexChanged.connect(self.filter_movies)
 
         self.search_label = QLabel('Search movies:')
         self.search_edit = QLineEdit()
@@ -35,9 +32,10 @@ class purchaseTicUI(QWidget):
         self.reset_button.clicked.connect(self.reset_movies)
 
         self.movies_label = QLabel('Movie list:')
-        self.movies_listview = QListView()
-        self.movies_listview.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.movies_listview.setMinimumSize(500, 400)
+        self.movies_table = QTableWidget()
+        self.movies_table.setColumnCount(4)
+        self.movies_table.setHorizontalHeaderLabels(['Movie Name', 'Genre', 'Show Time', 'Hall Name'])
+        self.movies_table.setMinimumSize(500, 400)
 
         self.buy_button = QPushButton('Buy ticket')
         self.buy_button.clicked.connect(self.buy_ticket)
@@ -55,18 +53,15 @@ class purchaseTicUI(QWidget):
         layout.addWidget(self.welcome_label, 0, 0, 1, 5)
         layout.addWidget(self.genre_label, 1, 0)
         layout.addWidget(self.genre_combobox, 1, 1)
-        layout.addWidget(self.sort_label, 1, 3)
-        layout.addWidget(self.sort_combobox, 1, 4)
         layout.addLayout(search_layout, 2, 0, 1, 5)
         layout.addWidget(self.movies_label, 3, 0)
-        layout.addWidget(self.movies_listview, 4, 0, 1, 5)
+        layout.addWidget(self.movies_table, 4, 0, 1, 5)
         layout.addWidget(self.buy_button, 5, 4, alignment=Qt.AlignRight)
         layout.addWidget(self.back_button, 5, 0, alignment=Qt.AlignLeft)
         layout.setSpacing(20)
         layout.setContentsMargins(40, 20, 40, 20)
 
         self.setLayout(layout)
-
         self.show_movies()
 
     def go_back(self):
@@ -75,28 +70,13 @@ class purchaseTicUI(QWidget):
     def show_movies(self):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM movies')
+        cursor.execute('SELECT movieName, genre, showtime, hallName FROM movie')
         movies_data = cursor.fetchall()
-        movie_strings = []
-        for row in movies_data:
-            movie_string = '{:<20}\t{:<30}\t{:<70}'.format(row[0], row[1], row[2])
-            movie_strings.append(movie_string)
-        movie_model = QStringListModel(movie_strings)
-        self.movies_listview.setModel(movie_model)
-        conn.close()
-
-    def show_food(self):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM food')
-        food_data = cursor.fetchall()
-        food_strings = []
-        for row in food_data:
-            food_string = '{:<20}\t{:<30}\t{:<70}'.format(row[0], row[1], row[2])
-            food_strings.append(food_string)
-        food_model = QStringListModel(food_strings)
-        self.food_listview.reset()
-        self.food_listview.setModel(food_model)
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item= QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
         conn.close()
 
     def search_movies(self):
@@ -104,25 +84,42 @@ class purchaseTicUI(QWidget):
         cursor = conn.cursor()
         search_text = self.search_edit.text().strip()
         if search_text:
-            cursor.execute("SELECT * FROM movies WHERE movieName LIKE ?", ('%' + search_text + '%',))
+            cursor.execute("SELECT * FROM movie WHERE movieName LIKE ?", ('%' + search_text + '%',))
         else:
-            cursor.execute('SELECT * FROM movies')
+            cursor.execute('SELECT * FROM movie')
         movies_data = cursor.fetchall()
-        movie_strings = []
-        for row in movies_data:
-            movie_string = '{:<20}\t{:<30}\t{:<70}'.format(row[0], row[1], row[2])
-            movie_strings.append(movie_string)
-        movie_model = QStringListModel(movie_strings)
-        self.movies_listview.setModel(movie_model)
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item = QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
         conn.close()
 
     def reset_movies(self):
         self.search_edit.setText("")
+        self.genre_combobox.setCurrentIndex(0)
         self.show_movies()
 
+    def filter_movies(self):
+        selected_genre = self.genre_combobox.currentText()
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM movie WHERE genre=?", (selected_genre,))
+        movies_data = cursor.fetchall()
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item = QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
+        conn.close()
 
     def buy_ticket(self):
-        return
+        pass
+
+
+
+
+
 
 
 
