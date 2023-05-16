@@ -1,12 +1,10 @@
 import sqlite3
 import sys
 sys.path.append('./Boundary')
-from PyQt5.QtCore import QStringListModel, Qt
+from PyQt5.QtCore import  Qt
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, \
-    QGridLayout, QComboBox, QListWidget, QAbstractItemView,QVBoxLayout, QMessageBox, QListWidgetItem, QStyledItemDelegate
-
-from movieController import listMovieController
+    QGridLayout, QComboBox, QListWidget, QVBoxLayout, QMessageBox, QListWidgetItem, QTableWidget, QTableWidgetItem
 from ticController import purchaseTicController, getTicController
 from logOutController import logOutController
 
@@ -71,20 +69,16 @@ class purchaseTicUI(QWidget):
         self.setWindowTitle('SilverVillage Movie')
         self.resize(800, 600)
 
-        self.userID = ""
-
         self.welcome_label = QLabel('Welcome, customer!')
         self.welcome_label.setStyleSheet('font-size: 20px;')
 
-        self.genres_list = ['Comedy', 'Action', 'Love', 'Horror', 'Sci-fi']
-        self.sort_options = ['New', 'Hottest']
+        self.genres_list = ['Love', 'Thriller', 'Action', 'Family', 'Adventure', 'Sci-fi', 'Crime']
 
         self.genre_label = QLabel('Movie type:')
         self.genre_combobox = QComboBox()
         self.genre_combobox.addItems(self.genres_list)
-        self.sort_label = QLabel('Sort by:')
-        self.sort_combobox = QComboBox()
-        self.sort_combobox.addItems(self.sort_options)
+
+        self.genre_combobox.currentIndexChanged.connect(self.filter_movies)
 
         self.search_label = QLabel('Search movies:')
         self.search_edit = QLineEdit()
@@ -95,13 +89,13 @@ class purchaseTicUI(QWidget):
         self.reset_button.clicked.connect(self.reset_movies)
 
         self.movies_label = QLabel('Movie list:')
-        self.movies_listview = QListWidget()
-        self.movies_listview.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.movies_listview.setMinimumSize(500, 400)
-
+        self.movies_table = QTableWidget()
+        self.movies_table.setColumnCount(4)
+        self.movies_table.setHorizontalHeaderLabels(['Movie Name', 'Genre', 'Show Time', 'Hall Name'])
+        self.movies_table.setMinimumSize(500, 400)
 
         self.buy_button = QPushButton('Buy ticket')
-        self.buy_button.clicked.connect(self.purchaseTicket)
+        self.buy_button.clicked.connect(self.buy_ticket)
 
         self.back_button = QPushButton('Back')
         self.back_button.clicked.connect(self.go_back)
@@ -116,23 +110,16 @@ class purchaseTicUI(QWidget):
         layout.addWidget(self.welcome_label, 0, 0, 1, 5)
         layout.addWidget(self.genre_label, 1, 0)
         layout.addWidget(self.genre_combobox, 1, 1)
-        layout.addWidget(self.sort_label, 1, 3)
-        layout.addWidget(self.sort_combobox, 1, 4)
         layout.addLayout(search_layout, 2, 0, 1, 5)
         layout.addWidget(self.movies_label, 3, 0)
-        layout.addWidget(self.movies_listview, 4, 0, 1, 5)
-        layout.addWidget(self.buy_button, 8, 4, alignment=Qt.AlignRight)
-        layout.addWidget(self.back_button, 8, 0, alignment=Qt.AlignLeft)
+        layout.addWidget(self.movies_table, 4, 0, 1, 5)
+        layout.addWidget(self.buy_button, 5, 4, alignment=Qt.AlignRight)
+        layout.addWidget(self.back_button, 5, 0, alignment=Qt.AlignLeft)
         layout.setSpacing(20)
         layout.setContentsMargins(40, 20, 40, 20)
 
         self.setLayout(layout)
-
-        self.listMovie()
-
-        #self.purchaseTicUI2 = purchaseTicUI2(self.stackedWidget,self.noOfTics.currentText())
-        #self.stackedWidget.addWidget(self.purchaseTicUI2)
-        self.stackedWidget.removeWidget(self.stackedWidget.widget(20))
+        self.show_movies()
     
     def setID (self, userID):
         self.userID = userID
@@ -140,21 +127,16 @@ class purchaseTicUI(QWidget):
     def go_back(self):
         self.stackedWidget.setCurrentIndex(6)
 
-    def listMovie(self):
-        listMovieController.listMovieC(self, self.stackedWidget, self.movies_listview, 0)
-
-    def show_food(self):
+    def show_movies(self):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM food')
-        food_data = cursor.fetchall()
-        food_strings = []
-        for row in food_data:
-            food_string = '{:<20}\t{:<30}\t{:<70}'.format(row[0], row[1], row[2])
-            food_strings.append(food_string)
-        food_model = QStringListModel(food_strings)
-        self.food_listview.reset()
-        self.food_listview.setModel(food_model)
+        cursor.execute('SELECT movieName, genre, showtime, hallName FROM movie')
+        movies_data = cursor.fetchall()
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item= QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
         conn.close()
 
     def search_movies(self):
@@ -162,44 +144,56 @@ class purchaseTicUI(QWidget):
         cursor = conn.cursor()
         search_text = self.search_edit.text().strip()
         if search_text:
-            cursor.execute("SELECT * FROM movies WHERE movieName LIKE ?", ('%' + search_text + '%',))
+            cursor.execute("SELECT * FROM movie WHERE movieName LIKE ?", ('%' + search_text + '%',))
         else:
-            cursor.execute('SELECT * FROM movies')
+            cursor.execute('SELECT * FROM movie')
         movies_data = cursor.fetchall()
-        movie_strings = []
-        for row in movies_data:
-            movie_string = '{:<20}\t{:<30}\t{:<70}'.format(row[0], row[1], row[2])
-            movie_strings.append(movie_string)
-        movie_model = QStringListModel(movie_strings)
-        self.movies_listview.setModel(movie_model)
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item = QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
         conn.close()
 
     def reset_movies(self):
         self.search_edit.setText("")
+        self.genre_combobox.setCurrentIndex(0)
         self.show_movies()
 
+    def filter_movies(self):
+        selected_genre = self.genre_combobox.currentText()
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM movie WHERE genre=?", (selected_genre,))
+        movies_data = cursor.fetchall()
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item = QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
+        conn.close()
 
-    def purchaseTicket(self):
+    def buy_ticket(self):
         try:
-            items = self.movies_listview.currentItem()
-            if items:
-                name = items.text()[:20].strip() 
-                genre = items.text()[21:51].strip()
-                time = items.text()[51:].strip()
+            selected_rows = self.movies_table.selectionModel().selectedRows()
+            if len(selected_rows) > 0:
+                row = selected_rows[0].row()
+                name = self.movies_table.item(row, 0).text().strip()
+                genre = self.movies_table.item(row, 1).text().strip()
+                time = self.movies_table.item(row, 2).text().strip()
                 print(name + " " + genre + " " + time)
-                hallname, rows, cols = self.getRowCol(name,genre)
+                hallname, rows, cols = self.getRowCol(name, genre)
                 datelist = self.getShowDate(name, genre)
                 purchaseTicUI2_instance = purchaseTicUI2(self.stackedWidget)
-                purchaseTicUI2_instance.setList(name, genre , datelist, rows, cols, hallname, self.userID)
+                purchaseTicUI2_instance.setList(name, genre, datelist, rows, cols, hallname, self.userID)
                 self.stackedWidget.addWidget(purchaseTicUI2_instance)
                 self.stackedWidget.setCurrentWidget(purchaseTicUI2_instance)
-                self.stackedWidget.show()       
-                #self.stackedWidget.setCurrentIndex(20)
+                self.stackedWidget.show()
             else:
                 raise ValueError("No movies selected")
         except ValueError as e:
-                QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-                print(str(e))
+            QMessageBox.warning(self, 'Error', str(e))
+            print(str(e))
 
     def getShowDate(self, name ,genre):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -362,7 +356,7 @@ class purchaseTicUI2(QWidget):
         current_widget_index = self.stackedWidget.currentIndex()
         current_widget = self.stackedWidget.widget(current_widget_index)
         self.stackedWidget.removeWidget(current_widget)
-        self.stackedWidget.setCurrentIndex(6)
+        self.stackedWidget.setCurrentIndex(7)
 
     def addSeating(self):
         # Create a grid layout to hold the seats
@@ -475,6 +469,7 @@ class purchaseTicUI2(QWidget):
         genreMsg = f'Genre: {self.genre}\n'
         dateMsg = f'Date: {selDate}\n'
         timeMsg = f'Show Time: {selTime}\n'
+        hall = f'Hall:{self.hallName}\n'
         
         item_count = self.ticketList.count()
         ticNumMsg = f'Total Number of tickets: {item_count}\n'
@@ -504,7 +499,7 @@ class purchaseTicUI2(QWidget):
         costMsg = f"------------------\nTotal price is ${totalCost}\n------------------\n"
         payMsg = f"\nProceed to purchase?"
 
-        message = movieMsg + genreMsg + dateMsg + timeMsg + ticNumMsg + self.ticket + costMsg + payMsg
+        message = movieMsg + genreMsg + dateMsg + timeMsg + hall + ticNumMsg + self.ticket + costMsg + payMsg
         confirm = QMessageBox.question(self.stackedWidget, 'Buy ticket', message ,
                                         QMessageBox.Yes | QMessageBox.No)
         if confirm == QMessageBox.Yes:
@@ -534,4 +529,6 @@ class purchaseTicUI2(QWidget):
         typeBox.addItems(self.typeList)
         return typeBox, self.priceList
     
+    
+
     
