@@ -9,6 +9,7 @@ import sys
 sys.path.append('./Boundary')
 
 class cinemaHall:
+    #6. Cinema Manager Controller
     def susHall(self, stackedWidget, hallList):
         self.stackedWidget = stackedWidget
         self.hallList = hallList
@@ -40,7 +41,7 @@ class cinemaHall:
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
             print(str(e))
-
+    #3. Cinema Manager Entity
     def addHall(self, stackedwidget, name, rows, columns):
         self.stackedWidget = stackedwidget
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -103,7 +104,7 @@ class cinemaHall:
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
             print(str(e))
-
+    #5. Cinema Manager Entity
     def editHall(self, stackedwidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
         self.dialog = dialog
         self.stackedWidget= stackedwidget

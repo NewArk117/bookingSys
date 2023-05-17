@@ -9,8 +9,10 @@ from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWid
 import sys 
 sys.path.append('./Controller')
 from viewProfController import viewProfileController
+from viewAllProfController import viewAllProfileController
 from editAccController import editAccountController
 from editProfController import editProfileController
+from viewAllAccController import viewAllAccountController
 from viewAccController import viewAccountController
 
 #Admin account main page GUI
@@ -29,21 +31,31 @@ class manageAcc(QWidget):
         self.labelCust= QLabel("Customer Accounts")
         self.staffBox = QListWidget()
         self.refreshStaffAcc()
+        self.labelStaff= QLabel("Accounts")
+        self.labelCust= QLabel("Profiles")
+        self.AccountBox = QListWidget()
         self.buttonCreateAcc= QPushButton("Create Account")
         self.buttonDeleteAcc = QPushButton("Delete Account")
         self.buttonEditAcc = QPushButton("Edit Account")
         self.custBox = QListWidget()
+        self.profBox = QListWidget()
+        self.searchAccButton = QPushButton("Search Account")
+        self.searchAccEdit = QLineEdit()
+        self.viewAccButton = QPushButton("View Account")
         self.backButton = QPushButton("Back")
 
         self.backButton.clicked.connect(self.goBack)
         self.buttonCreateAcc.clicked.connect(self.goCreateAcc)
         self.buttonEditAcc.clicked.connect(self.editAcc)
         
+        self.searchAccButton.clicked.connect(self.searchAcc)
+        self.viewAccButton.clicked.connect(self.viewAcc)
+        
 
         layoutAcc.addWidget(self.labelStaff, 0, 0)
-        layoutAcc.addWidget(self.staffBox, 1, 0)
+        layoutAcc.addWidget(self.AccountBox, 1, 0)
         layoutAcc.addWidget(self.labelCust, 2, 0)
-        layoutAcc.addWidget(self.custBox, 3, 0)
+        layoutAcc.addWidget(self.profBox, 3, 0)
         layoutAcc.addWidget(self.buttonCreateAcc, 0, 1)
         layoutAcc.addWidget(self.buttonDeleteAcc, 0 ,2)
         layoutAcc.addWidget(self.buttonEditAcc, 0, 3)

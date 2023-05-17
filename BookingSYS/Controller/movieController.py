@@ -6,6 +6,7 @@ sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
 from movie import movie
 
+#11. Cinema Manager Controller
 class delMovieController:
     def delMovieC(self, stackedWidget, moviesList):
         self.stackedWidget = stackedWidget
@@ -15,6 +16,7 @@ class delMovieController:
             if not items:
                 raise ValueError("Please select a hall.")
             else:
+                #11. Cinema Manager Entity
                 movie().delMovie(self.stackedWidget, self.moviesList)
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
@@ -93,12 +95,14 @@ class addMovieController:
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
         
-        
+ #9. Cinema Manager Controller
 class listMovieController:
     def listMovieC(self, stackedWidget,list, num):
         self.stackedWidget = stackedWidget
+        #9. Cinema Manager Entity (movie.py)
         movie().listManagerMovie(self.stackedWidget, list, num)
 
+#10. Cinema Manager Controller
 class editMovieController:
     def editMovieC(self, stackedwidget,dialog ,name , genre, name2, genre2):
         try:
@@ -107,6 +111,7 @@ class editMovieController:
                 print("All are empty")
                 raise ValueError("New columns are empty")
             else:
+                #10. Cinema Manager Entity
                 x = movie().editMovie(stackedwidget, dialog ,name ,genre,name2, genre2)
                 return x
         except ValueError as e:

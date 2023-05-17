@@ -1,5 +1,5 @@
 #GUI imports
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox, QVBoxLayout, QDateEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QListWidget, QAbstractItemView, QDialog, QMessageBox, QHBoxLayout, QDateEdit
 from PyQt5 import QtGui
 from PyQt5.QtCore import QStringListModel, Qt, QTimer, QDate
 import sqlite3
@@ -11,7 +11,7 @@ sys.path.append('./Controller')
 from FBController import delFBController, addFBController ,listFBController, editFBController
 from movieController import delMovieController, addMovieController, listMovieController, editMovieController
 from ticTypeController import delTicTypeController, addTicTypeController, listTicTypeController, editTicTypeController
-from cinemaHallController import delHallsController, addHallController , listHallController , editHallController
+from cinemaHallController import susHallsController, addHallController , listHallController , editHallController
 
 
 #Create new account GUI
@@ -76,6 +76,9 @@ class managerUI(QWidget):
         self.stackedWidget.setCurrentIndex(13)
 
 #Create ticket GUi
+#19. Cinema Manager Boundary
+#20. Cinema Manager Boundary
+#21. Cinema Manager Boundary
 class manageTicTypeUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -100,13 +103,22 @@ class manageTicTypeUI(QWidget):
         self.delButton = QPushButton("Delete")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+
+        layoutSearch = QHBoxLayout()
+        self.searchLabel = QLabel("Search: ")
+        self.searchEdit = QLineEdit()
+        self.searchBtn = QPushButton("Search")
+        layoutSearch.addWidget(self.searchBtn)
+        layoutSearch.addWidget(self.searchLabel)
+        layoutSearch.addWidget(self.searchEdit)
         
         layout.addWidget(self.label1, 0, 0)
         #layout.addWidget(self.label2, 1, 0)
-        layout.addWidget(self.ticketList, 1, 0, 4, 1)
-        layout.addWidget(self.addButton, 1, 1)
-        layout.addWidget(self.delButton, 1, 2)
-        layout.addWidget(self.editButton, 2, 1)
+        layout.addLayout(layoutSearch, 1, 0)
+        layout.addWidget(self.ticketList, 2, 0, 4, 1)
+        layout.addWidget(self.addButton, 2, 1)
+        layout.addWidget(self.delButton, 2, 2)
+        layout.addWidget(self.editButton, 3, 1)
         layout.addWidget(self.backButton, 7, 2)
 
         self.backButton.clicked.connect(self.goBack)
@@ -131,14 +143,18 @@ class manageTicTypeUI(QWidget):
         self.listTics()
 
     def delTics(self):
+        #21. Cinema Manager Controller
         delTicTypeController.delTicTypeC(self, self.stackedWidget, self.ticketList)
         self.listTics()
 
+
     def editTics1(self, dialog, name, price, name2, price2 ):
+        #20. Cinema Manager Controller (ticTypeController.py)
         editTicTypeController.editTicTypeC(self, dialog, self.stackedWidget, name, price, name2, price2 )
         self.listTics()
 
     def listTics(self):
+        #19. Cinema Manager Controller
         listTicTypeController.listTicTypeC(self, self.stackedWidget, self.ticketList )
     
     def editTics(self):
@@ -204,6 +220,9 @@ class manageTicTypeUI(QWidget):
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
 
 #Create movies GUI
+#9. Cinema Manager Boundary
+#10. Cinema Manager Boundary
+#11. Cinema Manager Boundary
 class manageMoviesUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -225,11 +244,20 @@ class manageMoviesUI(QWidget):
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
         
+        layoutSearch = QHBoxLayout()
+        self.searchLabel = QLabel("Search: ")
+        self.searchEdit = QLineEdit()
+        self.searchBtn = QPushButton("Search")
+        layoutSearch.addWidget(self.searchBtn)
+        layoutSearch.addWidget(self.searchLabel)
+        layoutSearch.addWidget(self.searchEdit)
+
         layout.addWidget(self.label1, 0, 0)
-        layout.addWidget(self.moviesList, 1, 0, 4, 1)
-        layout.addWidget(self.addButton, 1 , 1)
-        layout.addWidget(self.delButton, 1, 2)
-        layout.addWidget(self.editButton, 2, 1)
+        layout.addLayout(layoutSearch, 1, 0)
+        layout.addWidget(self.moviesList, 2, 0, 4, 1)
+        layout.addWidget(self.addButton, 2 , 1)
+        layout.addWidget(self.delButton, 2, 2)
+        layout.addWidget(self.editButton, 3, 1)
         layout.addWidget(self.backButton, 7, 2)
 
         self.backButton.clicked.connect(self.goBack)
@@ -246,16 +274,21 @@ class manageMoviesUI(QWidget):
         self.stackedWidget.setCurrentIndex(14)
 
     def deleteMovie(self):
+        #11. Cinema Manager COntroller
         delMovieController.delMovieC(self,self.stackedWidget, self.moviesList)
 
     def listMovie(self):
+        #9. Cinema Manager Controller
         listMovieController.listMovieC(self, self.stackedWidget, self.moviesList, 1)
 
+
     def editMovie(self,  dialog ,name1 , genre1, name2, genre2):
+        #10. Cinema Manager Controller
         x = editMovieController.editMovieC(self,self.stackedWidget, dialog ,name1, genre1, name2, genre2)
         if x:
             self.listMovie()
 
+    #10. Cinema Manager Boundary
     def editMovieUI(self):
         self.dialog = QDialog(self)
         self.dialog.setWindowTitle("Edit Hall")
@@ -308,6 +341,10 @@ class manageMoviesUI(QWidget):
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
 
 #Create hall GUI
+
+#4. Cinema Manager Boundary
+#5. Cinema Manager Boundary
+#6. Cinema Manager Boundary
 class manageHallsUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -329,17 +366,26 @@ class manageHallsUI(QWidget):
         self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+
+        layoutSearch = QHBoxLayout()
+        self.searchLabel = QLabel("Search: ")
+        self.searchEdit = QLineEdit()
+        self.searchBtn = QPushButton("Search")
+        layoutSearch.addWidget(self.searchBtn)
+        layoutSearch.addWidget(self.searchLabel)
+        layoutSearch.addWidget(self.searchEdit)
         
         layout.addWidget(self.label1, 0, 0)
-        layout.addWidget(self.hallList, 1, 0, 4, 1)
-        layout.addWidget(self.addButton, 1 , 1)
-        layout.addWidget(self.delButton, 1, 2)
-        layout.addWidget(self.editButton, 2, 1)
+        layout.addLayout(layoutSearch, 1, 0)
+        layout.addWidget(self.hallList, 2, 0, 4, 1)
+        layout.addWidget(self.addButton, 2 , 1)
+        layout.addWidget(self.delButton, 2, 2)
+        layout.addWidget(self.editButton, 3, 1)
         layout.addWidget(self.backButton, 7, 2)
 
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addHall)
-        self.delButton.clicked.connect(self.delHall)
+        self.delButton.clicked.connect(self.susHall)
         self.editButton.clicked.connect(self.editHallUI)
 
         self.setLayout(layout)
@@ -350,13 +396,16 @@ class manageHallsUI(QWidget):
     def addHall(self):
         self.stackedWidget.setCurrentIndex(17)
 
-    def delHall(self):
-        delHallsController.delHallsC(self, self.stackedWidget, self.hallList)
+    def susHall(self):
+        #6. Cinema Manager Controller (same)
+        susHallsController.susHallsC(self, self.stackedWidget, self.hallList)
     
     def listHalls(self):
+        #4. Cinema Manager Controller (hallcontroller.py)
         listHallController.listHallC(self, self.stackedWidget, self.hallList )
 
     def editHall(self,  dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
+        #5. Cinema Manager Controller (hallcontroller.py)
         x = editHallController.editHallC(self,self.stackedWidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2)
         if x:
             self.listHalls()
@@ -433,6 +482,9 @@ class manageHallsUI(QWidget):
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
 
 
+#14. Cinema Manager Boundary
+#15. Cinema Manager BOundary
+#16. Cinema Manager Boundary
 class manageFBUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -455,11 +507,20 @@ class manageFBUI(QWidget):
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
         
+        layoutSearch = QHBoxLayout()
+        self.searchLabel = QLabel("Search: ")
+        self.searchEdit = QLineEdit()
+        self.searchBtn = QPushButton("Search")
+        layoutSearch.addWidget(self.searchBtn)
+        layoutSearch.addWidget(self.searchLabel)
+        layoutSearch.addWidget(self.searchEdit)
+
         layout.addWidget(self.label1, 0, 0)
-        layout.addWidget(self.fbList, 1, 0, 4, 1)
-        layout.addWidget(self.addButton, 1 , 1)
-        layout.addWidget(self.delButton, 1, 2)
-        layout.addWidget(self.editButton, 2, 1)
+        layout.addLayout(layoutSearch, 1,0)
+        layout.addWidget(self.fbList, 2, 0, 4, 1)
+        layout.addWidget(self.addButton, 2 , 1)
+        layout.addWidget(self.delButton, 2, 2)
+        layout.addWidget(self.editButton, 3, 1)
         layout.addWidget(self.backButton, 7, 2)
 
         self.backButton.clicked.connect(self.goBack)
@@ -475,19 +536,22 @@ class manageFBUI(QWidget):
     def addFB(self):
         self.stackedWidget.setCurrentIndex(16)
         self.listFB()
-
+    
     def delFB(self):
+        #16. Cinema Manager Controller
         delFBController.delFBC(self, self.stackedWidget, self.fbList)
         self.listFB()
 
     def listFB(self):
+        #14. Cinema Manager Controller (look for fnbcontroller.py)
         listFBController.listFBC(self, self.stackedWidget, self.fbList)
 
     def editFB1(self, dialog, name, price,quantity, name2, price2 , quantity2):
+        #15. Cinema Manager Controller
         editFBController.editFBC(self, dialog, self.stackedWidget, name, price, quantity, name2, price2, quantity2 )
         self.listFB()
 
-
+    #15. Cinema Manager Boundary
     def editFB(self):
         self.dialog = QDialog(self)
         self.dialog.setWindowTitle("Edit F&B")
@@ -557,7 +621,7 @@ class manageFBUI(QWidget):
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
 
-
+#8. Cinema Manager Boundary
 #UI for create========================================
 class addMovies(QWidget):
     def __init__(self, stackedWidget):
@@ -619,11 +683,12 @@ class addMovies(QWidget):
         genre = self.genre_edit.text()
         start_date = self.startDateCal.date().toPyDate()
         end_date = self.endDateCal.date().toPyDate()
+        #8. Cinema Manager Controller (find all controllers in movieController.py)
         addMovieController.addMoviesC(self,self.stackedWidget, name ,genre, start_date, end_date)
         self.name_edit.clear()
         self.genre_edit.clear()
         
-
+#3. Cinema Manager Boundary
 class addHalls(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -675,8 +740,11 @@ class addHalls(QWidget):
         self.name_edit.clear()
         self.rows_edit.clear()
         self.column_edit.clear()
+
+        #3. Cinema Manager Controller (go to hallcontroller.py)
         addHallController.addHallC(self, self.stackedWidget, name, rows, column)
 
+#13. Cinema Manager Boundary
 class addFnB(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -724,13 +792,14 @@ class addFnB(QWidget):
         name = self.name_edit.text()
         price = self.price_edit.text()
         quantity = self.quantity_edit.text()
+        #13. Cinema Manager Controller
         addFBController.addFBC(self, self.stackedWidget, name ,price, quantity)
 
         self.name_edit.clear()
         self.price_edit.clear()
         self.quantity_edit.clear()
 
-
+#18. Cinema Manager Boundary
 class addTic(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -769,9 +838,11 @@ class addTic(QWidget):
     def goBack(self):
         self.stackedWidget.setCurrentIndex(13)
 
+    #18. Cinema Manager Controller
     def addTic(self):
         name = self.name_edit.text()
         price = self.price_edit.text()
+        #18. Cinema Manager Controller (tictypeController.py)
         addTicTypeController.addTypeTicC(self, self.stackedWidget, name ,price)
 
         self.name_edit.clear()

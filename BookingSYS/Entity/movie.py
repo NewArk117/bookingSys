@@ -8,7 +8,7 @@ import sys
 sys.path.append('./Boundary')
 
 class movie:
-
+    #8. Cinema Manager Entity
     def addMovie(self, stackedWidget, name , genre ,list, startDate, endDate):
         self.stackedWidget = stackedWidget
         conn = sqlite3.connect('SilverVillageUserAcc.db')
