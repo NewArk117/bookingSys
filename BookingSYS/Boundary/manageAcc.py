@@ -3,7 +3,7 @@ import sqlite3
 
 #GUI imports
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QListWidgetItem, QLineEdit
 
 #Import links to different scripts in Controller
 import sys 
