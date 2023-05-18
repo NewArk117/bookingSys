@@ -10,7 +10,7 @@ import sys
 sys.path.append('./Boundary')
 from loginUI import loginUI
 from adminUI import adminUI
-from customerInfoUI import customerInfoUI, ticketPurchasedUI
+from customerInfoUI import customerInfoUI, ticketPurchasedUI, fnbPurchasedUI, fnbRefundUI, AccountInfoUI
 from customerUI import customerUI, purchaseTicUI, purchaseTicUI2
 from manageAcc import manageAcc
 from createAccUI import createAccUI
@@ -124,6 +124,17 @@ class MainWindow(QMainWindow):
 
         self.ticketPurchase = ticketPurchasedUI(self.stackedWidget)#20
         self.stackedWidget.addWidget(self.ticketPurchase)
+
+        self.fnbPurchasedUI = fnbPurchasedUI(self.stackedWidget) #21
+        self.stackedWidget.addWidget(self.fnbPurchasedUI)
+
+        self.fnbRefundUI = fnbRefundUI(self.stackedWidget) #22
+        self.stackedWidget.addWidget(self.fnbRefundUI)
+
+        self.AccountInfoUI = AccountInfoUI(self.stackedWidget) #23
+        self.stackedWidget.addWidget(self.AccountInfoUI)
+
+
 
 
         #self.stackedWidget.setCurrentIndex(7)
