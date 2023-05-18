@@ -46,8 +46,9 @@ class customerUI(QWidget):
         widget.setID(self.userID)
 
     def buy_food(self):
+        widget = self.stackedWidget.widget(18)
+        widget.setID(self.userID)
         self.stackedWidget.setCurrentIndex(18)
-
     def show_personal_info(self):
         widget = self.stackedWidget.widget(8)
         widget.setID(self.userID)
@@ -273,7 +274,7 @@ class purchaseTicUI2(QWidget):
         self.movie_text = QLabel(self.name)
 
         self.genre_label = QLabel("Genre:")
-        self.genre_text = QLabel(self.genre) 
+        self.genre_text = QLabel(self.genre)
 
         self.confirm = QPushButton('Confirm')
         #self.confirm.clicked.connect(self.purchaseTicket)
@@ -299,7 +300,7 @@ class purchaseTicUI2(QWidget):
         #self.selTime_cbox.currentIndexChanged.connect(self.timechanged)
         self.chooseSeat.clicked.connect(self.addSeating)
         self.confirm.clicked.connect(self.pushMe)
-        
+
         #self.confirm.clicked.connect(self.getShowDate)
 
         #self.ticketWidget = self.getTicketWidget(self)
@@ -329,7 +330,7 @@ class purchaseTicUI2(QWidget):
         self.layout.addWidget(self.confirm, 12, 4, alignment = Qt.AlignRight)
         self.layout.addWidget(self.back_button, 12, 0, alignment=Qt.AlignLeft)
 
-          
+
 
         self.setLayout(self.layout)
 
@@ -348,7 +349,7 @@ class purchaseTicUI2(QWidget):
         self.movie_text.setText(self.name)
         self.genre_text.setText(self.genre)
         self.selDate_cbox.addItems(self.dates)
-    
+
     def getTicketWidget(self):
         getTicController.getTicC(self, self.ticnumber)
 
@@ -365,10 +366,10 @@ class purchaseTicUI2(QWidget):
         grid.addWidget(screen, 0 ,1, 1, self.cols)
         screen.setAlignment(Qt.AlignCenter)
         screen.setFixedSize(self.cols*75,20)
-        
+
         # List of alphabets for row labels
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-        
+
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
@@ -388,7 +389,7 @@ class purchaseTicUI2(QWidget):
         conn.commit()
         conn.close()
 
-        
+
         # Add a button for each seat in the grid
         for row in range(self.rows):
             for col in range(self.cols):
@@ -404,7 +405,7 @@ class purchaseTicUI2(QWidget):
         #self.chooseSeat.hide()
 
     def seatAvail(self, row, col, seatList, seatButton):
-        
+
         self.seatNumber = str(row) + "-" + str(col)
         for seat in seatList:
             if seat[0] == self.seatNumber:
@@ -432,7 +433,7 @@ class purchaseTicUI2(QWidget):
                 if seatLabel.text() == f"Seat Number: {seat}":
                     #print(f"Seat {seat} already added")
                     raise ValueError("Seat already selected")
-                
+
             #print("Seat added to list")
             # Add seat to the list
             widget = QWidget()
@@ -451,7 +452,7 @@ class purchaseTicUI2(QWidget):
         except ValueError as e:
             QMessageBox.warning(self.stackedWidget, 'Error', str(e))
             print(str(e))
-        
+
 
         #print(self.ticketList.count())
 
@@ -461,7 +462,7 @@ class purchaseTicUI2(QWidget):
             item = self.ticketList.takeItem(current_row)
             del item
 
-        
+
     def pushMe(self):
         selTime = self.selTime_cbox.currentText()
         selDate = self.selDate_cbox.currentText()
@@ -470,7 +471,7 @@ class purchaseTicUI2(QWidget):
         dateMsg = f'Date: {selDate}\n'
         timeMsg = f'Show Time: {selTime}\n'
         hall = f'Hall:{self.hallName}\n'
-        
+
         item_count = self.ticketList.count()
         ticNumMsg = f'Total Number of tickets: {item_count}\n'
         self.ticket = ""
@@ -495,7 +496,7 @@ class purchaseTicUI2(QWidget):
                     seat = label.split(":")[1].strip()
                     seatList.append([seat,combo_box_value, price])
                     totalCost = totalCost + price
-                    
+
         costMsg = f"------------------\nTotal price is ${totalCost}\n------------------\n"
         payMsg = f"\nProceed to purchase?"
 
@@ -528,6 +529,11 @@ class purchaseTicUI2(QWidget):
 
         typeBox.addItems(self.typeList)
         return typeBox, self.priceList
+
+
+
+    
+
     
     
 
