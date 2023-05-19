@@ -68,6 +68,39 @@ class ticket:
 
         conn.close()
 
+
+    def get_user_tickets(user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        sql = 'SELECT ticket_ID, movieName, hallName, seat_No, showtime, date, type, price FROM ticket WHERE userID = ?'
+        data = (user_id,)
+        cursor.execute(sql, data)
+        ticket_data = cursor.fetchall()
+        conn.close()
+        return ticket_data
+
+
+    def delete_ticket(ticket_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = 'DELETE FROM ticket WHERE ticket_ID = ?'
+        data = (ticket_id,)
+        cursor.execute(sql, data)
+
+        conn.commit()
+        conn.close()
+
+    def get_tickets(user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        sql = 'SELECT ticket_ID, movieName, showtime, date FROM ticket WHERE userID = ?'
+        data = (user_id,)
+        cursor.execute(sql, data)
+        ticket_data = cursor.fetchall()
+        conn.close()
+        return ticket_data
+
         
 
            
