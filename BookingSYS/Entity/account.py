@@ -295,3 +295,65 @@ class Account:
         else:
             # Passwords do not match
             QMessageBox.critical(dialog, 'Error', 'Passwords do not match.')
+
+    def get_username(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        SELECT userName
+        FROM account
+        WHERE userID = ?
+        '''
+        cursor.execute(sql, (user_id,))
+        result = cursor.fetchone()
+
+        conn.close()
+
+        return result[0] if result else None
+
+    def update_account_info(self, user_id, new_user_id, new_username):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        UPDATE account
+        SET userID = ?,
+            userName = ?
+        WHERE userID = ?
+        '''
+        cursor.execute(sql, (new_user_id, new_username, user_id))
+        conn.commit()
+
+        conn.close()
+
+    def get_password(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        SELECT password
+        FROM account
+        WHERE userID = ?
+        '''
+        cursor.execute(sql, (user_id,))
+        result = cursor.fetchone()
+
+        conn.close()
+
+        return result[0] if result else None
+
+    def update_password(self, user_id, new_password):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        UPDATE account
+        SET password = ?
+        WHERE userID = ?
+        '''
+        cursor.execute(sql, (new_password, user_id))
+        conn.commit()
+
+        conn.close()
+
