@@ -43,3 +43,19 @@ class listFBController:
     def listFBC(self, stackedWidget,list):
         self.stackedWidget = stackedWidget
         FnB().listManagerFB(self.stackedWidget, list)
+
+
+class PurchaseFoodController:
+    def __init__(self):
+        self.food_model = FnB()
+
+    def get_food_data(self):
+        return self.food_model.get_food_data()
+
+    def save_food_order(self, user_id, ticket_id, order_list):
+        self.food_model.save_food_order(user_id, ticket_id, order_list)
+
+    def close_connection(self):
+        self.food_model.close_connection()
+
+
