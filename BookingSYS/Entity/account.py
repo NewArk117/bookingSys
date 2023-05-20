@@ -12,10 +12,7 @@ sys.path.append('./Boundary')
 class Account:
     def login(self,stackedWidget, usrname, pw):
         self.stackedWidget = stackedWidget
-
-
         conn = sqlite3.connect('SilverVillageUserAcc.db')
-
         # Get a cursor object
         cursor = conn.cursor()
 
@@ -26,11 +23,14 @@ class Account:
 
         # Execute the SQL query with the values
         cursor.execute(sql, (value1, value2))
-
+        loginTitle = "Login Successful"
+        loginMessage = "You have successfully logged in."
+        loginTitleF = "Login Error"
+        loginWarning = "Wrong Username or Password."
         row = cursor.fetchone()
         widget1 = QWidget()
         if row:
-            QMessageBox.information(widget1,"Login Successful", "You have successfully logged in.")
+            QMessageBox.information(widget1, loginTitle, loginMessage)
             if row[3] == 'sysAdmin':
                 self.stackedWidget.setCurrentIndex(2)
             elif row[3] == 'customer':
@@ -40,8 +40,8 @@ class Account:
             elif row[3] == 'cinemaManager':
                 self.stackedWidget.setCurrentIndex(9)
         else:
-            QMessageBox.warning(widget1,"Login Error", "Wrong Username or Password.")
-                    
+            QMessageBox.warning(widget1, loginTitleF, loginWarning)
+
 
         #Close Transaction 
         cursor.close()
@@ -49,16 +49,15 @@ class Account:
 
     def logout(self,stackedWidget):
         self.stackedWidget = stackedWidget
-
-        reply = QMessageBox.question(self.stackedWidget, 'Confirm logout',
-                                    'Are you sure you want to logout?',
-                                    QMessageBox.Yes | QMessageBox.No,
-                                    QMessageBox.No)
+        self.stackedWidget.setCurrentIndex(0)
+        #reply = QMessageBox.question(self.stackedWidget, 'Confirm logout',
+                                   # 'Are you sure you want to logout?',
+                                   # QMessageBox.Yes | QMessageBox.No)
         
-        if reply == QMessageBox.Yes:
-            self.stackedWidget.setCurrentIndex(0)
+        #if reply == QMessageBox.Yes:
+            #self.stackedWidget.setCurrentIndex(0)
 
-    def createAccount(self,stackedWidget, userID, userName, password, permission):
+    def createAccount(self,stackedWidget, userID, userName, password, accType):
         self.stackedWidget = stackedWidget
         widget2 = QWidget()
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -77,17 +76,20 @@ class Account:
             checkPw.append(row[2])
             checkPer.append(row[3])
 
+        createErrorTitle = "Invalid Input"
+        emptyError = "A column is empty please fill up all the details"
+        IDError = "ID already in used"
+        userError = "Username already in used"
+
         # Insert a new record into the account table
         sql = "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)"
-        data = (userID, userName, password, permission)
+        data = (userID, userName, password, accType)
         if data[0] == "" or data[1] == "" or data[2] == "" or data[3] == "":
-            QMessageBox.information(widget2,"Invalid Input", "A column is empty please fill up all the details")
+            QMessageBox.information(widget2, createErrorTitle, emptyError)
         elif data[0] in checkID:
-            QMessageBox.information(widget2,"Invalid Input", "ID already in used")
+            QMessageBox.information(widget2, createErrorTitle, IDError)
         elif data[1] in checkUser:
-            QMessageBox.information(widget2,"Invalid Input", "Username already in used")
-        elif data[2] in checkUser:
-            QMessageBox.information(widget2,"Invalid Input", "Password already in used")
+            QMessageBox.information(widget2,createErrorTitle, userError)
         else:
             cursor.execute(sql, data)
 
@@ -160,21 +162,50 @@ class Account:
                     texts = [line_edit.text() for line_edit in widget.findChildren(QLineEdit)]
                     if texts[0] == "" or texts[1] == "" or texts[2] == "":
                         QMessageBox.information(widget,"Invalid Input", "A column is empty please fill up all the details")
-                    elif texts[0] in checkUser:
-                        QMessageBox.information(widget,"Invalid Input", "Username already in used")
-                    elif texts[1] in checkPw:
-                        QMessageBox.information(widget,"Invalid Input", "Password already in used")
-                    else:
+                    elif texts[0] in checkUser and texts[1] not in checkPw:
                         conn = sqlite3.connect('SilverVillageUserAcc.db')
                         c = conn.cursor()
+
                         sql1 = "DELETE FROM account WHERE account.userID = ?"
                         c.execute(sql1,(row[0],))
+
+                        c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
+                        conn.commit()
+                        conn.close()
+                        return False
+                    
+                    elif texts[1] in checkPw and texts[0] not in checkUser:
+                        conn = sqlite3.connect('SilverVillageUserAcc.db')
+                        c = conn.cursor()
+
+                        sql1 = "DELETE FROM account WHERE account.userID = ?"
+                        c.execute(sql1,(row[0],))
+                
                         c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
 
                         conn.commit()
                         conn.close()
                         return False
+                    
+                    elif texts[1] not in checkPw and texts[0] not in checkUser:
+                        conn = sqlite3.connect('SilverVillageUserAcc.db')
+                        c = conn.cursor()
 
+                        sql1 = "DELETE FROM account WHERE account.userID = ?"
+                        c.execute(sql1,(row[0],))
+
+                        c.execute("INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)", (row[0],texts[0], texts[1], texts[2]))
+
+                        conn.commit()
+                        conn.close()
+                        return False
+                    
+                    elif QMessageBox.Cancel:
+                        return False
+                    else:
+                        QMessageBox.information(widget,"Invalid Input", "Username and Password already in used")
+                    
+                        
     def viewAccount(self, stackedWidget, item_name):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object

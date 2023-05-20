@@ -23,14 +23,14 @@ class createAccUI(QWidget):
         layout = QGridLayout()
 
         #Buttons
-        self.accType_label = QLabel('Account ID:')
-        self.accType_edit = QLineEdit()
+        self.userID_label = QLabel('Account ID:')
+        self.userID_edit = QLineEdit()
         self.username_label = QLabel('New username:')
         self.username_edit = QLineEdit()
         self.password_label = QLabel('New password:')
         self.password_edit = QLineEdit()
-        self.permission_label = QLabel('Account Type:')
-        self.permission_edit = QLineEdit()
+        self.accType_label = QLabel('Account Type:')
+        self.accType_edit = QLineEdit()
         
 
         self.createButton = QPushButton('Create')
@@ -43,10 +43,10 @@ class createAccUI(QWidget):
         layout.addWidget(self.username_edit,4,2)
         layout.addWidget(self.password_label,5,1)
         layout.addWidget(self.password_edit,5,2)
-        layout.addWidget(self.accType_label,6,1)
-        layout.addWidget(self.accType_edit,6,2)
-        layout.addWidget(self.permission_label,7,1)
-        layout.addWidget(self.permission_edit,7,2)
+        layout.addWidget(self.userID_label,6,1)
+        layout.addWidget(self.userID_edit,6,2)
+        layout.addWidget(self.accType_label,7,1)
+        layout.addWidget(self.accType_edit,7,2)
         layout.addWidget(self.createButton,8 ,1)
         layout.addWidget(self.backButton, 8, 3)
         
@@ -59,11 +59,11 @@ class createAccUI(QWidget):
     def createAccount(self):
         username = self.username_edit.text()
         password = self.password_edit.text()
+        userID = self.userID_edit.text()
         accType = self.accType_edit.text()
-        permission = self.permission_edit.text()
-        createAccController.createAcc(self,self.stackedWidget, accType, username, password,permission)
+        createAccController.createAcc(self,self.stackedWidget, userID, username, password, accType)
         
         self.username_edit.clear()
         self.password_edit.clear()
+        self.userID_edit.clear()
         self.accType_edit.clear()
-        self.permission_edit.clear()

@@ -13,7 +13,7 @@ from viewAccController import viewAccountController
 from searchAccController import searchAccountController
 
 #Admin account main page GUI
-class manageAcc(QWidget):
+class userAdminUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
 

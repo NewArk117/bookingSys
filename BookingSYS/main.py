@@ -12,7 +12,7 @@ from loginUI import loginUI
 from adminUI import adminUI
 from customerInfoUI import customerInfoUI, ticketPurchasedUI, fnbPurchasedUI, fnbRefundUI, AccountInfoUI
 from customerUI import customerUI, purchaseTicUI, purchaseTicUI2
-from manageAcc import manageAcc
+from userAdminUI import userAdminUI
 from createAccUI import createAccUI
 from createProfUI import createProfUI
 from purchaseFoodUI import purchaseFoodUI
@@ -71,8 +71,8 @@ class MainWindow(QMainWindow):
         self.admin = adminUI(self.stackedWidget)#2
         self.stackedWidget.addWidget(self.admin)
 
-        self.manageAcc = manageAcc(self.stackedWidget)#3
-        self.stackedWidget.addWidget(self.manageAcc)
+        self.userAdminUI = userAdminUI(self.stackedWidget)#3
+        self.stackedWidget.addWidget(self.userAdminUI)
 
         self.createAccUI = createAccUI(self.stackedWidget)#4
         self.stackedWidget.addWidget(self.createAccUI)
