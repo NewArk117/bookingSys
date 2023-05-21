@@ -115,34 +115,34 @@ cursor = conn.cursor()
 #Insert 15 staff into the "account" table
 someStaff = randomStaff()
 someStaffPassword = randomStaffPassword()
-sql = "INSERT INTO account (userID, userName, password,permission) VALUES (?, ?, ?, ?)"
+sql = "INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)"
 for i in range(10):  
     if i == 0:
-        data = ("owner1", "owner", "password","cinemaOwner")
+        data = ("owner", "password","cinemaOwner")
         cursor.execute(sql, data) 
     elif i == 1:
-        data = ("manager1", "manager", "password", "cinemaManager")
+        data = ("manager", "password", "cinemaManager")
         cursor.execute(sql, data) 
     elif i == 2:
-        data = ("admin1", "admin", "password", "sysAdmin")
+        data = ("admin", "password", "sysAdmin")
         cursor.execute(sql, data) 
     elif i == 3:
-        data = ("customerTest", "customer", "password", "customer")
+        data = ("customer", "password", "customer")
         cursor.execute(sql, data) 
     elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
-        data = ("manager"+ str(i-2), someStaff[i], someStaffPassword[i], "cinemaManager")
+        data = ("manager"+ str(i-2), someStaffPassword[i], "cinemaManager")
         cursor.execute(sql, data) 
     else:
-        data = ("admin"+ str(i-7), someStaff[i],someStaffPassword[i],"sysAdmin")
+        data = ("admin"+ str(i-7), someStaffPassword[i],"sysAdmin")
         cursor.execute(sql, data) 
 
     
 # Insert 100 customer into the "account" table
 someCust = randomCust()
 someCustPassword = randomCustPassword()
-sql = "INSERT INTO account (userID, userName, password,permission) VALUES (?, ?, ?, ?)"
+sql = "INSERT INTO account (userID, password,accType) VALUES (?, ?, ?)"
 for i in range(100):  
-    data = ("cust"+str(i), someCust[i], someCustPassword[i],"customer")
+    data = ("cust"+str(i), someCustPassword[i],"customer")
 
     cursor.execute(sql, data)
 
@@ -265,7 +265,7 @@ for x in movieList:
 
 #add food
 def addFood( name, price, quantity, cursor):
-    # Insert a new record into the account table
+    # Insert a new record into the food table
     sql = "INSERT INTO food (foodName, price, quantity, isAvailable) VALUES (?, ?, ?, ?)"
     data = (name, price, quantity , 1)
     cursor.execute(sql, data)

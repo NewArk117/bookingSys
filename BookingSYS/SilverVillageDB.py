@@ -9,9 +9,8 @@ cursor = conn.cursor()
 # Create a new table in the database
 cursor.execute('''CREATE TABLE IF NOT EXISTS account 
                  (userID TEXT PRIMARY KEY,
-                  userName TEXT,
                   password TEXT,
-                  permission TEXT)''')
+                  accType TEXT)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS userProfile 
                  (userID TEXT PRIMARY KEY,

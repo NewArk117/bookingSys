@@ -1,6 +1,6 @@
 #GUI imports
-from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QLabel, QLineEdit
-
+from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QLabel, QLineEdit, QMessageBox
+import sqlite3
 #Import links to different scripts in Controller
 import sys 
 sys.path.append('./Controller')
@@ -101,7 +101,36 @@ class userAdminUI(QWidget):
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
-            editAccountController.editAccount(self, self.stackedWidget, item_name)
+            list1 = editAccountController.editAccount(self, item_name)
+            message_box = QMessageBox()
+            message_box.setText('Edit Account')
+
+            field_labels = ["UserID:", "Password:", "Permission:"]
+            layout = QGridLayout()
+
+            for label_text in field_labels:
+                label = QLabel(label_text)
+                
+                if label_text == "UserID:":
+                    line_edit1 = QLabel(str(list1[0]))
+                    layout.addWidget(label,1,0)
+                    layout.addWidget(line_edit1,1,1)      
+                elif label_text == "Password:":
+                    line_edit = QLineEdit(str(list1[1]))
+                    layout.addWidget(label,2,0)
+                    layout.addWidget(line_edit,2,1)
+                else:
+                    line_edit2 = QLabel(str(list1[2]))
+                    layout.addWidget(label,3,0)
+                    layout.addWidget(line_edit2,3,1)
+            
+            # Create a widget to hold the layout and set it as the message box's body
+            widget = QWidget()
+            widget.setLayout(layout)
+            message_box.layout().addWidget(widget)
+            message_box.addButton(QMessageBox.Ok)
+            
+            result = message_box.exec_()
             
     def editProf(self):
         selected_item = self.profBox.currentItem()
@@ -110,7 +139,6 @@ class userAdminUI(QWidget):
         if selected_item is not None:
             item_name = selected_item.text()
             editProfileController.editProfile(self, self.stackedWidget, item_name)
-
 
     def viewProfile(self):
         selected_item = self.profBox.currentItem()
@@ -124,7 +152,14 @@ class userAdminUI(QWidget):
             # If an item is selected, display its name
             if selected_item is not None:
                 item_name = selected_item.text()
-                viewAccountController.viewAccount(self, self.stackedWidget, item_name)
+
+                #Call the controller
+                accountDetails = viewAccountController.viewAccount(self, item_name)
+                
+                message_box = QMessageBox()
+                message_box.setText("Account ID: " + str(accountDetails[0]) + "\n" + "Password: " + str(accountDetails[1]) + "\n" + "Account Type: " + str(accountDetails[2]))
+                message_box.setWindowTitle(str(accountDetails[0]))
+                message_box.exec_()
 
     def viewAllAcc(self):
         viewAllAccountController.viewAllAccount(self,self.stackedWidget, self.AccountBox)

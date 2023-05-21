@@ -4,6 +4,7 @@ sys.path.append( './Entity' )
 from account import Account
 
 class logOutController:
-    def loggingOut(self, stackedWidget):
-        self.stackedWidget = stackedWidget
-        Account().logout(self.stackedWidget)
+    def loggingOut(self)->bool:
+        logout = Account().logout()
+        if logout == True:
+            return True

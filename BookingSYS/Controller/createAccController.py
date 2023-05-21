@@ -4,7 +4,15 @@ sys.path.append( './Entity' )
 from account import Account
 
 class createAccController:
-    def createAcc(self, stackedWidget, userID, username, password, accType):
-        self.stackedWidget = stackedWidget
-        Account().createAccount(self.stackedWidget, userID,username, password, accType)
+    def createAcc(self, userID, password, accType)->str:
+
+        #Call the entity
+        newAccount = Account().createAccount(userID, password, accType)
+
+        if newAccount == "Success":
+            return "Success"
+        elif newAccount == "IDError":
+            return "IDError"
+        else:
+            return "emptyError"
         
