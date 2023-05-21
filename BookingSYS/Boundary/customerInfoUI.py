@@ -173,8 +173,11 @@ class fnbRefundUI(QWidget):
         self.order_id_label.setText("Order ID: {}".format(order_id))
         self.controller.show_food_list(order_id)  # Update the food list when order ID is set
 
+
     def go_back(self):
         self.stackedWidget.setCurrentIndex(21)
+        fnb_purchased_ui = self.stackedWidget.currentWidget()
+        fnb_purchased_ui.refresh_fnb_record()
 
     def viewTic(self):
         viewTicController.viewTicC(self, self.stackedWidget,self.ticketList)
@@ -406,14 +409,12 @@ class fnbPurchasedUI(QWidget):
         if selected_item is not None:
             selected_text = selected_item.text()
             order_id = self.extract_order_id(selected_text)
-            if order_id is not None:
-                refund_ui = fnbRefundUI(self.stackedWidget)
-                refund_ui.set_order_id(order_id)
-                self.stackedWidget.addWidget(refund_ui)
-                self.stackedWidget.setCurrentWidget(refund_ui)
+            self.show_refund_ui(order_id)
         else:
             QMessageBox.information(self, 'No Item Selected', 'Please select an item to refund.')
 
+    def refresh_fnb_record(self):
+        self.show_fnb_record(self.userID)
 
 
 class AccountInfoUI(QWidget):
@@ -542,6 +543,16 @@ class AccountInfoUI(QWidget):
 
     def go_back(self):
         self.stackedWidget.setCurrentIndex(8)
+
+
+
+
+
+
+
+
+
+
 
 
 
