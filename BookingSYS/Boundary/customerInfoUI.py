@@ -480,12 +480,15 @@ class AccountInfoUI(QWidget):
         if dialog.exec_() == QDialog.Accepted:
             new_userID = user_id_input.text()
             new_username = username_input.text()
-
-            self.controller.update_account_info(self.userID, new_userID, new_username)
-
-            self.userID = new_userID
-            self.show_account_info(self.userID)
-            QMessageBox.information(self, 'Success', 'Account information updated successfully.')
+            if(self.controller.is_user_id_exists(new_userID)):
+                QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
+            elif(self.controller.is_username_exists(new_username)):
+                QMessageBox.information(self, 'Fail', 'The provided Username already exists. Please choose a different one.')
+            else:
+                self.controller.update_account_info(self.userID, new_userID, new_username)
+                self.userID = new_userID
+                self.show_account_info(self.userID)
+                QMessageBox.information(self, 'Success', 'Account information updated successfully.')
 
 
     def change_password(self):
@@ -539,6 +542,12 @@ class AccountInfoUI(QWidget):
 
     def go_back(self):
         self.stackedWidget.setCurrentIndex(8)
+
+
+
+
+
+
 
 
 
