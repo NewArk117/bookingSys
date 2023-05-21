@@ -7,6 +7,12 @@ class AccountController:
     def get_username(self, user_id):
         return self.entity.get_username(user_id)
 
+    def is_user_id_exists(self, user_id):
+        return self.entity.is_user_id_exists(user_id)
+
+    def is_username_exists(self, username):
+        return self.entity.is_username_exists(username)
+
     def update_account_info(self, user_id, new_user_id, new_username):
         self.entity.update_account_info(user_id, new_user_id, new_username)
         self.entity.update_food_orders_user_id(user_id, new_user_id)
