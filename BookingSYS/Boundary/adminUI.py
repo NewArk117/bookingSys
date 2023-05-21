@@ -1,5 +1,5 @@
 #GUI Imports
-from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout
+from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QMessageBox
 from PyQt5 import QtGui
 
 #Import links to different scripts in Controller
@@ -35,4 +35,13 @@ class adminUI(QWidget):
         self.stackedWidget.setCurrentIndex(4)
 
     def logOut(self):
-        logOutController.loggingOut(self, self.stackedWidget)
+        reply = QMessageBox.question(self, 'Confirm logout',
+                                    'Are you sure you want to logout?',
+                                     QMessageBox.Yes | QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            #Call the controlller
+            logout = logOutController.loggingOut(self)
+
+            if logout == True:
+                self.stackedWidget.setCurrentIndex(0)

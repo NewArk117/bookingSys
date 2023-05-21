@@ -1,5 +1,5 @@
 #GUI imports
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton,QGridLayout, QComboBox, QMessageBox
 from PyQt5 import QtGui
 
 #Import links to different scripts in Controller
@@ -21,16 +21,16 @@ class createAccUI(QWidget):
 
         # layout for manage Accounts -----------------------------------
         layout = QGridLayout()
+        self.accTypeList = ['userAdmin', 'customer', 'cinemaManager', 'cinemaOwner']
 
         #Buttons
         self.userID_label = QLabel('Account ID:')
         self.userID_edit = QLineEdit()
-        self.username_label = QLabel('New username:')
-        self.username_edit = QLineEdit()
         self.password_label = QLabel('New password:')
         self.password_edit = QLineEdit()
         self.accType_label = QLabel('Account Type:')
-        self.accType_edit = QLineEdit()
+        self.accType_cBox = QComboBox()
+        self.accType_cBox.addItems(self.accTypeList)
         
 
         self.createButton = QPushButton('Create')
@@ -39,14 +39,12 @@ class createAccUI(QWidget):
         self.backButton.clicked.connect(self.goBack)
         self.createButton.clicked.connect(self.createAccount)
 
-        layout.addWidget(self.username_label,4,1)
-        layout.addWidget(self.username_edit,4,2)
-        layout.addWidget(self.password_label,5,1)
-        layout.addWidget(self.password_edit,5,2)
-        layout.addWidget(self.userID_label,6,1)
-        layout.addWidget(self.userID_edit,6,2)
+        layout.addWidget(self.password_label, 6,1)
+        layout.addWidget(self.password_edit,6,2)
+        layout.addWidget(self.userID_label,5,1)
+        layout.addWidget(self.userID_edit,5,2)
         layout.addWidget(self.accType_label,7,1)
-        layout.addWidget(self.accType_edit,7,2)
+        layout.addWidget(self.accType_cBox,7,2)
         layout.addWidget(self.createButton,8 ,1)
         layout.addWidget(self.backButton, 8, 3)
         
@@ -57,13 +55,26 @@ class createAccUI(QWidget):
         
 
     def createAccount(self):
-        username = self.username_edit.text()
         password = self.password_edit.text()
         userID = self.userID_edit.text()
-        accType = self.accType_edit.text()
-        createAccController.createAcc(self,self.stackedWidget, userID, username, password, accType)
+        accType = self.accType_cBox.currentText()
+        widget1 = QWidget()
         
-        self.username_edit.clear()
+        #Call the controller
+        newAcc = createAccController.createAcc(self, userID, password, accType)
+        
+        emptyError = "A column is empty please fill up all the details"
+        IDError = "ID already in used"
+        success = "Account Created"
+        Error = "Error"
+        if newAcc == 'Success':
+            QMessageBox.information(widget1, "Done!", success)
+            self.stackedWidget.setCurrentIndex(3)
+        elif newAcc == 'IDError':
+            QMessageBox.information(widget1, Error, IDError)
+        else:
+             QMessageBox.warning(widget1, Error, emptyError)
+
         self.password_edit.clear()
         self.userID_edit.clear()
-        self.accType_edit.clear()
+    

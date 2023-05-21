@@ -3,9 +3,14 @@ sys.path.append( './Entity' )
 from account import Account
 
 class loginController:
-    def checkLogin(self, stackedWidget, usrname, pw):
-        self.stackedWidget = stackedWidget
-        self.usrname = usrname
+    def checkLogin(self, userID, pw)->str:
+        self.usrname = userID
         self.pw = pw
-        Account().login(self.stackedWidget, usrname, pw)
-        
+
+        #Call the entitity
+        user = Account().login(userID, pw)
+
+        if user != "error":
+            return user
+        else:
+            return "error"
