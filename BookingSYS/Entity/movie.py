@@ -14,63 +14,74 @@ class movie:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        self.hallAvail = ""
-        self.hallYes = []
+        cursor.execute('SELECT movieName FROM movie')
+        movie_data = cursor.fetchall()
+        movieList = []
+        for row in movie_data:
+            movieList.append(row[0])
 
-        datelist = []
-        showtimes = ["1330", "1530", "1730", "1930", "2130"]
-        showtimes2 = []
-        #startDate = date.today()
-        delta = datetime.timedelta(days=1)
-        currentDate = startDate
-        try:
-            while currentDate <= endDate:
-                datelist.append(currentDate)
-                for time in showtimes:
-                    showtimes2.append([currentDate, time])
-                currentDate += delta
+        if name not in movieList:
 
-            for date in datelist:
-                for time in showtimes:
-                    sql = "SELECT hallName, date FROM hallshowtime WHERE showtime = ? AND isAvailable = ? AND date = ?"
-                    data = (time,1, date)
-                    cursor.execute(sql,data)
-                    hall_data = cursor.fetchall()
-                    for row in hall_data:
-                        self.hallAvail = row[0]
-                        self.hallYes.append([time,date, self.hallAvail])
-            
+            self.hallAvail = ""
+            self.hallYes = []
 
-            #print("This is hallNA" + str(self.hallNA))
-            print("This is hallYes" + str(self.hallYes))
+            datelist = []
+            showtimes = ["1330", "1530", "1730", "1930", "2130"]
+            showtimes2 = []
+            #startDate = date.today()
+            delta = datetime.timedelta(days=1)
+            currentDate = startDate
+            try:
+                while currentDate <= endDate:
+                    datelist.append(currentDate)
+                    for time in showtimes:
+                        showtimes2.append([currentDate, time])
+                    currentDate += delta
 
-            startDateList = self.hallYes[0]
-            endDateList = self.hallYes[-1]
-            startDate = startDateList[1]
-            endDate = endDateList[1]
-            hall = startDateList[2]
+                for date in datelist:
+                    for time in showtimes:
+                        sql = "SELECT hallName, date FROM hallshowtime WHERE showtime = ? AND isAvailable = ? AND date = ?"
+                        data = (time,1, date)
+                        cursor.execute(sql,data)
+                        hall_data = cursor.fetchall()
+                        for row in hall_data:
+                            self.hallAvail = row[0]
+                            self.hallYes.append([time,date, self.hallAvail])
+                
 
-            for x in showtimes:
-                sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate, isAvailable) VALUES (?, ?, ?,?, ? ,?,?)"
-                data2 = (name, genre, int(x), hall, startDate, endDate, 1)
-                cursor.execute(sql2, data2)
+                #print("This is hallNA" + str(self.hallNA))
+                print("This is hallYes" + str(self.hallYes))
 
-            for x in self.hallYes:
-                time = int(x[0])
-                date = x[1]
-                hall = str(x[2])
-            
-                sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND date = ?"
-                data3 = (0, hall, time , date)
-                cursor.execute(sql3, data3)
-                conn.commit()
+                startDateList = self.hallYes[0]
+                endDateList = self.hallYes[-1]
+                startDate = startDateList[1]
+                endDate = endDateList[1]
+                hall = startDateList[2]
 
-            conn.close()
+                for x in showtimes:
+                    sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate, isAvailable) VALUES (?, ?, ?,?, ? ,?,?)"
+                    data2 = (name, genre, int(x), hall, startDate, endDate, 1)
+                    cursor.execute(sql2, data2)
 
-            self.stackedWidget.setCurrentIndex(10)
-        except:
-            self.stackedWidget.setCurrentIndex(10)
-    
+                for x in self.hallYes:
+                    time = int(x[0])
+                    date = x[1]
+                    hall = str(x[2])
+                
+                    sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND date = ?"
+                    data3 = (0, hall, time , date)
+                    cursor.execute(sql3, data3)
+                    conn.commit()
+
+                
+
+                self.stackedWidget.setCurrentIndex(10)
+            except:
+                self.stackedWidget.setCurrentIndex(10)
+
+        conn.close()
+
+
     def listManagerMovie(self, stackWidget, list, num):
         self.list = list
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -133,6 +144,10 @@ class movie:
     def editMovie(self, stackedwidget, dialog ,name , genre,avail1, name2, genre2,avail2):
         self.dialog = dialog
         self.stackedWidget= stackedwidget   
+
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
         if name2 == "":
             name2 = name
         if genre2 == "":
@@ -140,19 +155,22 @@ class movie:
         if avail2 == "":
             avail2 = avail1
 
+        cursor.execute('SELECT movieName FROM movie')
+        movie_data = cursor.fetchall()
+        movieList = []
+        for row in movie_data:
+            movieList.append(row[0])
 
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
+        if name2 not in movieList:
+            sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
+            data = (name2, genre2,avail1, name, genre, avail2)
+            cursor.execute(sql, data)
 
-        sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
-        data = (name2, genre2,avail1, name, genre, avail2)
-        cursor.execute(sql, data)
+            sql1 = "UPDATE ticket SET movieName = ? WHERE movieName = ?"
+            data1 = (name2,  name)
+            cursor.execute(sql1, data1)
 
-        sql1 = "UPDATE ticket SET movieName = ? WHERE movieName = ?"
-        data1 = (name2,  name)
-        cursor.execute(sql1, data1)
-
-        print(name2, name)
+            print(name2, name)
 
         # Commit the transaction
         conn.commit()

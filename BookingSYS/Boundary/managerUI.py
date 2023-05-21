@@ -701,10 +701,10 @@ class addHalls(QWidget):
         self.name_label = QLabel('Hall Name:')
         self.name_edit = QLineEdit()
 
-        self.rows_label = QLabel('Number of rows:')
+        self.rows_label = QLabel('Number of rows (1-8):')
         self.rows_edit = QLineEdit()
 
-        self.column_label = QLabel('Number of columns:')
+        self.column_label = QLabel('Number of columns(1-8):')
         self.column_edit = QLineEdit()
 
 
