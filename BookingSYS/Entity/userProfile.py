@@ -101,3 +101,51 @@ class UserProfile:
             cursor.close()
             conn.close()
             return "Success"
+        
+    def searchProfile(self, stackedWidget, item_name, list)->list:
+        self.stackedWidget = stackedWidget
+        self.list = list
+
+        if item_name != "":
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            cursor = conn.cursor()
+            list.clear()
+            sql = "SELECT * FROM userProfile WHERE userID = ?"
+            value1 = item_name
+            cursor.execute(sql, (value1,))
+            
+            rows = cursor.fetchall()
+            
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+            
+            return list
+        
+        else:
+            # Connect to the database
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            
+            # Create a cursor object from the connection
+            cursor = conn.cursor()
+            list.clear()
+            # Execute the SQL query to retrieve data from the table
+            cursor.execute("SELECT * FROM userProfile")
+            
+            # Fetch all the rows that match the query
+            rows = cursor.fetchall()
+
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+            return list

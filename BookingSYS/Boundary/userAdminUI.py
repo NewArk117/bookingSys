@@ -11,7 +11,7 @@ from editProfController import editProfileController
 from viewAllAccController import viewAllAccountController
 from viewAccController import viewAccountController
 from searchAccController import searchAccountController
-
+from searchProfController import searchProfileController
 #Admin account main page GUI
 class userAdminUI(QWidget):
     def __init__(self, stackedWidget):
@@ -66,6 +66,7 @@ class userAdminUI(QWidget):
         self.buttonCreate2.clicked.connect(self.goCreateProf)
         self.buttonViewProfile.clicked.connect(self.viewProfile)
         self.buttonEdit2.clicked.connect(self.editProf)
+        self.searchProfButton.clicked.connect(self.searchProf)
         
         layoutAcc.addWidget(self.buttonCreate2, 2 ,1)
         layoutAcc.addWidget(self.buttonDelete2, 2 ,2)
@@ -83,6 +84,9 @@ class userAdminUI(QWidget):
         item_name = self.searchAccEdit.text()
         list = searchAccountController.searchAccount(self, self.stackedWidget, item_name, self.AccountBox)
 
+    def searchProf(self):
+        item_name = self.searchProfEdit.text()   
+        list = searchProfileController.searchProfile(self, self.stackedWidget, item_name, self.profBox)
     def deleteAcc(self):
         backButtonController.backButtonC(self, self.stackedWidget)
 
