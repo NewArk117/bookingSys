@@ -8,68 +8,48 @@ import sys
 sys.path.append('./Boundary')
 
 class ticketType:
-    def delTicType(self, stackedWidget, ticList):
+    def susTicType(self, stackedWidget, ticList):
         self.stackedWidget = stackedWidget
         self.ticList = ticList
-        items = [self.ticList.item(i).text() for i in range(self.ticList.count())]
-        for item in items:
-            words = item.split()
-            type = words[0]
-            price = words[1]
-        items_str = ' '.join(' '.join(items).split())           
-        try:
-            if not items_str:
-                raise ValueError("No ticket type selected")
-            message = f'Are you sure you want to remove(?)\nTicket Type: {type}\nPrice: {price} '     
-            confirm = QMessageBox.question(self.stackedWidget, 'Remove ticket type', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                print("ok")
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
+        item = self.ticList.currentItem()
+        type = item.text().strip()
+ 
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
 
-                sql = "DELETE FROM ticketType WHERE type = ? AND price = ?"
-                data = (type, price)
-                cursor.execute(sql, data)
+        sql = "UPDATE ticketType SET isAvailable = ? WHERE type = ?"
+        data = (0 ,type)
+        cursor.execute(sql, data)
 
-                conn.commit()
-                conn.close()
-                self.listTicType(self.stackedWidget, self.ticList) 
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
-
+        conn.commit()
+        conn.close()
+    
 
         
 
     def addTicType(self, stackedWidget, name , price):
         self.stackedWidget = stackedWidget
-        message = f'Add ticket type named:{name} \nPrice:{price} '
         try:   
-            confirm = QMessageBox.question(self.stackedWidget, 'Add Ticket Type', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
 
-                # Get a cursor object
-                cursor = conn.cursor()
+            # Get a cursor object
+            cursor = conn.cursor()
 
-                # Insert a new record into the account table
-                sql = "INSERT INTO ticketType (type, price) VALUES (?, ?)"
-                data = (name, price)
-                cursor.execute(sql, data)
+            # Insert a new record into the account table
+            sql = "INSERT INTO ticketType (type, price, isAvailable) VALUES (?, ?, ?)"
+            data = (name, price, 1)
+            cursor.execute(sql, data)
 
-                # Commit the transaction
-                conn.commit()
+            # Commit the transaction
+            conn.commit()
 
-                # Close the database connection
-                conn.close()
+            # Close the database connection
+            conn.close()
 
-                self.stackedWidget.setCurrentIndex(13)
+            self.stackedWidget.setCurrentIndex(13)
 
         except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+            self.stackedWidget.setCurrentIndex(13)
 
     def listTicType(self, stackWidget, list):
         self.list = list
@@ -86,33 +66,31 @@ class ticketType:
         self.list.addItems(ticType_strings)
         conn.close()
 
-    def editTicType(self, dialog, stackedwidget, name1 , price1, name2, price2):
+    def editTicType(self, dialog, stackedwidget, name1 , price1, avail1, name2, price2, avail2):
         self.stackedWidget = stackedwidget
         self.dialog = dialog
-        message = f'Confirm to update(?)\nOld Name:{name1}\nOld Price:{price1}\nTo\nNew Name:{name2}\nNew Price:{price2}'
-        try:   
-            confirm = QMessageBox.question(self.stackedWidget, 'Update Ticket', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
+ 
+        if name2 == "":
+            name2 = name1
+        if price2 == "":
+            price2 = price1
+        if avail2 == "":
+            avail2 = avail1
+            
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        # Update an existing record in the ticketType table
+        sql = "UPDATE ticketType SET type = ?, price = ?, isAvailable = ? WHERE type = ? AND price = ? AND isAvailable = ?"
+        data = (name2, price2,avail2, name1, price1, avail1)
+        cursor.execute(sql, data)
 
-                # Update an existing record in the ticketType table
-                sql = "UPDATE ticketType SET type = ?, price = ? WHERE type = ? AND price = ?"
-                data = (name2, price2, name1, price1)
-                cursor.execute(sql, data)
+        # Commit the transaction
+        conn.commit()
 
-                # Commit the transaction
-                conn.commit()
-
-                # Close the database connection
-                conn.close()
-
-                self.dialog.reject()
-
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+        # Close the database connection
+        conn.close()
+        #self.listTicType(self.stackedWidget, )
+        self.dialog.reject()
 
     def searchTicType(self, stackedWidget, item_name, list):
         self.stackedWidget = stackedWidget
@@ -170,11 +148,34 @@ class ticketType:
         rows = cursor.fetchall()
         for row in rows:
             print(str(row[0]))
-            message_box = QMessageBox()
-            message_box.setText("Ticket Type: " + str(row[0]) + "\n" + "Price: $" + str(row[1]) + "\n" + "Availability: " + str(row[2]))
-            message_box.setWindowTitle(str(row[0]))
-            message_box.exec()
+            #message_box = QMessageBox()
+            text = ("Ticket Type: " + str(row[0]) + "\n" + "Price: $" + str(row[1]) + "\n" + "Availability: " + str(row[2]))
+            type = (str(row[0]))
+            #message_box.exec()
         
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
+    
+        return text ,type
+
+    def getData(self, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = "SELECT * FROM ticketType WHERE type = ?"
+        value1 = item_name.strip()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+        for row in rows:
+            self.ticketType = str(row[0])
+            self.price = str(row[1])
+            self.avail = str(row[2])
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        return self.ticketType, self.price, self.avail

@@ -8,44 +8,36 @@ from ticketType import ticketType
 class addTicTypeController:
     def addTicTypeC(self, stackedWidget, name , price):
         self.stackedWidget = stackedWidget
-        try:
-            if price.isnumeric():
-                #18. Cinema Manager Entity
-                ticketType().addTicType(self.stackedWidget, name ,price)
-            else:
-                raise ValueError("Price is not numerical")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
+        if price.isnumeric():
+            #18. Cinema Manager Entity
+            ticketType().addTicType(self.stackedWidget, name ,price)
+        
 
 
 #21. Cinema Manager Controller
-class delTicTypeController:
-    def delTicTypeC(self, stackedWidget, ticList):
+class susTicTypeController:
+    def susTicTypeC(self, stackedWidget, ticList):
         self.stackedWidget = stackedWidget
-        self.ticList = ticList
-        items = [item.text() for item in self.ticList.selectedItems()]
-        try:
-            if not items:
-                raise ValueError("Please select a hall.")
-            else:
-                #21. Cinema Manager Entity
-                ticketType().delTicType(self.stackedWidget, self.ticList)
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        self.ticList = ticList  
+        items = self.ticList.currentItem()
+        if items:
+            #21. Cinema Manager Entity
+            ticketType().susTicType(self.stackedWidget, self.ticList)
         
 
 #20. Cinema Manager Controller
 class editTicTypeController:
-    def editTicTypeC(self,dialog, stackedwidget, oldname,oldprice, newname, newprice):
-        try:
-            if newname and newprice:
-                #20. Cinema Manager Entity
-                ticketType().editTicType(dialog, stackedwidget, oldname,oldprice, newname, newprice)
-            else:
-                raise ValueError("New columns are empty")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
-
+    def editTicTypeC(self,dialog, stackedwidget, ticketList, newname, newprice,avail2):
+        self.ticketList = ticketList
+        items = self.ticketList.currentItem()
+        if items:
+            name = items.text().split()[0].strip()
+            ticType = ticketType()
+            typename, price, avail = ticType.getData(name)
+            #print(typename, newprice, avail)
+            #20. Cinema Manager Entity
+            ticketType().editTicType(dialog, stackedwidget, typename, price,avail , newname, newprice,avail2)
+            
 #19. Cinema Manager Controller
 class listTicTypeController:
     def listTicTypeC(self, stackedWidget,list):
@@ -60,7 +52,18 @@ class searchTicTypeController:
 
 
 class viewTicTypeController:
-    def viewTicTypeC(self, stackedWidget, item_name):
+    def viewTicTypeC(self, stackedWidget, ticketList):
         self.stackedWidget = stackedWidget
-        self.item_name = item_name
-        ticketType().viewTicType(self.stackedWidget,item_name)
+        self.ticketList = ticketList
+        selected_item = self.ticketList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            text, type = ticketType().viewTicType(self.stackedWidget,item_name)
+
+            return text, type
+
+        else:
+            text=None
+            type = None
+            return text, type

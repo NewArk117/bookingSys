@@ -8,10 +8,16 @@ import sys
 import calendar
 import datetime
 sys.path.append('./Controller')
-from FBController import delFBController, addFBController ,listFBController, editFBController, searchFBController, viewFBController
-from movieController import delMovieController, addMovieController, listMovieController, editMovieController, searchMovieController, viewMovieController
-from ticTypeController import delTicTypeController, addTicTypeController, listTicTypeController, editTicTypeController, searchTicTypeController, viewTicTypeController
+sys.path.append('./Entity')
+from FBController import susFBController, addFBController ,listFBController, editFBController, searchFBController, viewFBController
+from movieController import susMovieController, addMovieController, listMovieController, editMovieController, searchMovieController, viewMovieController
+from ticTypeController import susTicTypeController, addTicTypeController, listTicTypeController, editTicTypeController, searchTicTypeController, viewTicTypeController
 from cinemaHallController import susHallsController, addHallController , listHallController , editHallController, searchHallController, viewHallController
+from logOutController import logOutController
+from ticketType import ticketType
+from cinemaHall import cinemaHall
+from movie import movie
+from fnb import FnB
 
 
 #Create new account GUI
@@ -60,6 +66,7 @@ class managerUI(QWidget):
         self.hallButton.clicked.connect(self.goHalls)
         self.fbButton.clicked.connect(self.goFB)
         self.ticketsButton.clicked.connect(self.goTicket)
+        self.logoutButton.clicked.connect(self.logOut)
 
         self.setLayout(layout)
 
@@ -74,6 +81,9 @@ class managerUI(QWidget):
     
     def goTicket(self):
         self.stackedWidget.setCurrentIndex(13)
+
+    def logOut(self):
+        logOutController.loggingOut(self, self.stackedWidget)
 
 #Create ticket GUi
 #19. Cinema Manager Boundary
@@ -100,7 +110,7 @@ class manageTicTypeUI(QWidget):
         self.listTics()
         self.ticketList.setSelectionMode(QAbstractItemView.SingleSelection)
         self.addButton = QPushButton("Add")
-        self.delButton = QPushButton("Delete")
+        self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
         self.viewButton = QPushButton("View")
@@ -125,8 +135,8 @@ class manageTicTypeUI(QWidget):
 
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addTic)
-        self.delButton.clicked.connect(self.delTics)
-        self.editButton.clicked.connect(self.editTics)
+        self.delButton.clicked.connect(self.susTics)
+        self.editButton.clicked.connect(self.editTicsUI)
         self.searchBtn.clicked.connect(self.searchTicType)
         self.viewButton.clicked.connect(self.viewTicType)
 
@@ -140,12 +150,12 @@ class manageTicTypeUI(QWidget):
 
     
     def viewTicType(self):
-        selected_item = self.ticketList.currentItem()
-        # If an item is selected, display its name
-        if selected_item is not None:
-            item_name = selected_item.text()
-            viewTicTypeController.viewTicTypeC(self, self.stackedWidget, item_name)
-
+        text, typename = viewTicTypeController.viewTicTypeC(self, self.stackedWidget, self.ticketList)
+        msgBox = QMessageBox()
+        msgBox.setText(text)
+        msgBox.setWindowTitle(typename)
+        msgBox.exec_()
+        
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -153,15 +163,15 @@ class manageTicTypeUI(QWidget):
         self.stackedWidget.setCurrentIndex(15)
         self.listTics()
 
-    def delTics(self):
-        #21. Cinema Manager Controller
-        delTicTypeController.delTicTypeC(self, self.stackedWidget, self.ticketList)
+    def susTics(self):
+        susTicTypeController.susTicTypeC(self, self.stackedWidget, self.ticketList)
         self.listTics()
+        
 
 
-    def editTics1(self, dialog, name, price, name2, price2 ):
+    def editTics(self, dialog, ticketList, name2, price2, avail2):
         #20. Cinema Manager Controller (ticTypeController.py)
-        editTicTypeController.editTicTypeC(self, dialog, self.stackedWidget, name, price, name2, price2 )
+        editTicTypeController.editTicTypeC(self, dialog, self.stackedWidget,ticketList, name2, price2, avail2 )
         self.listTics()
 
     def listTics(self):
@@ -172,67 +182,44 @@ class manageTicTypeUI(QWidget):
         item_name = self.searchEdit.text()
         searchTicTypeController.searchTicTypeC(self, self.stackedWidget, item_name, self.ticketList)
     
-    def editTics(self):
+    def editTicsUI(self):
         self.dialog = QDialog(self)
-        self.dialog.setWindowTitle("My Dialog")
+        self.dialog.setWindowTitle("Edit Type")
 
         font = QtGui.QFont()
         font.setPointSize(20)
 
-        #self.getOldTicket()
-        try:
-            items = [item.text() for item in self.ticketList.selectedItems()]
-            if not items:
-                raise ValueError("Please select a ticketType.")
-            
-            items = self.ticketList.currentItem()
-            
-            if items:
-                name = items.text().split()[0]
-                price = items.text().split()[1]
+        layout = QGridLayout(self.dialog)
+        self.name1_label = QLabel('Name:')
+        self.name1_edit = QLineEdit()
+        #self.name1_edit.setPlaceholderText(typename)
 
-                layout = QGridLayout(self.dialog)
-                self.name1_label = QLabel('Old Name:')
-                self.name1_edit = QLabel(name)
-            
+        self.price1_label = QLabel('Price:')
+        self.price1_edit = QLineEdit()
+        #self.price1_edit.setPlaceholderText(price)
 
-                self.price1_label = QLabel('Old Price:')
-                self.price1_edit = QLabel(price)
+        self.avail_label = QLabel('Availabilty:')
+        self.avail_edit = QLineEdit()
+        #self.avail_edit.setPlaceholderText(avail)
+        
+        self.backButton = QPushButton("Back")
+        self.submitButton = QPushButton("Submit")
 
+        layout.addWidget(self.name1_label,0,0)
+        layout.addWidget(self.name1_edit,0,1)
+        layout.addWidget(self.price1_label, 1, 0)
+        layout.addWidget(self.price1_edit, 1, 1)
 
-                self.name2_label = QLabel('New Name:')
-                self.name2_edit = QLineEdit()
-                #self.name2_edit.setPlaceholderText(self.oldname)
-                
+        layout.addWidget(self.avail_label,2,0)
+        layout.addWidget(self.avail_edit,2,1)
 
-                self.price2_label = QLabel('New Price:')
-                self.price2_edit = QLineEdit()
-                #self.price2_edit.setPlaceholderText(self.oldprice)
-                
-                self.backButton = QPushButton("Back")
-                self.submitButton = QPushButton("Submit")
+        layout.addWidget(self.backButton,5, 0 )
+        layout.addWidget(self.submitButton,5 ,2)
 
-                layout.addWidget(self.name1_label,0,0)
-                layout.addWidget(self.name1_edit,0,1)
-                layout.addWidget(self.price1_label, 1, 0)
-                layout.addWidget(self.price1_edit, 1, 1)
+        self.backButton.clicked.connect(self.dialog.reject)
+        self.submitButton.clicked.connect(lambda: (self.editTics(self.dialog,self.ticketList, self.name1_edit.text(), self.price1_edit.text(), self.avail_edit.text())))
 
-                layout.addWidget(self.name2_label,2,0)
-                layout.addWidget(self.name2_edit,2,1)
-                layout.addWidget(self.price2_label, 3, 0)
-                layout.addWidget(self.price2_edit, 3, 1)
-
-                layout.addWidget(self.backButton,5, 0 )
-                layout.addWidget(self.submitButton,5 ,2)
-
-                self.backButton.clicked.connect(self.dialog.reject)
-                self.submitButton.clicked.connect(lambda: (self.editTics1(self.dialog, name, price,self.name2_edit.text(), self.price2_edit.text() )))
-
-                self.dialog.exec_()
-            else:
-                raise ValueError("No type selected")
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        self.dialog.exec_()
 
 #Create movies GUI
 #9. Cinema Manager Boundary
@@ -255,7 +242,7 @@ class manageMoviesUI(QWidget):
         self.label1 = QLabel("Manage Movies")
         self.moviesList = QListWidget()
         self.addButton = QPushButton("Add")
-        self.delButton = QPushButton("Delete")
+        self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
         self.viewButton = QPushButton("View")
@@ -279,7 +266,7 @@ class manageMoviesUI(QWidget):
 
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addMov)
-        self.delButton.clicked.connect(self.deleteMovie)
+        self.delButton.clicked.connect(self.susMovie)
         self.editButton.clicked.connect(self.editMovieUI)
         self.searchBtn.clicked.connect(self.searchMovie)
         self.viewButton.clicked.connect(self.viewMovie)
@@ -288,11 +275,12 @@ class manageMoviesUI(QWidget):
         self.stackedWidget.currentChanged.connect(self.listMovie)
 
     def viewMovie(self):
-        selected_item = self.moviesList.currentItem()
-        # If an item is selected, display its name
-        if selected_item is not None:
-            item_name = selected_item.text()
-            viewMovieController.viewMovieC(self, self.stackedWidget, item_name)
+        text, moviename = viewMovieController.viewMovieC(self, self.stackedWidget, self.moviesList)
+
+        msgBox = QMessageBox()
+        msgBox.setText(text)
+        msgBox.setWindowTitle(moviename)
+        msgBox.exec_()
 
 
     def goBack(self):
@@ -301,24 +289,23 @@ class manageMoviesUI(QWidget):
     def addMov(self):
         self.stackedWidget.setCurrentIndex(14)
 
-    def deleteMovie(self):
+    def susMovie(self):
         #11. Cinema Manager COntroller
-        delMovieController.delMovieC(self,self.stackedWidget, self.moviesList)
+        susMovieController.susMovieC(self,self.stackedWidget, self.moviesList)
 
     def listMovie(self):
         #9. Cinema Manager Controller
         listMovieController.listMovieC(self, self.stackedWidget, self.moviesList, 1)
 
     def searchMovie(self):
-            item_name = self.searchEdit.text()
-            searchMovieController.searchMovieC(self, self.stackedWidget, item_name, self.moviesList)
+        item_name = self.searchEdit.text()
+        searchMovieController.searchMovieC(self, self.stackedWidget, item_name, self.moviesList)
 
 
-    def editMovie(self,  dialog ,name1 , genre1, name2, genre2):
+    def editMovie(self,  dialog , name2, genre2, avail2):
         #10. Cinema Manager Controller
-        x = editMovieController.editMovieC(self,self.stackedWidget, dialog ,name1, genre1, name2, genre2)
-        if x:
-            self.listMovie()
+        editMovieController.editMovieC(self,self.stackedWidget,dialog,self.moviesList, name2, genre2, avail2)
+        self.listMovie()
 
     #10. Cinema Manager Boundary
     def editMovieUI(self):
@@ -330,47 +317,38 @@ class manageMoviesUI(QWidget):
 
         layout = QGridLayout(self.dialog)
         #self.getOldTicket()
-        try:
-            
-            items = [item.text() for item in self.moviesList.selectedItems()]
-            if not items:
-                raise ValueError("Please select a movie.")
-            print(items.text())
+        
+        self.name_label = QLabel('Movie Name:')
+        self.name_edit = QLineEdit()
+        #self.name_edit.setPlaceholderText(moviename)
 
-            items = self.moviesList.currentItem()
+        self.genre_label = QLabel('Genre:')
+        self.genre_edit = QLineEdit()
+        #self.genre_edit.setPlaceholderText(genre)
 
-            if items:
-                name = items.text()[:20].strip() 
-                genre = items.text()[21:].strip()  
+        self.avail_label = QLabel('Availabilty:')
+        self.avail_edit = QLineEdit()
+        #self.avail_edit.setPlaceholderText(avail)
 
-                self.name_label = QLabel('Movie Name:')
-                self.name_edit = QLineEdit()
-                self.name_edit.setPlaceholderText(name)
+        self.backButton = QPushButton("Back")
+        self.submitButton = QPushButton("Submit")
 
-                self.genre_label = QLabel('Genre:')
-                self.genre_edit = QLineEdit()
-                self.genre_edit.setPlaceholderText(genre)
+        layout.addWidget(self.name_label,0,0)
+        layout.addWidget(self.name_edit,0,1)
 
-                self.backButton = QPushButton("Back")
-                self.submitButton = QPushButton("Submit")
+        layout.addWidget(self.genre_label, 1, 0)
+        layout.addWidget(self.genre_edit, 1, 1)
 
-                layout.addWidget(self.name_label,0,0)
-                layout.addWidget(self.name_edit,0,1)
+        layout.addWidget(self.avail_label,2,0)
+        layout.addWidget(self.avail_edit,2,1)
 
-                layout.addWidget(self.genre_label, 1, 0)
-                layout.addWidget(self.genre_edit, 1, 1)
+        layout.addWidget(self.backButton,5, 0 )
+        layout.addWidget(self.submitButton,5 ,2)
+        
+        self.backButton.clicked.connect(self.dialog.reject)
+        self.submitButton.clicked.connect(lambda: (self.editMovie(self.dialog, self.name_edit.text(), self.genre_edit.text(), self.avail_edit.text())))
 
-                layout.addWidget(self.backButton,5, 0 )
-                layout.addWidget(self.submitButton,5 ,2)
-                
-                self.backButton.clicked.connect(self.dialog.reject)
-                self.submitButton.clicked.connect(lambda: (self.editMovie(self.dialog, name, genre,self.name_edit.text(), self.genre_edit.text())))
-
-                self.dialog.exec_()
-            else:
-                raise ValueError("No movie selected")
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        self.dialog.exec_()
 
 #Create hall GUI
 
@@ -428,12 +406,14 @@ class manageHallsUI(QWidget):
         self.stackedWidget.currentChanged.connect(self.listHalls)
 
     def viewHall(self):
-        selected_item = self.hallList.currentItem()
-        # If an item is selected, display its name
-        if selected_item is not None:
-            item_name = selected_item.text()
-            viewHallController.viewHallC(self, self.stackedWidget, item_name)
+            text, hallname = viewHallController.viewHallC(self, self.stackedWidget, self.hallList)
 
+            msgBox = QMessageBox()
+            msgBox.setText(text)
+            msgBox.setWindowTitle(hallname)
+            msgBox.exec_()
+
+       
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -443,6 +423,7 @@ class manageHallsUI(QWidget):
     def susHall(self):
         #6. Cinema Manager Controller (same)
         susHallsController.susHallsC(self, self.stackedWidget, self.hallList)
+
     
     def listHalls(self):
         #4. Cinema Manager Controller (hallcontroller.py)
@@ -453,15 +434,12 @@ class manageHallsUI(QWidget):
         searchHallController.searchHallC(self, self.stackedWidget, item_name, self.hallList)
 
 
-    def editHall(self,  dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
+    def editHall(self,  dialog, name2, avail2):
         #5. Cinema Manager Controller (hallcontroller.py)
-        x = editHallController.editHallC(self,self.stackedWidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2)
-        if x:
-            self.listHalls()
-        #print(name2)
-        #print(rows2)
-        #print(columns2)
-        #print(avail2)
+        #editHallController.editHallC(self,self.stackedWidget, dialog ,name , avail, name2, avail2)
+        editHallController.editHallC(self,self.stackedWidget, dialog ,self.hallList, name2, avail2)
+        self.listHalls()
+      
     def editHallUI(self):
         self.dialog = QDialog(self)
         self.dialog.setWindowTitle("Edit Hall")
@@ -471,64 +449,34 @@ class manageHallsUI(QWidget):
 
         layout = QGridLayout(self.dialog)
         #self.getOldTicket()
-        try:
-            items = [item.text() for item in self.hallList.selectedItems()]
-            if not items:
-                raise ValueError("Please select a hall.")
-            items = self.hallList.currentItem()
+    
+        self.name_label = QLabel('Hall Name:')
+        self.name_edit = QLineEdit()
+        #self.name_edit.setPlaceholderText(hallname)
 
-            if items:
-                name = items.text().split()[0]
-                rows = items.text().split()[1]
-                columns = items.text().split()[2]
-                capacity = items.text().split()[3]
-                avail = items.text().split()[4]
+        self.avail_label = QLabel('Availability:')
+        self.avail_edit = QLineEdit()
+        #self.avail_edit.setPlaceholderText(avail)
 
-                self.name_label = QLabel('Hall Name:')
-                self.name_edit = QLineEdit()
-                self.name_edit.setPlaceholderText(name)
+        #print (name + rows + columns + capacity + availString)
 
-                self.rows_label = QLabel('Number of rows:')
-                self.rows_edit = QLineEdit()
-                self.rows_edit.setPlaceholderText(rows)
+        self.backButton = QPushButton("Back")
+        self.submitButton = QPushButton("Submit")
 
-                self.column_label = QLabel('Number of columns:')
-                self.column_edit = QLineEdit()
-                self.column_edit.setPlaceholderText(columns)
+        layout.addWidget(self.name_label,0,0)
+        layout.addWidget(self.name_edit,0,1)
 
-                self.avail_label = QLabel('Availability:')
-                self.avail_edit = QLineEdit()
-                self.avail_edit.setPlaceholderText(avail)
-
-                #print (name + rows + columns + capacity + availString)
-
-                self.backButton = QPushButton("Back")
-                self.submitButton = QPushButton("Submit")
-
-                layout.addWidget(self.name_label,0,0)
-                layout.addWidget(self.name_edit,0,1)
-
-                layout.addWidget(self.rows_label, 1, 0)
-                layout.addWidget(self.rows_edit, 1, 1)
-
-                layout.addWidget(self.column_label,2,0)
-                layout.addWidget(self.column_edit,2,1)
-
-                layout.addWidget(self.avail_label, 3, 0)
-                layout.addWidget(self.avail_edit, 3, 1)
+        layout.addWidget(self.avail_label, 3, 0)
+        layout.addWidget(self.avail_edit, 3, 1)
 
 
-                layout.addWidget(self.backButton,5, 0 )
-                layout.addWidget(self.submitButton,5 ,2)
-                
-                self.backButton.clicked.connect(self.dialog.reject)
-                self.submitButton.clicked.connect(lambda: (self.editHall(self.dialog, name, rows, columns , avail ,self.name_edit.text(), self.rows_edit.text(),self.column_edit.text(), self.avail_edit.text())))
+        layout.addWidget(self.backButton,5, 0 )
+        layout.addWidget(self.submitButton,5 ,2)
+        
+        self.backButton.clicked.connect(self.dialog.reject)
+        self.submitButton.clicked.connect(lambda: (self.editHall(self.dialog,self.name_edit.text(), self.avail_edit.text())))
 
-                self.dialog.exec_()
-            else:
-                raise ValueError("No hall selected")
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        self.dialog.exec_()
 
 
 #14. Cinema Manager Boundary
@@ -552,7 +500,7 @@ class manageFBUI(QWidget):
         self.fbList = QListWidget()
         self.listFB()
         self.addButton = QPushButton("Add")
-        self.delButton = QPushButton("Delete")
+        self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
         self.viewButton = QPushButton("View")
@@ -576,7 +524,7 @@ class manageFBUI(QWidget):
 
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addFB)
-        self.delButton.clicked.connect(self.delFB)
+        self.delButton.clicked.connect(self.susFB)
         self.editButton.clicked.connect(self.editFB)
         self.searchBtn.clicked.connect(self.searchFB)
         self.viewButton.clicked.connect(self.viewFB)
@@ -586,11 +534,11 @@ class manageFBUI(QWidget):
 
         
     def viewFB(self):
-        selected_item = self.fbList.currentItem()
-        # If an item is selected, display its name
-        if selected_item is not None:
-            item_name = selected_item.text()
-            viewFBController.viewFBC(self, self.stackedWidget, item_name)
+        text, itemname = viewFBController.viewFBC(self, self.stackedWidget, self.fbList)
+        msgBox = QMessageBox()
+        msgBox.setText(text)
+        msgBox.setWindowTitle(itemname)
+        msgBox.exec_()
     
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
@@ -599,18 +547,19 @@ class manageFBUI(QWidget):
         self.stackedWidget.setCurrentIndex(16)
         self.listFB()
     
-    def delFB(self):
+    def susFB(self):
         #16. Cinema Manager Controller
-        delFBController.delFBC(self, self.stackedWidget, self.fbList)
+        susFBController.susFBC(self, self.stackedWidget, self.fbList)
         self.listFB()
+
 
     def listFB(self):
         #14. Cinema Manager Controller (look for fnbcontroller.py)
         listFBController.listFBC(self, self.stackedWidget, self.fbList)
 
-    def editFB1(self, dialog, name, price,quantity, name2, price2 , quantity2):
+    def editFB1(self, dialog, fbList, name2, price2 , quantity2, avail2):
         #15. Cinema Manager Controller
-        editFBController.editFBC(self, dialog, self.stackedWidget, name, price, quantity, name2, price2, quantity2 )
+        editFBController.editFBC(self, dialog, self.stackedWidget, fbList,name2, price2, quantity2,avail2 )
         self.listFB()
 
     def searchFB(self):
@@ -625,70 +574,51 @@ class manageFBUI(QWidget):
         font = QtGui.QFont()
         font.setPointSize(20)
 
-        #self.getOldTicket()
-        try:
-            items = [item.text() for item in self.fbList.selectedItems()]
-            if not items:
-                raise ValueError("Please select an item.")
-            
-            items = self.fbList.currentItem()
 
-            if items:
-                name = items.text()[:20].strip() 
-                price = items.text()[21:30].strip()
-                quantity = items.text()[31:].strip()
+        self.name_label = QLabel('Item Name:')
+        self.name_edit = QLineEdit()
+        #self.name_edit.setPlaceholderText(itemname)
 
-                layout = QGridLayout(self.dialog)
-                self.name1_label = QLabel('Old Item:')
-                self.name1_edit = QLabel(name)
-            
+        self.price_label = QLabel('Price:')
+        self.price_edit = QLineEdit()
+        #self.price_edit.setPlaceholderText(price)
 
-                self.price1_label = QLabel('Old Price:')
-                self.price1_edit = QLabel(price)
+        self.quantity_label = QLabel('Quantity:')
+        self.quantity_edit = QLineEdit()
+        #self.quantity_edit.setPlaceholderText(quantity)
 
-                self.quantity1_label = QLabel('Old Quantity:')
-                self.quantity1_edit = QLabel(quantity)
+        self.avail_label = QLabel('Availability:')
+        self.avail_edit = QLineEdit()
+        #self.avail_edit.setPlaceholderText(avail)
 
+        layout = QGridLayout(self.dialog)
+        #print (name + rows + columns + capacity + availString)
 
-                self.name2_label = QLabel('New Name:')
-                self.name2_edit = QLineEdit()
-                #self.name2_edit.setPlaceholderText(self.oldname)
-                
+        self.backButton = QPushButton("Back")
+        self.submitButton = QPushButton("Submit")
 
-                self.price2_label = QLabel('New Price:')
-                self.price2_edit = QLineEdit()
-                #self.price2_edit.setPlaceholderText(self.oldprice)
-                
-                self.quantity2_label = QLabel('New Quantity:')
-                self.quantity2_edit = QLineEdit()
+        layout.addWidget(self.name_label,0,0)
+        layout.addWidget(self.name_edit,0,1)
 
-                self.backButton = QPushButton("Back")
-                self.submitButton = QPushButton("Submit")
+        layout.addWidget(self.price_label, 1, 0)
+        layout.addWidget(self.price_edit, 1, 1)
 
-                layout.addWidget(self.name1_label,0,0)
-                layout.addWidget(self.name1_edit,0,1)
-                layout.addWidget(self.price1_label, 1, 0)
-                layout.addWidget(self.price1_edit, 1, 1)
+        layout.addWidget(self.quantity_label,2,0)
+        layout.addWidget(self.quantity_edit,2,1)
 
-                layout.addWidget(self.name2_label,2,0)
-                layout.addWidget(self.name2_edit,2,1)
-                layout.addWidget(self.price2_label, 3, 0)
-                layout.addWidget(self.price2_edit, 3, 1)
+        layout.addWidget(self.avail_label, 3, 0)
+        layout.addWidget(self.avail_edit, 3, 1)
 
-                layout.addWidget(self.backButton,5, 0 )
-                layout.addWidget(self.submitButton,5 ,2)
+        layout.addWidget(self.backButton,5, 0 )
+        layout.addWidget(self.submitButton,5 ,2)
 
-                self.backButton.clicked.connect(self.dialog.reject)
-                self.submitButton.clicked.connect(lambda: (self.editFB1(self.dialog, name, price,self.name2_edit.text(), self.price2_edit.text() )))
+        self.backButton.clicked.connect(self.dialog.reject)
+        self.submitButton.clicked.connect(lambda: (self.editFB1(self.dialog, self.fbList, self.name_edit.text(), self.price_edit.text(), self.quantity_edit.text(), self.avail_edit.text() )))
 
-                self.dialog.exec_()
-            else:
-                raise ValueError("No item selected")
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        self.dialog.exec_()
 
-#8. Cinema Manager Boundary
 #UI for create========================================
+#8. Cinema Manager Boundary
 class addMovies(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -908,9 +838,10 @@ class addTic(QWidget):
     def addTic(self):
         name = self.name_edit.text()
         price = self.price_edit.text()
-        #18. Cinema Manager Controller (tictypeController.py)
-        addTicTypeController.addTypeTicC(self, self.stackedWidget, name ,price)
 
+        #18. Cinema Manager Controller (tictypeController.py)
+        addTicTypeController.addTicTypeC(self, self.stackedWidget, name ,price)
+        
         self.name_edit.clear()
         self.price_edit.clear()
 

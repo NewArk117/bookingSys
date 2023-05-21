@@ -8,45 +8,38 @@ from cinemaHall import cinemaHall
 class addHallController:
     def addHallC(self, stackedWidget, name , rows, columns):
         self.stackedWidget = stackedWidget
-        try:
-            if rows.isnumeric() and columns.isnumeric():
-                #3. Cinema Manager Entity (go to cinemahall.py)
-                cinemaHall().addHall(self.stackedWidget, name ,rows, columns)
-            else:
-                raise ValueError("Row/Column is not numerical")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
+        if rows.isnumeric() and columns.isnumeric():
+            #3. Cinema Manager Entity (go to cinemahall.py)
+            cinemaHall().addHall(self.stackedWidget, name ,rows, columns)
+            
 
 #6. Cinema Manager Controller
 class susHallsController:
     def susHallsC(self, stackedWidget, hallList):
         self.stackedWidget = stackedWidget
         self.hallList = hallList
-        items = [item.text() for item in self.hallList.selectedItems()]
-        try:
-            if not items:
-                raise ValueError("Please select a hall.")
-            else:
-                #6. Cinema Manager Entity no return
-                cinemaHall().susHall(self.stackedWidget, self.hallList)
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-        
+        items = self.hallList.currentItem()
+        if items:
+            #6. Cinema Manager Entity no return
+            cinemaHall().susHall(self.stackedWidget, self.hallList)
 
 
 class editHallController:
-    def editHallC(self, stackedwidget,dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
+    def editHallC(self, stackedwidget,dialog ,hallList, name2, avail2):
+        self.hallList = hallList
         try:
-            print ("In controller")
-            if name2 == "" and rows2 == "" and columns2 == "" and avail2 == "" :
-                print("All are empty")
-                raise ValueError("New columns are empty")
-            else:   
+            items = self.hallList.currentItem()
+            if items:
+                name = items.text().split()[0]
+                hall1 = cinemaHall()
+                hallname,rows,columns,avail = hall1.getData(name)
+                print(hallname, rows, columns, avail)
                 #5. Cinema Manager Entity got return (cinemahall.py)
-                x = cinemaHall().editHall(stackedwidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2)
-                return x
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
+                cinemaHall().editHall(stackedwidget, dialog ,hallname , avail, name2, avail2)
+        except:
+            dialog.reject()
+
+    
 #4. Cinema Manager Controller
 class listHallController:
     def listHallC(self, stackedWidget,list):
@@ -60,8 +53,17 @@ class searchHallController:
         cinemaHall().searchHall(self.stackedWidget,item_name, list) 
 
 class viewHallController:
-    def viewHallC(self, stackedWidget, item_name):
+    def viewHallC(self, stackedWidget, hallList):
         self.stackedWidget = stackedWidget
-        self.item_name = item_name
-        cinemaHall().viewHall(self.stackedWidget,item_name)
+        self.hallList = hallList
+        selected_item = self.hallList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            text, hallname = cinemaHall().viewHall(self.stackedWidget,item_name)
+            return text, hallname
+        else:
+            text=None
+            hallname = None
+            return text, hallname
 
