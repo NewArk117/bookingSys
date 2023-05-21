@@ -116,3 +116,15 @@ class editMovieController:
                 return x
         except ValueError as e:
             QMessageBox.warning(self, 'Error', str(e))
+
+class searchMovieController:
+    def searchMovieC(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        movie().searchMovie(self.stackedWidget,item_name, list) 
+
+class viewMovieController:
+    def viewMovieC(self, stackedWidget, item_name):
+        self.stackedWidget = stackedWidget
+        self.item_name = item_name
+        movie().viewMovie(self.stackedWidget,item_name)
+

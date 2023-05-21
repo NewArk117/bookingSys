@@ -47,6 +47,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS movie
                   hallName TEXT,
                   startdate DATE,
                   enddate DATE,
+                  isAvailable BOOLEAN,
                   PRIMARY KEY(movieName, showtime),
                   FOREIGN KEY(hallName) REFERENCES hallshowtime(hallName),
                   FOREIGN KEY(showtime) REFERENCES hallshowtime(showtime)
@@ -65,11 +66,13 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS seat
 cursor.execute('''CREATE TABLE IF NOT EXISTS food 
                  (foodName TEXT PRIMARY KEY,
                   price DECIMAL,
-                  quantity INT)''')
+                  quantity INT,
+                  isAvailable BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS ticketType 
                  (type TEXT PRIMARY KEY,
-                  price DECIMAL)''')
+                  price DECIMAL,
+                 isAvailable BOOLEAN)''')
 
 
 

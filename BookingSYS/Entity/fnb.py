@@ -1,7 +1,7 @@
 import sqlite3
 
 #GUI Imports
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
 
 #Import links to different scripts in Boundary
 import sys 
@@ -77,7 +77,8 @@ class FnB:
         fb_data = cursor.fetchall()
         fb_strings = []
         for row in fb_data:
-            fb_string = '{:<20}\t{:<30}\t{:50}'.format(row[0], row[1], row[2])
+            #fb_string = '{:<20}\t{:<30}\t{:50}'.format(row[0], row[1], row[2])
+            fb_string = '{:<20}'.format(row[0])
             fb_strings.append(fb_string)
         self.list.clear()
         self.list.addItems(fb_strings)
@@ -176,3 +177,67 @@ class FnB:
 
         conn.commit()
         conn.close()
+
+    def searchFB(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        self.list = list
+
+        if item_name != "":
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            cursor = conn.cursor()
+            list.clear()
+            sql = "SELECT * FROM food WHERE foodName = ?"
+            value1 = item_name
+            cursor.execute(sql, (value1,))
+            
+            rows = cursor.fetchall()
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+        else:
+            self.list = list
+            # Connect to the database
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            
+            # Create a cursor object from the connection
+            cursor = conn.cursor()
+            list.clear()
+            # Execute the SQL query to retrieve data from the table
+            cursor.execute("SELECT * FROM food")
+            
+            # Fetch all the rows that match the query
+            rows = cursor.fetchall()
+
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+
+    def viewFB(self, stackedWidget, item_name):
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            # Get a cursor object
+            cursor = conn.cursor()
+            query = "SELECT * FROM food WHERE foodName = ?"
+            value1 = item_name.strip()
+            # Execute the SQL query to retrieve data from the table
+            cursor.execute(query, (value1,))
+            # Fetch all the rows that match the query
+            rows = cursor.fetchall()
+            for row in rows:
+                message_box = QMessageBox()
+                message_box.setText("Food Name: " + str(row[0]) + "\n" + "Price: " + str(row[1]) + "\n" + "Quantity: " + str(row[2]) + "\n" + "Availabilty: " + str(row[3]))
+                message_box.setWindowTitle(str(row[0]))
+                message_box.exec_()
+            
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()

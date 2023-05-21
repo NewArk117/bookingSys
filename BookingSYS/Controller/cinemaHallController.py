@@ -54,3 +54,14 @@ class listHallController:
         #4. Cinema Manager Entity (cinemahall.py) no return
         cinemaHall().listManagerHall(self.stackedWidget, list)
 
+class searchHallController:
+    def searchHallC(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        cinemaHall().searchHall(self.stackedWidget,item_name, list) 
+
+class viewHallController:
+    def viewHallC(self, stackedWidget, item_name):
+        self.stackedWidget = stackedWidget
+        self.item_name = item_name
+        cinemaHall().viewHall(self.stackedWidget,item_name)
+

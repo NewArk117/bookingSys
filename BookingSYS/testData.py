@@ -245,8 +245,8 @@ def addMovie(name, genre, hallname,cursor):
         time = int(x[0])
         hall = str(x[1])
         #print("This is time " + str(time) + " This is hall " + hall)
-        sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate) VALUES (?, ?, ?,?, ? ,?)"
-        data2 = (name, genre, time, hall, startDate, endDate)
+        sql2 = "INSERT INTO movie (movieName, genre, showtime, hallName, startdate, enddate, isAvailable) VALUES (?, ?, ?,?, ? ,?, ?)"
+        data2 = (name, genre, time, hall, startDate, endDate, 1)
         cursor.execute(sql2, data2)
         for date in datelist:
             sql3 = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ? AND showtime = ? AND date = ?"
@@ -266,8 +266,8 @@ for x in movieList:
 #add food
 def addFood( name, price, quantity, cursor):
     # Insert a new record into the account table
-    sql = "INSERT INTO food (foodName, price, quantity) VALUES (?, ?, ?)"
-    data = (name, price, quantity)
+    sql = "INSERT INTO food (foodName, price, quantity, isAvailable) VALUES (?, ?, ?, ?)"
+    data = (name, price, quantity , 1)
     cursor.execute(sql, data)
 
 addFood("Burger", 5.2, 10 , cursor)
@@ -275,8 +275,8 @@ addFood("Coke", 2.5, 10, cursor)
 addFood("Popcorn", 6.0, 10, cursor)
 
 def addTicketType(name, price, cursor):
-    sql = "INSERT INTO ticketType (type, price) VALUES (?, ?)"
-    data = (name, price)
+    sql = "INSERT INTO ticketType (type, price, isAvailable) VALUES (?, ?, ?)"
+    data = (name, price, 1)
     cursor.execute(sql, data)
 
 addTicketType("Adult", 12.0,cursor)

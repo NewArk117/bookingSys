@@ -77,7 +77,7 @@ class ticketPurchasedUI(QWidget):
                                                                                                 "Ticket Type", "Cost")
         self.label1 = QLabel(ticket_string)
         self.ticketList = QListWidget()
-        self.listData()
+        self.viewData()
         self.ticket_delete_button = QPushButton('Refund')
         self.ticket_update_button = QPushButton('Change')
         self.backButton = QPushButton("Back")

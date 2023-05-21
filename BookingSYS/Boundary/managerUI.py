@@ -8,10 +8,10 @@ import sys
 import calendar
 import datetime
 sys.path.append('./Controller')
-from FBController import delFBController, addFBController ,listFBController, editFBController
-from movieController import delMovieController, addMovieController, listMovieController, editMovieController
-from ticTypeController import delTicTypeController, addTicTypeController, listTicTypeController, editTicTypeController
-from cinemaHallController import susHallsController, addHallController , listHallController , editHallController
+from FBController import delFBController, addFBController ,listFBController, editFBController, searchFBController, viewFBController
+from movieController import delMovieController, addMovieController, listMovieController, editMovieController, searchMovieController, viewMovieController
+from ticTypeController import delTicTypeController, addTicTypeController, listTicTypeController, editTicTypeController, searchTicTypeController, viewTicTypeController
+from cinemaHallController import susHallsController, addHallController , listHallController , editHallController, searchHallController, viewHallController
 
 
 #Create new account GUI
@@ -103,6 +103,8 @@ class manageTicTypeUI(QWidget):
         self.delButton = QPushButton("Delete")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+        self.viewButton = QPushButton("View")
+        layout.addWidget(self.viewButton, 3,2)
 
         layoutSearch = QHBoxLayout()
         self.searchLabel = QLabel("Search: ")
@@ -125,6 +127,8 @@ class manageTicTypeUI(QWidget):
         self.addButton.clicked.connect(self.addTic)
         self.delButton.clicked.connect(self.delTics)
         self.editButton.clicked.connect(self.editTics)
+        self.searchBtn.clicked.connect(self.searchTicType)
+        self.viewButton.clicked.connect(self.viewTicType)
 
         #self.timer = QTimer()
         #self.timer.setInterval(1000)
@@ -133,7 +137,14 @@ class manageTicTypeUI(QWidget):
 
         self.setLayout(layout)
         self.stackedWidget.currentChanged.connect(self.listTics)
-        
+
+    
+    def viewTicType(self):
+        selected_item = self.ticketList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            viewTicTypeController.viewTicTypeC(self, self.stackedWidget, item_name)
 
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
@@ -156,6 +167,10 @@ class manageTicTypeUI(QWidget):
     def listTics(self):
         #19. Cinema Manager Controller
         listTicTypeController.listTicTypeC(self, self.stackedWidget, self.ticketList )
+    
+    def searchTicType(self):
+        item_name = self.searchEdit.text()
+        searchTicTypeController.searchTicTypeC(self, self.stackedWidget, item_name, self.ticketList)
     
     def editTics(self):
         self.dialog = QDialog(self)
@@ -243,6 +258,8 @@ class manageMoviesUI(QWidget):
         self.delButton = QPushButton("Delete")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+        self.viewButton = QPushButton("View")
+        layout.addWidget(self.viewButton, 3,2)
         
         layoutSearch = QHBoxLayout()
         self.searchLabel = QLabel("Search: ")
@@ -264,9 +281,20 @@ class manageMoviesUI(QWidget):
         self.addButton.clicked.connect(self.addMov)
         self.delButton.clicked.connect(self.deleteMovie)
         self.editButton.clicked.connect(self.editMovieUI)
+        self.searchBtn.clicked.connect(self.searchMovie)
+        self.viewButton.clicked.connect(self.viewMovie)
 
         self.setLayout(layout)
         self.stackedWidget.currentChanged.connect(self.listMovie)
+
+    def viewMovie(self):
+        selected_item = self.moviesList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            viewMovieController.viewMovieC(self, self.stackedWidget, item_name)
+
+
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -280,6 +308,10 @@ class manageMoviesUI(QWidget):
     def listMovie(self):
         #9. Cinema Manager Controller
         listMovieController.listMovieC(self, self.stackedWidget, self.moviesList, 1)
+
+    def searchMovie(self):
+            item_name = self.searchEdit.text()
+            searchMovieController.searchMovieC(self, self.stackedWidget, item_name, self.moviesList)
 
 
     def editMovie(self,  dialog ,name1 , genre1, name2, genre2):
@@ -366,6 +398,8 @@ class manageHallsUI(QWidget):
         self.delButton = QPushButton("Suspend")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+        self.viewButton = QPushButton("View")
+        layout.addWidget(self.viewButton, 3,2)
 
         layoutSearch = QHBoxLayout()
         self.searchLabel = QLabel("Search: ")
@@ -387,9 +421,19 @@ class manageHallsUI(QWidget):
         self.addButton.clicked.connect(self.addHall)
         self.delButton.clicked.connect(self.susHall)
         self.editButton.clicked.connect(self.editHallUI)
+        self.searchBtn.clicked.connect(self.searchHall)
+        self.viewButton.clicked.connect(self.viewHall)
 
         self.setLayout(layout)
         self.stackedWidget.currentChanged.connect(self.listHalls)
+
+    def viewHall(self):
+        selected_item = self.hallList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            viewHallController.viewHallC(self, self.stackedWidget, item_name)
+
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -403,6 +447,11 @@ class manageHallsUI(QWidget):
     def listHalls(self):
         #4. Cinema Manager Controller (hallcontroller.py)
         listHallController.listHallC(self, self.stackedWidget, self.hallList )
+
+    def searchHall(self):
+        item_name = self.searchEdit.text()
+        searchHallController.searchHallC(self, self.stackedWidget, item_name, self.hallList)
+
 
     def editHall(self,  dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
         #5. Cinema Manager Controller (hallcontroller.py)
@@ -506,6 +555,8 @@ class manageFBUI(QWidget):
         self.delButton = QPushButton("Delete")
         self.editButton = QPushButton("Edit")
         self.backButton = QPushButton("Back")
+        self.viewButton = QPushButton("View")
+        layout.addWidget(self.viewButton, 3,2)
         
         layoutSearch = QHBoxLayout()
         self.searchLabel = QLabel("Search: ")
@@ -527,9 +578,20 @@ class manageFBUI(QWidget):
         self.addButton.clicked.connect(self.addFB)
         self.delButton.clicked.connect(self.delFB)
         self.editButton.clicked.connect(self.editFB)
+        self.searchBtn.clicked.connect(self.searchFB)
+        self.viewButton.clicked.connect(self.viewFB)
 
         self.setLayout(layout)
         self.stackedWidget.currentChanged.connect(self.listFB)
+
+        
+    def viewFB(self):
+        selected_item = self.fbList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            viewFBController.viewFBC(self, self.stackedWidget, item_name)
+    
     def goBack(self):
         self.stackedWidget.setCurrentIndex(9)
 
@@ -550,6 +612,10 @@ class manageFBUI(QWidget):
         #15. Cinema Manager Controller
         editFBController.editFBC(self, dialog, self.stackedWidget, name, price, quantity, name2, price2, quantity2 )
         self.listFB()
+
+    def searchFB(self):
+        item_name = self.searchEdit.text()
+        searchFBController.searchFBC(self, self.stackedWidget, item_name, self.fbList)
 
     #15. Cinema Manager Boundary
     def editFB(self):

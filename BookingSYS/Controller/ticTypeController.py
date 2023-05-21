@@ -53,3 +53,14 @@ class listTicTypeController:
         #19. Cinema Manager Entity (ticketType.py)
         ticketType().listTicType(self.stackedWidget, list)
 
+class searchTicTypeController:
+    def searchTicTypeC(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        ticketType().searchTicType(self.stackedWidget,item_name, list) 
+
+
+class viewTicTypeController:
+    def viewTicTypeC(self, stackedWidget, item_name):
+        self.stackedWidget = stackedWidget
+        self.item_name = item_name
+        ticketType().viewTicType(self.stackedWidget,item_name)

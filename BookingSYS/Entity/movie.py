@@ -1,7 +1,7 @@
 import sqlite3
 import datetime
 #GUI Imports
-from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QGridLayout, QWidget, QLabel, QTextEdit
 from PyQt5.QtCore import Qt
 #Import links to different scripts in Boundary
 import sys 
@@ -57,10 +57,8 @@ class movie:
         movie_data = cursor.fetchall()
         movie_strings = []
         for row in movie_data:
-            if num == 0:
-                movie_string = '{:<20}\t{:<40}'.format(row[0], row[1])
-            else:
-                movie_string = '{:<20}\t{:<30}'.format(row[0], row[1])
+            #movie_string = '{:<20}\t{:<40}'.format(row[0], row[1])
+            movie_string = '{:<20}'.format(row[0])
             movie_strings.append(movie_string)
         self.list.clear()
         self.list.addItems(movie_strings)
@@ -157,8 +155,67 @@ class movie:
             print(str(e))
 
         
+    def searchMovie(self, stackedWidget, item_name, list):
+            self.stackedWidget = stackedWidget
+            self.list = list
+
+            if item_name != "":
+                conn = sqlite3.connect('SilverVillageUserAcc.db')
+                cursor = conn.cursor()
+                list.clear()
+                sql = "SELECT DISTINCT * FROM Movie WHERE movieName = ?"
+                value1 = item_name
+                cursor.execute(sql, (value1,))
+                
+                rows = cursor.fetchall()
+                # Iterate over the rows and populate the list widget with the data
+                for row in rows:
+                    item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+                # Close the cursor and the database connection
+                cursor.close()
+                conn.close()
+            else:
+                self.list = list
+                # Connect to the database
+                conn = sqlite3.connect('SilverVillageUserAcc.db')
+                
+                # Create a cursor object from the connection
+                cursor = conn.cursor()
+                list.clear()
+                # Execute the SQL query to retrieve data from the table
+                cursor.execute("SELECT DISTINCT movieName FROM movie")
+                
+                # Fetch all the rows that match the query
+                rows = cursor.fetchall()
+
+                # Iterate over the rows and populate the list widget with the data
+                for row in rows:
+                    item = QListWidgetItem(str(row[0]))
+                    self.list.addItem(item)
+
+                # Close the cursor and the database connection
+                cursor.close()
+                conn.close()
+
+    def viewMovie(self, stackedWidget, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = "SELECT * FROM movie WHERE movieName = ?"
+        value1 = item_name.strip()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        for row in rows:
+            message_box = QMessageBox()
+            message_box.setText("Movie Name: " + str(row[0]) + "\n" + "Genre: " + str(row[1]) + "\n" + "Hall Name: " + str(row[3]) + "\n" + "Start Date: " + str(row[4]) + "End Date: " + str(row[5]) + "Availability: " + str(row[6]))
+            message_box.setWindowTitle(str(row[0]))
+            message_box.exec_()
         
-
-
-
-        
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()

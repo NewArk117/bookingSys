@@ -51,6 +51,12 @@ class listFBController:
         FnB().listManagerFB(self.stackedWidget, list)
 
 
+class searchFBController:
+    def searchFBC(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        FnB().searchFB(self.stackedWidget,item_name, list)    
+
+
 class PurchaseFoodController:
     def __init__(self):
         self.food_model = FnB()
@@ -65,3 +71,8 @@ class PurchaseFoodController:
         self.food_model.close_connection()
 
 
+class viewFBController:
+    def viewFBC(self, stackedWidget, item_name):
+        self.stackedWidget = stackedWidget
+        self.item_name = item_name
+        FnB().viewFB(self.stackedWidget,item_name)

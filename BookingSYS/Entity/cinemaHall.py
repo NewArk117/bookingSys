@@ -2,7 +2,7 @@ import sqlite3
 import datetime
 from datetime import date
 #GUI Imports
-from PyQt5.QtWidgets import QMessageBox, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QPushButton
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QGridLayout, QWidget, QLabel, QTextEdit, QPushButton
 from PyQt5.QtCore import Qt
 #Import links to different scripts in Boundary
 import sys 
@@ -170,7 +170,8 @@ class cinemaHall:
         hall_data = cursor.fetchall()
         hall_strings = []
         for row in hall_data:
-            hall_string = '{:<20}\t{:<5}\t{:<5}\t{:<10}\t{:5}'.format(row[0], row[1], row[2], row[3], row[4])
+            #hall_string = '{:<20}\t{:<5}\t{:<5}\t{:<10}\t{:5}'.format(row[0])
+            hall_string = '{:<20}'.format(row[0])
             hall_strings.append(hall_string)
         self.list.clear()
         self.list.addItems(hall_strings)
@@ -218,4 +219,69 @@ class cinemaHall:
         conn.commit()
 
         # Close the database connection
+        conn.close()
+
+    def searchHall(self, stackedWidget, item_name, list):
+        self.stackedWidget = stackedWidget
+        self.list = list
+
+        if item_name != "":
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            cursor = conn.cursor()
+            list.clear()
+            sql = "SELECT * FROM hall WHERE hallName = ?"
+            value1 = item_name
+            cursor.execute(sql, (value1,))
+            
+            rows = cursor.fetchall()
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+        else:
+            self.list = list
+            # Connect to the database
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
+            
+            # Create a cursor object from the connection
+            cursor = conn.cursor()
+            list.clear()
+            # Execute the SQL query to retrieve data from the table
+            cursor.execute("SELECT * FROM hall")
+            
+            # Fetch all the rows that match the query
+            rows = cursor.fetchall()
+
+            # Iterate over the rows and populate the list widget with the data
+            for row in rows:
+                item = QListWidgetItem(str(row[0]))
+                self.list.addItem(item)
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+
+    def viewHall(self, stackedWidget, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = "SELECT * FROM hall WHERE hallName = ?"
+        value1 = item_name.strip()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+
+        for row in rows:
+            message_box = QMessageBox()
+            message_box.setText("Hall Name: " + str(row[0]) + "\n" + "Rows : " + str(row[1]) + "\n" + "Columns: " + str(row[2]) + "\n" + "Capacity: " + str(row[3])+ "Availability: " + str(row[4]))
+            message_box.setWindowTitle(str(row[0]))
+            message_box.exec_()
+        
+        # Close the cursor and the database connection
+        cursor.close()
         conn.close()
