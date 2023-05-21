@@ -64,29 +64,20 @@ def movieData():
 
 #Generate random DOB for customer profile
 def randomDateCust():
-    start_date = datetime.date(1975, 1, 1)  # specify the starting date
-    end_date = datetime.date(2000, 5, 7)  # specify the ending date
-    dobList = []
-    for i in range(100):
-        delta = end_date - start_date  # calculate the time delta between the start and end dates
-        random_day = random.randrange(delta.days)  # generate a random number of days
-        random_date = start_date + datetime.timedelta(days=random_day)  # add the random number of days to the start date
-        dobList.append(random_date)
+    integers = []
+    for _ in range(100):
+        integer = random.randint(20, 70)
+        integers.append(integer)
+    return integers
 
-    return dobList
 
 #Generate random DOB for staff profile
 def randomDateStaff():
-    start_date = datetime.date(1975, 1, 1)  # specify the starting date
-    end_date = datetime.date(2000, 5, 7)  # specify the ending date
-    dobList = []
-    for i in range(15):
-        delta = end_date - start_date  # calculate the time delta between the start and end dates
-        random_day = random.randrange(delta.days)  # generate a random number of days
-        random_date = start_date + datetime.timedelta(days=random_day)  # add the random number of days to the start date
-        dobList.append(random_date)
-
-    return dobList
+    integers = []
+    for _ in range(10):
+        integer = random.randint(20, 70)
+        integers.append(integer)
+    return integers
 
 #Generate random name for customer profile
 def randomNameCust():
@@ -154,16 +145,16 @@ staffName = ["Gianna Hess", "Ryan Velasquez", "Alexander OlsenMoses", "FlowersGi
 sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
 for i in range(10):  
     if i == 0:
-        data = ("owner1", staffName[i], someDates1[i],"cinemaOwner")
+        data = ("owner", staffName[i], someDates1[i],"cinemaOwner")
         cursor.execute(sql, data) 
     elif i == 1:
-        data = ("manager1", staffName[i], someDates1[i], "cinemaManager")
+        data = ("manager", staffName[i], someDates1[i], "cinemaManager")
         cursor.execute(sql, data) 
     elif i == 2:
-        data = ("admin1", staffName[i], someDates1[i], "sysAdmin")
+        data = ("admin", staffName[i], someDates1[i], "sysAdmin")
         cursor.execute(sql, data) 
     elif i == 3:
-        data = ("customerTest", staffName[i], someDates1[i], "customer")
+        data = ("customer", staffName[i], someDates1[i], "customer")
         cursor.execute(sql, data) 
     elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
         data = ("manager"+ str(i-2), staffName[i], someDates1[i], "cinemaManager")

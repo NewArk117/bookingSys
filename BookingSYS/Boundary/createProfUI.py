@@ -1,5 +1,6 @@
 #GUI imports
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QGridLayout
+import sqlite3
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QGridLayout, QComboBox, QMessageBox
 from PyQt5 import QtGui
 
 #Import links to different scripts in Controller
@@ -22,20 +23,32 @@ class createProfUI(QWidget):
         layout = QGridLayout()
 
         #Buttons
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT userID FROM account")
+        
+        rows = cursor.fetchall()
+        self.userIDList = []
+        for row in rows:
+            self.userIDList.append(row[0])
+
         self.userID_label = QLabel('Account ID:')
-        self.userID_edit = QLineEdit()
+        self.userID_cBox = QComboBox()
+        self.userID_cBox.addItems(self.userIDList)
 
         self.name_label = QLabel('Name:')
         self.name_edit = QLineEdit()
 
-        self.DOB_label = QLabel('DOB(DDMMYYYY):')
+        self.DOB_label = QLabel("Age:")
         self.DOB_edit = QLineEdit()
 
+        self.accTypeList = ['userAdmin', 'customer', 'cinemaManager', 'cinemaOwner']
         self.accType_label = QLabel('Account Type:')
-        self.accType_edit = QLineEdit()
+        self.accType_cBox = QComboBox()
+        self.accType_cBox.addItems(self.accTypeList)
         
         layout.addWidget(self.userID_label,1, 1)
-        layout.addWidget(self.userID_edit,1,2)
+        layout.addWidget(self.userID_cBox,1,2)
 
         layout.addWidget(self.name_label,2,1)
         layout.addWidget(self.name_edit,2,2)
@@ -44,7 +57,7 @@ class createProfUI(QWidget):
         layout.addWidget(self.DOB_edit,3,2)
 
         layout.addWidget(self.accType_label,4,1)
-        layout.addWidget(self.accType_edit,4,2)
+        layout.addWidget(self.accType_cBox,4,2)
 
         self.createButton = QPushButton('Create')
         self.backButton = QPushButton ('Back')
@@ -62,13 +75,25 @@ class createProfUI(QWidget):
 
     #call this function to go to the entity, entity should have the SQL statements to create the account. parse the variables into the function
     def createProfile(self):
-        userID = self.userID_edit.text()
+        userID = self.userID_cBox.currentText()
         name = self.name_edit.text()
-        DOB = self.DOB_edit.text()
-        accType = self.accType_edit.text()
-        createProfController.createProf(self,self.stackedWidget,userID, name, DOB, accType)
+        age = self.DOB_edit.text()
+        accType = self.accType_cBox.currentText()
+        widget1 = QWidget()
 
-        self.userID_edit.clear()
+        newProf = createProfController.createProf(self,userID, name, age, accType)
+
+        success = "Profile Created"
+        Error = "Error"
+        integerError = "There is integer in the name!"
+        stringError = "Contain String in age"
+        if newProf == 'Success':
+            QMessageBox.information(widget1, "Done!", success)
+            self.stackedWidget.setCurrentIndex(3)
+        elif newProf == "stringError":
+            QMessageBox.information(widget1, Error, stringError)
+        else:
+             QMessageBox.information(widget1, Error, integerError)
+
         self.name_edit.clear()
         self.DOB_edit.clear()
-        self.accType_edit.clear()

@@ -3,8 +3,7 @@ sys.path.append( './Entity' )
 from userProfile import UserProfile
 
 class viewProfileController:
-    def viewProfile(self, stackedWidget, item_name):
-        self.stackedWidget = stackedWidget
+    def viewProfile(self, item_name)->list:
         self.item_name = item_name
-        UserProfile().viewProfile(self.stackedWidget,item_name)
-        
+        profileDetails = UserProfile().viewProfile(item_name)
+        return profileDetails

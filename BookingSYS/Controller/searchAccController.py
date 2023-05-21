@@ -3,7 +3,8 @@ sys.path.append( './Entity' )
 from account import Account
 
 class searchAccountController:
-    def searchAccount(self, stackedWidget, item_name, list):
+    def searchAccount(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
-        Account().searchAccount(self.stackedWidget,item_name, list)
+        list = Account().searchAccount(self.stackedWidget,item_name, list)
+        return list
         

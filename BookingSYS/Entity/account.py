@@ -68,49 +68,21 @@ class Account:
             conn.close()
             return "Success"
             
-    def editAccount(self, item_name)->list:
+    def editAccount(self, item_name, line)->bool:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
-
-        # Get a cursor object
         cursor = conn.cursor()
-        checkID = []
-        checkPw = []
-        checkPer = []
-        cursor.execute("SELECT * FROM account")
-        rowChecker = cursor.fetchall()
-        for checker in rowChecker:
-            checkID.append(checker[0])
-            checkPw.append(checker[1])
-            checkPer.append(checker[2])
-            
+
+        update_query = "UPDATE account SET password = ? WHERE userID = ?"
+        if line != "":
+            values = (line, item_name)
+            cursor.execute(update_query, values)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return True
+        else:
+            return False
         
-        sql = "SELECT * FROM account WHERE userID = ?"
-        value1 = item_name
-
-        cursor.execute(sql, (value1,))
-
-        row = cursor.fetchone()
-        return row
-        """
-        while True:
-            result = message_box.exec_()
-            if result == QMessageBox.Ok:
-                texts = [line_edit.text() for line_edit in widget.findChildren(QLineEdit)]
-                if texts[0] == "" :
-                    QMessageBox.information(widget,"Invalid Input", "A column is empty please fill up all the details")
-                elif texts[0] not in checkPw:
-                    conn = sqlite3.connect('SilverVillageUserAcc.db')
-                    c = conn.cursor()
-
-                    sql1 = "DELETE FROM account WHERE account.userID = ?"
-                    c.execute(sql1,(row[0],))
-                    c.execute("INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)", (row[0],texts[0],row[2]))
-                    conn.commit()
-                    conn.close()
-                    return False 
-                else:
-                    return False
-         """       
     def viewAccount(self, item_name)->list:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object
@@ -153,7 +125,7 @@ class Account:
         cursor.close()
         conn.close()
     
-    def searchAccount(self, stackedWidget, item_name, list):
+    def searchAccount(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
         self.list = list
 
@@ -166,16 +138,19 @@ class Account:
             cursor.execute(sql, (value1,))
             
             rows = cursor.fetchall()
-            # Iterate over the rows and populate the list widget with the data
+            
             for row in rows:
                 item = QListWidgetItem(str(row[0]))
                 self.list.addItem(item)
 
+
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+            
+            return list
+        
         else:
-            self.list = list
             # Connect to the database
             conn = sqlite3.connect('SilverVillageUserAcc.db')
             
@@ -196,6 +171,8 @@ class Account:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+            return list
+        
     def process_registration(self, stackedWidget, dialog, id, username, password, confirm_password):
         if password == confirm_password:
             # Connect to thedatabase

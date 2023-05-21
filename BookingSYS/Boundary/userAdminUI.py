@@ -1,5 +1,5 @@
 #GUI imports
-from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QLabel, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import  QWidget, QLabel, QPushButton, QGridLayout, QListWidget, QLabel, QLineEdit, QMessageBox, QComboBox
 import sqlite3
 #Import links to different scripts in Controller
 import sys 
@@ -81,7 +81,7 @@ class userAdminUI(QWidget):
 
     def searchAcc(self):
         item_name = self.searchAccEdit.text()
-        searchAccountController.searchAccount(self, self.stackedWidget, item_name, self.AccountBox)
+        list = searchAccountController.searchAccount(self, self.stackedWidget, item_name, self.AccountBox)
 
     def deleteAcc(self):
         backButtonController.backButtonC(self, self.stackedWidget)
@@ -101,51 +101,121 @@ class userAdminUI(QWidget):
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
-            list1 = editAccountController.editAccount(self, item_name)
-            message_box = QMessageBox()
-            message_box.setText('Edit Account')
+            while True:
+                message_box = QMessageBox()
+                message_box.setWindowTitle(item_name)
+                message_box.setText('Edit Account')
 
-            field_labels = ["UserID:", "Password:", "Permission:"]
-            layout = QGridLayout()
+                layout = QGridLayout()
+                label = QLabel("Password:")
+                line_edit = QLineEdit()
+                layout.addWidget(label,2,0)
+                layout.addWidget(line_edit,2,1)
+            
+                # Create a widget to hold the layout and set it as the message box's body
+                widget = QWidget()
+                widget.setLayout(layout)
+                message_box.layout().addWidget(widget)
+                message_box.addButton(QMessageBox.Ok)
 
-            for label_text in field_labels:
-                label = QLabel(label_text)
-                
-                if label_text == "UserID:":
-                    line_edit1 = QLabel(str(list1[0]))
-                    layout.addWidget(label,1,0)
-                    layout.addWidget(line_edit1,1,1)      
-                elif label_text == "Password:":
-                    line_edit = QLineEdit(str(list1[1]))
-                    layout.addWidget(label,2,0)
-                    layout.addWidget(line_edit,2,1)
+                result = message_box.exec_()
+                if result == QMessageBox.Ok:
+                    line = line_edit.text()
+                    edit = editAccountController.editAccount(self, item_name, line)
+                    if edit:
+                        success_message_box = QMessageBox()
+                        success_message_box.setWindowTitle("Success")
+                        success_message_box.setText("Pass!!!")
+                        success_message_box.exec_()
+                        break
+                    else:
+                        failure_message_box = QMessageBox()
+                        failure_message_box.setWindowTitle("Edit Failed")
+                        failure_message_box.setText("Empty Field!!!")
+                        failure_message_box.exec_()
                 else:
-                    line_edit2 = QLabel(str(list1[2]))
-                    layout.addWidget(label,3,0)
-                    layout.addWidget(line_edit2,3,1)
-            
-            # Create a widget to hold the layout and set it as the message box's body
-            widget = QWidget()
-            widget.setLayout(layout)
-            message_box.layout().addWidget(widget)
-            message_box.addButton(QMessageBox.Ok)
-            
-            result = message_box.exec_()
-            
+                    break       
+                
     def editProf(self):
         selected_item = self.profBox.currentItem()
 
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
-            editProfileController.editProfile(self, self.stackedWidget, item_name)
+            while True:
+                
+
+                message_box = QMessageBox()
+                message_box.setWindowTitle(item_name)
+                message_box.setText('Edit Profile')
+
+                layout = QGridLayout()
+                
+                label1 = QLabel("Name:")
+                line_edit1 = QLineEdit()
+                layout.addWidget(label1,1,0)
+                layout.addWidget(line_edit1,1,1)      
+                
+                label2 = QLabel("Age:")
+                line_edit2 = QLineEdit()
+                layout.addWidget(label2,2,0)
+                layout.addWidget(line_edit2,2,1)
+
+                accTypeList = ['userAdmin', 'customer', 'cinemaManager', 'cinemaOwner']
+                accType_label = QLabel('Account Type:')
+                accType_cBox = QComboBox()
+                accType_cBox.addItems(accTypeList) 
+                layout.addWidget(accType_label,3,0)
+                layout.addWidget(accType_cBox,3,1)
+
+                # Create a widget to hold the layout and set it as the message box's body
+                widget = QWidget()
+                widget.setLayout(layout)
+                message_box.layout().addWidget(widget)
+                message_box.addButton(QMessageBox.Ok)
+
+                result = message_box.exec_()
+                if result == QMessageBox.Ok:
+                    name = line_edit1.text()
+                    age = line_edit2.text()
+                    accType =accType_cBox.currentText()
+                    edit = editProfileController.editProfile(self, item_name, name, age, accType)
+                    if edit == "Success":
+                        success_message_box = QMessageBox()
+                        success_message_box.setWindowTitle("Success")
+                        success_message_box.setText("Pass!!!")
+                        success_message_box.exec_()
+                        break
+                    elif edit == "stringError":
+                        failure_message_box = QMessageBox()
+                        failure_message_box.setWindowTitle("Edit Failed")
+                        failure_message_box.setText("Age has string")
+                        failure_message_box.exec_()
+                    elif edit == "integerError":
+                        failure_message_box = QMessageBox()
+                        failure_message_box.setWindowTitle("Edit Failed")
+                        failure_message_box.setText("Name has integer")
+                        failure_message_box.exec_()
+                    else:
+                        failure_message_box = QMessageBox()
+                        failure_message_box.setWindowTitle("Edit Failed")
+                        failure_message_box.setText("Empty Field!!!")
+                        failure_message_box.exec_()
+                else:
+                    break       
 
     def viewProfile(self):
         selected_item = self.profBox.currentItem()
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
-            viewProfileController.viewProfile(self, self.stackedWidget, item_name)
+
+            profileDetails = viewProfileController.viewProfile(self, item_name)
+
+            message_box = QMessageBox()
+            message_box.setText("Account ID: " + str(profileDetails[0]) + "\n" + "Name: " + str(profileDetails[1]) + "\n" + "Age: " + str(profileDetails[2]) + "\n" + "Account Type: " + str(profileDetails[3]))
+            message_box.setWindowTitle(str(profileDetails[0]))
+            message_box.exec_()
 
     def viewAcc(self):
             selected_item = self.AccountBox.currentItem()

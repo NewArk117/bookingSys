@@ -13,10 +13,11 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS account
                   accType TEXT)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS userProfile 
-                 (userID TEXT PRIMARY KEY,
+                 (userID TEXT,
                   name TEXT,
-                  DOB TEXT,
-                  accType TEXT)''')
+                  DOB INT,
+                  accType TEXT,
+                  FOREIGN KEY(userID) REFERENCES account(userID))''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS movies 
                  (movieID TEXT PRIMARY KEY,
