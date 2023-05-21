@@ -30,13 +30,18 @@ class FnB:
 
     def addFB(self, stackedWidget, name , price, quantity):
         self.stackedWidget = stackedWidget
-       
-        try:   
-            conn = sqlite3.connect('SilverVillageUserAcc.db')
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
 
-            # Get a cursor object
-            cursor = conn.cursor()
+        cursor.execute('SELECT foodName FROM food')
+        food_data = cursor.fetchall()
+        foodList = []
+        for row in food_data:
+            foodList.append(row[0])
 
+        if name not in foodList:  
+            
             # Insert a new record into the account table
             sql = "INSERT INTO food (foodname, price, quantity, isAvailable) VALUES (?, ?, ?, ?)"
             data = (name, price, quantity, 1)
@@ -45,13 +50,10 @@ class FnB:
             # Commit the transaction
             conn.commit()
 
-            # Close the database connection
-            conn.close()
-    
             self.stackedWidget.setCurrentIndex(12)
-
-        except ValueError as e:
+        else:
             self.stackedWidget.setCurrentIndex(12)
+        conn.close()
 
     def listManagerFB(self, stackWidget, list):
         self.list = list
@@ -72,6 +74,9 @@ class FnB:
         self.stackedWidget = stackedwidget
         self.dialog = dialog
 
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
         if name2 == "":
             name2 = name1
         if price2 == "":
@@ -81,16 +86,21 @@ class FnB:
         if avail2 == "":
             avail2 = avail1
         
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
+        cursor.execute('SELECT foodName FROM food')
+        food_data = cursor.fetchall()
+        foodList = []
+        for row in food_data:
+            foodList.append(row[0])
 
-        # Update an existing record in the ticketType table
-        sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
-        data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
-        cursor.execute(sql, data)
+        if name1 not in foodList:  
 
-        # Commit the transaction
-        conn.commit()
+            # Update an existing record in the ticketType table
+            sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
+            data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            cursor.execute(sql, data)
+
+            # Commit the transaction
+            conn.commit()
 
         # Close the database connection
         conn.close()

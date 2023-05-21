@@ -35,46 +35,56 @@ class cinemaHall:
     #3. Cinema Manager Entity
     def addHall(self, stackedwidget, name, rows, columns):
         self.stackedWidget = stackedwidget
-        row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-        rows = int(rows)
-        columns = int(columns)
-        self.seats = ""
-        #print (rows + " " + columns)
-        for row in range(rows):
-            x = "Seats: " + row_labels[row] + "1 - " + row_labels[row]+ str(columns+1)
-            self.seats = self.seats + "\n" + x
-
-        datelist = []
-        showtimes = ["1330", "1530", "1730", "1930", "2130"]
-        startDate = datetime.date(2023, 5, 1)
-        #startDate = date.today()
-        delta = datetime.timedelta(days=1)
-        endDate = datetime.date(2023, 11 , 30)
-        currentDate = startDate
-
-        while currentDate <= endDate:
-            datelist.append(currentDate)
-            currentDate += delta
-  
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
         # Get a cursor object
         cursor = conn.cursor()
+        
+        cursor.execute('SELECT hallName FROM hall')
+        hall_data = cursor.fetchall()
+        hallList = []
+        for row in hall_data:
+            hallList.append(row[0])
+
+        #print(hallList)
+        if name not in hallList:
+            #print("Not here")
+
+            row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+            rows = int(rows)
+            columns = int(columns)
+            self.seats = ""
+            #print (rows + " " + columns)
+            for row in range(rows):
+                x = "Seats: " + row_labels[row] + "1 - " + row_labels[row]+ str(columns+1)
+                self.seats = self.seats + "\n" + x
+
+            datelist = []
+            showtimes = ["1330", "1530", "1730", "1930", "2130"]
+            startDate = datetime.date(2023, 5, 1)
+            #startDate = date.today()
+            delta = datetime.timedelta(days=1)
+            endDate = datetime.date(2023, 11 , 30)
+            currentDate = startDate
+
+            while currentDate <= endDate:
+                datelist.append(currentDate)
+                currentDate += delta
 
 
-        for date1 in datelist:
-            for time in showtimes:
-                sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
-                data1 = (name,time,date1, 1)
-                cursor.execute(sql1, data1)
-                conn.commit()
-                self.addSeats(name, rows, columns, time ,date1)
+            for date1 in datelist:
+                for time in showtimes:
+                    sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
+                    data1 = (name,time,date1, 1)
+                    cursor.execute(sql1, data1)
+                    conn.commit()
+                    self.addSeats(name, rows, columns, time ,date1)
 
-        sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
-        capacity = rows * columns
-        data2 = (name, rows, columns, capacity, 1)
-        cursor.execute(sql2, data2)
-
+            sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
+            capacity = rows * columns
+            data2 = (name, rows, columns, capacity, 1)
+            cursor.execute(sql2, data2)
+        
         # Commit the transaction
         conn.commit()
 
@@ -87,35 +97,45 @@ class cinemaHall:
     def editHall(self, stackedwidget, dialog ,name , avail, name2, avail2):
         self.dialog = dialog
         self.stackedWidget= stackedwidget  
+
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
         if name2 == "":
             name2 = name
         if avail2 == "":
             avail2 = avail
-    
+
+        cursor.execute('SELECT hallName FROM hall')
+        hall_data = cursor.fetchall()
+        hallList = []
+        for row in hall_data:
+            hallList.append(row[0])
+
+        #print(hallList)
+        if name2 not in hallList:
                       
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        # Update an existing record in hall
+            
+            # Update an existing record in hall
 
-        sql = "UPDATE hall SET hallName = ?, isAvailable = ? WHERE hallName = ?"
-        data = (name2, avail2, name)
-        cursor.execute(sql, data)
+            sql = "UPDATE hall SET hallName = ?, isAvailable = ? WHERE hallName = ?"
+            data = (name2, avail2, name)
+            cursor.execute(sql, data)
 
-        sql1 = "UPDATE hallshowtime SET hallName = ? WHERE hallName = ?"
-        data1 = (name2, name)
-        cursor.execute(sql1, data1)
+            sql1 = "UPDATE hallshowtime SET hallName = ? WHERE hallName = ?"
+            data1 = (name2, name)
+            cursor.execute(sql1, data1)
 
-        sql2 = "UPDATE movie SET hallName = ? WHERE hallName = ?"
-        data2 = (name2,  name)
-        cursor.execute(sql2, data2)
+            sql2 = "UPDATE movie SET hallName = ? WHERE hallName = ?"
+            data2 = (name2,  name)
+            cursor.execute(sql2, data2)
 
-        sql3 = "UPDATE seat SET hallName = ? WHERE hallName = ?"
-        data3 = (name2,  name)
-        cursor.execute(sql3, data3)
+            sql3 = "UPDATE seat SET hallName = ? WHERE hallName = ?"
+            data3 = (name2,  name)
+            cursor.execute(sql3, data3)
 
-        sql4 = "UPDATE ticket SET hallName = ? WHERE hallName = ?"
-        data4 = (name2, name)
-        cursor.execute(sql4, data4)
+            sql4 = "UPDATE ticket SET hallName = ? WHERE hallName = ?"
+            data4 = (name2, name)
+            cursor.execute(sql4, data4)
 
         # Commit the transaction
         conn.commit()

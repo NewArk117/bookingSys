@@ -9,8 +9,10 @@ class addHallController:
     def addHallC(self, stackedWidget, name , rows, columns):
         self.stackedWidget = stackedWidget
         if rows.isnumeric() and columns.isnumeric():
-            #3. Cinema Manager Entity (go to cinemahall.py)
-            cinemaHall().addHall(self.stackedWidget, name ,rows, columns)
+            if 0 < int(rows) < 9:
+                if 0 < int(columns) < 9: 
+                    #3. Cinema Manager Entity (go to cinemahall.py)
+                    cinemaHall().addHall(self.stackedWidget, name ,rows, columns)
             
 
 #6. Cinema Manager Controller

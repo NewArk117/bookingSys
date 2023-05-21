@@ -29,12 +29,20 @@ class ticketType:
 
     def addTicType(self, stackedWidget, name , price):
         self.stackedWidget = stackedWidget
-        try:   
-            conn = sqlite3.connect('SilverVillageUserAcc.db')
 
-            # Get a cursor object
-            cursor = conn.cursor()
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
 
+        # Get a cursor object
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT type FROM ticketType')
+        tictype_data = cursor.fetchall()
+        ticList = []
+        for row in tictype_data:
+            ticList.append(row[0])
+
+        if name not in ticList:
+            
             # Insert a new record into the account table
             sql = "INSERT INTO ticketType (type, price, isAvailable) VALUES (?, ?, ?)"
             data = (name, price, 1)
@@ -43,13 +51,15 @@ class ticketType:
             # Commit the transaction
             conn.commit()
 
-            # Close the database connection
-            conn.close()
+            
 
             self.stackedWidget.setCurrentIndex(13)
-
-        except ValueError as e:
+        else:
             self.stackedWidget.setCurrentIndex(13)
+
+        # Close the database connection
+        conn.close()
+
 
     def listTicType(self, stackWidget, list):
         self.list = list
@@ -69,7 +79,9 @@ class ticketType:
     def editTicType(self, dialog, stackedwidget, name1 , price1, avail1, name2, price2, avail2):
         self.stackedWidget = stackedwidget
         self.dialog = dialog
- 
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
         if name2 == "":
             name2 = name1
         if price2 == "":
@@ -77,12 +89,17 @@ class ticketType:
         if avail2 == "":
             avail2 = avail1
             
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        # Update an existing record in the ticketType table
-        sql = "UPDATE ticketType SET type = ?, price = ?, isAvailable = ? WHERE type = ? AND price = ? AND isAvailable = ?"
-        data = (name2, price2,avail2, name1, price1, avail1)
-        cursor.execute(sql, data)
+        cursor.execute('SELECT type FROM ticketType')
+        tictype_data = cursor.fetchall()
+        ticList = []
+        for row in tictype_data:
+            ticList.append(row[0])
+
+        if name2 not in ticList:
+            # Update an existing record in the ticketType table
+            sql = "UPDATE ticketType SET type = ?, price = ?, isAvailable = ? WHERE type = ? AND price = ? AND isAvailable = ?"
+            data = (name2, price2,avail2, name1, price1, avail1)
+            cursor.execute(sql, data)
 
         # Commit the transaction
         conn.commit()
