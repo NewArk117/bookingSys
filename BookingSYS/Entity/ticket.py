@@ -68,61 +68,39 @@ class ticket:
 
         conn.close()
 
-    def editTic(self,dialog, stackedwidget, odate, otime, ndate, ntime, mName, hallName, seat):
-        self.dialog = dialog
 
+    def get_user_tickets(user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        sql = 'SELECT ticket_ID, movieName, hallName, seat_No, showtime, date, type, price FROM ticket WHERE userID = ?'
+        data = (user_id,)
+        cursor.execute(sql, data)
+        ticket_data = cursor.fetchall()
+        conn.close()
+        return ticket_data
+
+
+    def delete_ticket(ticket_id):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        sql = "UPDATE seat SET isAvailable = ? WHERE seat_No = ? AND hallName = ? AND showtime = ? AND date = ?"
-        data = (1, seat , hallName, otime, odate )
+        sql = 'DELETE FROM ticket WHERE ticket_ID = ?'
+        data = (ticket_id,)
         cursor.execute(sql, data)
 
-        sql2 = "UPDATE seat SET isAvailable = ? WHERE seat_No = ? AND hallName = ? AND showtime = ? AND date = ?"
-        data2 = (0, seat , hallName, ntime, ndate)
-        cursor.execute(sql2, data2)
-
-        sql3 = "UPDATE ticket SET date = ?, showtime = ? WHERE movieName = ? and showtime = ? AND date = ? AND hallName = ? AND seat_No = ?"
-        data3 = (ndate, ntime, mName, otime, odate, hallName, seat)
-        cursor.execute(sql3, data3)
-
-        self.dialog.close()
-
         conn.commit()
-
         conn.close()
+
+    def get_tickets(user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        sql = 'SELECT ticket_ID, movieName, showtime, date FROM ticket WHERE userID = ?'
+        data = (user_id,)
+        cursor.execute(sql, data)
+        ticket_data = cursor.fetchall()
+        conn.close()
+        return ticket_data
+
         
-    def refundTic(self, dialog, ticketID, seat, hallName, otime, odate):
-        self.dialog = dialog
-        self.ticetID = ticketID
 
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
-        sql = "UPDATE seat SET isAvailable = ? WHERE seat_No = ? AND hallName = ? AND showtime = ? AND date = ?"
-        data = (1, seat , hallName, otime, odate )
-        cursor.execute(sql, data)
-
-        sql2 = "DELETE FROM ticket WHERE ticket_ID = ?"
-        data2 = (ticketID,)
-        cursor.execute(sql2, data2)
-
-        conn.commit()
-
-        conn.close()
-
-        self.dialog.close()
            
-    def viewTic(self, stackedWidget, moviename, hallname, seatNo, showtime, date, type, price):
-        self.stackedWidget = stackedWidget
-        headingMsg = f"====== SHOW THIS TICKET TO ENTER =====\n"
-        movieMsg = f"\nMovie name: {moviename}\n"
-        hallMsg = f"Hall Number: {hallname}\n"
-        seatMsg = f"Seat No: {seatNo}\n"
-        timeMsg = f"Show Time: {showtime}\n"
-        dateMsg = f"Date: {date}\n"
-        typeMsg = f"Ticket Type: {type}, ${price}\n"
-
-        message = headingMsg + movieMsg + hallMsg + seatMsg + timeMsg + dateMsg + typeMsg
-
-        QMessageBox.information(self.stackedWidget, 'Show Ticket', message)

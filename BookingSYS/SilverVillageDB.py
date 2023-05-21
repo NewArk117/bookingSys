@@ -96,6 +96,25 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS ticket
                   FOREIGN KEY(showtime) REFERENCES hallshowtime(showtime),
                   FOREIGN KEY(type) REFERENCES ticketType(type))''')
 
+cursor.execute('''CREATE TABLE IF NOT EXISTS food_orders (
+               order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+               user_id TEXT,
+               ticket_id INTEGER,
+               FOREIGN KEY (user_id) REFERENCES account (userID)
+               )''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS food_order_items (
+               order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+               order_id INTEGER,
+               food_name TEXT,
+               quantity INTEGER,
+               FOREIGN KEY (order_id) REFERENCES food_orders (order_id),
+               FOREIGN KEY (food_name) REFERENCES food (foodName)
+               )''')
+
+
+
+
 
 # Commit the transaction
 conn.commit()
