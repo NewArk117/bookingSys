@@ -8,66 +8,50 @@ import sys
 sys.path.append('./Boundary')
 
 class FnB:
-    def delFB(self, stackedWidget, fbList):
-            self.stackedWidget = stackedWidget
-            self.fbList = fbList
-            
-            items = self.fbList.currentItem()
-            foodname = items.text()[:20].strip() 
-            price = items.text()[21:30].strip()
-            quantity = items.text()[31:50].strip()
-            print(foodname)
-            try:
-                if not items:
-                    raise ValueError("No F&B selected")
-                message = f'Are you sure you want to remove {foodname} ?'     
-                confirm = QMessageBox.question(self.stackedWidget, 'Remove F&B', message ,
-                                                QMessageBox.Yes | QMessageBox.No)
-                if confirm == QMessageBox.Yes:
-                    print("ok")
-                    #insert sql to remove movie here 
-                    conn = sqlite3.connect('SilverVillageUserAcc.db')
-                    cursor = conn.cursor()
+    def susFB(self, stackedWidget, fbList):
+        self.stackedWidget = stackedWidget
+        self.fbList = fbList
+        
+        items = self.fbList.currentItem()
+        foodname = items.text()[:20].strip() 
+        #print(foodname)
+        
+        #insert sql to remove movie here 
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
 
-                    sql = "DELETE FROM food WHERE foodname = ? AND price = ?"
-                    data = (foodname, price)
-                    cursor.execute(sql, data)
+        sql = "UPDATE food SET isAvailable = ? WHERE foodname = ?"
+        data = (0 ,foodname)
+        cursor.execute(sql, data)
 
-                    conn.commit()
-                    conn.close()
-                    self.listManagerFB(self.stackedWidget, self.fbList) 
-            except ValueError as e:
-                QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-                print(str(e))
+        conn.commit()
+        conn.close()
+
 
     def addFB(self, stackedWidget, name , price, quantity):
         self.stackedWidget = stackedWidget
-        message = f'Add F&B named:{name} \nPrice:{price}\nQuantity{quantity} '
+       
         try:   
-            confirm = QMessageBox.question(self.stackedWidget, 'Add F&B', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
+            conn = sqlite3.connect('SilverVillageUserAcc.db')
 
-                # Get a cursor object
-                cursor = conn.cursor()
+            # Get a cursor object
+            cursor = conn.cursor()
 
-                # Insert a new record into the account table
-                sql = "INSERT INTO food (foodname, price, quantity) VALUES (?, ?, ?)"
-                data = (name, price, quantity)
-                cursor.execute(sql, data)
+            # Insert a new record into the account table
+            sql = "INSERT INTO food (foodname, price, quantity, isAvailable) VALUES (?, ?, ?, ?)"
+            data = (name, price, quantity, 1)
+            cursor.execute(sql, data)
 
-                # Commit the transaction
-                conn.commit()
+            # Commit the transaction
+            conn.commit()
 
-                # Close the database connection
-                conn.close()
-        
-                self.stackedWidget.setCurrentIndex(12)
+            # Close the database connection
+            conn.close()
+    
+            self.stackedWidget.setCurrentIndex(12)
 
         except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+            self.stackedWidget.setCurrentIndex(12)
 
     def listManagerFB(self, stackWidget, list):
         self.list = list
@@ -84,33 +68,34 @@ class FnB:
         self.list.addItems(fb_strings)
         conn.close()
 
-    def editFB(self, dialog, stackedwidget, name1 , price1,quantity1, name2, price2, quantity2):
+    def editFB(self, dialog, stackedwidget, name1 , price1,quantity1, avail1, name2, price2, quantity2, avail2):
         self.stackedWidget = stackedwidget
         self.dialog = dialog
-        message = f'Confirm to update(?)\nOld Item:{name1}\nOld Price:{price1}\nOld Quantity:{quantity1}\nTo\nNew Name:{name2}\nNew Price:{price2}\nNew Quantity:{quantity2}'
-        try:   
-            confirm = QMessageBox.question(self.stackedWidget, 'Update F&B', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
 
-                # Update an existing record in the ticketType table
-                sql = "UPDATE food SET foodname = ?, price = ?, quantity = ? WHERE foodname = ? AND price = ? AND quantity = ?"
-                data = (name2, price2, quantity1, name1, price1, quantity2)
-                cursor.execute(sql, data)
+        if name2 == "":
+            name2 = name1
+        if price2 == "":
+            price2 = price1
+        if quantity2 == "":
+            quantity2 = quantity1
+        if avail2 == "":
+            avail2 = avail1
+        
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
 
-                # Commit the transaction
-                conn.commit()
+        # Update an existing record in the ticketType table
+        sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
+        data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+        cursor.execute(sql, data)
 
-                # Close the database connection
-                conn.close()
+        # Commit the transaction
+        conn.commit()
 
-                self.dialog.reject()
+        # Close the database connection
+        conn.close()
 
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+        self.dialog.reject()
 
 
     def get_order_items(order_id):
@@ -233,11 +218,54 @@ class FnB:
             # Fetch all the rows that match the query
             rows = cursor.fetchall()
             for row in rows:
-                message_box = QMessageBox()
-                message_box.setText("Food Name: " + str(row[0]) + "\n" + "Price: " + str(row[1]) + "\n" + "Quantity: " + str(row[2]) + "\n" + "Availabilty: " + str(row[3]))
-                message_box.setWindowTitle(str(row[0]))
-                message_box.exec_()
+                #message_box = QMessageBox()
+                text = ("Food Name: " + str(row[0]) + "\n" + "Price: " + str(row[1]) + "\n" + "Quantity: " + str(row[2]) + "\n" + "Availabilty: " + str(row[3]))
+                itemname = (str(row[0]))
+                #message_box.exec_()
             
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+            return text, itemname
+    def getData(self, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = "SELECT * FROM food WHERE foodName = ?"
+        value1 = item_name.strip()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+        for row in rows:
+            self.itemname = str(row[0])
+            self.price = str(row[1])
+            self.quantity = str(row[2])
+            self.avail = str(row[3])
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        return self.itemname, self.price, self.quantity, self.avail
+
+    def get_fnb_records(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+            SELECT fo.order_id, t.movieName, t.showtime, t.date, GROUP_CONCAT(foi.food_name || ' (' || foi.quantity || ')'), SUM(foi.quantity), SUM(foi.quantity * food.price)
+            FROM food_orders fo
+            JOIN ticket t ON fo.ticket_id = t.ticket_ID
+            JOIN food_order_items foi ON fo.order_id = foi.order_id
+            JOIN food ON foi.food_name = food.foodName
+            WHERE fo.user_id = ?
+            GROUP BY fo.order_id, t.movieName, t.date, t.showtime
+            '''
+
+        data = (user_id,)
+        cursor.execute(sql, data)
+        fnb_data = cursor.fetchall()
+
+        conn.close()
+
+        return fnb_data

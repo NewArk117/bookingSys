@@ -13,39 +13,29 @@ class cinemaHall:
     def susHall(self, stackedWidget, hallList):
         self.stackedWidget = stackedWidget
         self.hallList = hallList
-        items = [self.hallList.item(i).text() for i in range(self.hallList.count())]
-        for item in items:
-            words = item.split()
-            hallName = words[0]
-        items_str = ' '.join(' '.join(items).split()) 
-        try:
-            if not items_str:
-                raise ValueError("No Hall selected")
-            message = f'Are you sure you want to suspend {hallName} ?'     
-            confirm = QMessageBox.question(self.stackedWidget, 'Suspend Hall', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                print("ok")
-                #insert sql to suspend hall here
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
+        items = self.hallList.currentItem()
+        hallName = items.text().strip()
+     
+        print("ok")
+        #insert sql to suspend hall here
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
 
-                sql = "UPDATE hall SET isAccessible = ? WHERE hallName = ?"
-                data = (0, hallName)
-                cursor.execute(sql, data)
+        sql = "UPDATE hall SET isAvailable = ? WHERE hallName = ?"
+        data = (0, hallName)
+        cursor.execute(sql, data)
 
-                conn.commit()
-                conn.close()
-                self.listManagerHall(self.stackedWidget, self.hallList) 
+        sql = "UPDATE hallshowtime SET isAvailable = ? WHERE hallName = ?"
+        data = (0, hallName)
+        cursor.execute(sql, data)
 
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+        conn.commit()
+        conn.close()
+
     #3. Cinema Manager Entity
     def addHall(self, stackedwidget, name, rows, columns):
         self.stackedWidget = stackedwidget
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-        message = f'Add Hall with the following values (?) :\nHall Name:{name}\n'
         rows = int(rows)
         columns = int(columns)
         self.seats = ""
@@ -53,9 +43,6 @@ class cinemaHall:
         for row in range(rows):
             x = "Seats: " + row_labels[row] + "1 - " + row_labels[row]+ str(columns+1)
             self.seats = self.seats + "\n" + x
-
-        message = message + self.seats
-        #print(message)
 
         datelist = []
         showtimes = ["1330", "1530", "1730", "1930", "2130"]
@@ -68,99 +55,75 @@ class cinemaHall:
         while currentDate <= endDate:
             datelist.append(currentDate)
             currentDate += delta
+  
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
 
-        try:   
-
-
-            confirm = QMessageBox.question(self.stackedWidget, 'Add Cinema Hall', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-
-                # Get a cursor object
-                cursor = conn.cursor()
+        # Get a cursor object
+        cursor = conn.cursor()
 
 
-                for date1 in datelist:
-                    for time in showtimes:
-                        sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
-                        data1 = (name,time,date1, 1)
-                        cursor.execute(sql1, data1)
-                        self.addSeats(name, rows, columns, time ,date1)
-
-                sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
-                capacity = rows * columns
-                data2 = (name, rows, columns, capacity, 1)
-                cursor.execute(sql2, data2)
-
-                # Commit the transaction
+        for date1 in datelist:
+            for time in showtimes:
+                sql1 = "INSERT INTO hallshowtime (hallName, showtime, date, isAvailable) VALUES (?, ?, ?, ?)"
+                data1 = (name,time,date1, 1)
+                cursor.execute(sql1, data1)
                 conn.commit()
+                self.addSeats(name, rows, columns, time ,date1)
 
-                # Close the database connection
-                conn.close()
+        sql2 = "INSERT INTO hall (hallName, rows, columns, capacity, isAvailable) VALUES (?, ?, ?, ? ,?)"
+        capacity = rows * columns
+        data2 = (name, rows, columns, capacity, 1)
+        cursor.execute(sql2, data2)
 
-                self.stackedWidget.setCurrentIndex(11)
+        # Commit the transaction
+        conn.commit()
 
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+        # Close the database connection
+        conn.close()
+
+        self.stackedWidget.setCurrentIndex(11)
+
     #5. Cinema Manager Entity
-    def editHall(self, stackedwidget, dialog ,name , row, column, avail, name2, rows2, columns2, avail2):
+    def editHall(self, stackedwidget, dialog ,name , avail, name2, avail2):
         self.dialog = dialog
-        self.stackedWidget= stackedwidget
-        try:   
-            if name2 == "":
-                name2 = name
-            if rows2 == "":
-                rows2 = row
-            if columns2 == "":
-                columns2 = column
-            if avail2 == "":
-                avail2 = avail
-            message = f'Confirm these changes(?)\n\nOLD----\nHall Name:{name}\nRows:{row}\nColumns:{column}\nAvailability:{avail}\n\nNEW----\nHall Name:{name2}\nRows:{rows2}\nColumns:{columns2}\nAvailability:{avail2}'
+        self.stackedWidget= stackedwidget  
+        if name2 == "":
+            name2 = name
+        if avail2 == "":
+            avail2 = avail
+    
+                      
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        # Update an existing record in hall
 
-            confirm = QMessageBox.question(self.stackedWidget, 'Update Hall', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                self.delSeats(name, row , column)
-                
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
-                capacity = int(rows2) * int(columns2)
-                # Update an existing record in hall
+        sql = "UPDATE hall SET hallName = ?, isAvailable = ? WHERE hallName = ?"
+        data = (name2, avail2, name)
+        cursor.execute(sql, data)
 
-                sql = "UPDATE hall SET hallName = ?, rows = ?, columns = ?, capacity = ?, isAvailable = ? WHERE hallName = ?"
-                data = (name2, rows2, columns2, capacity, avail2, name)
-                cursor.execute(sql, data)
+        sql1 = "UPDATE hallshowtime SET hallName = ? WHERE hallName = ?"
+        data1 = (name2, name)
+        cursor.execute(sql1, data1)
 
-                # Commit the transaction
-                conn.commit()
+        sql2 = "UPDATE movie SET hallName = ? WHERE hallName = ?"
+        data2 = (name2,  name)
+        cursor.execute(sql2, data2)
 
-                # Close the database connection
-                conn.close()
+        sql3 = "UPDATE seat SET hallName = ? WHERE hallName = ?"
+        data3 = (name2,  name)
+        cursor.execute(sql3, data3)
 
-                datelist = []
-                showtimes = ["1330", "1530", "1730", "1930", "2130"]
-                startDate = datetime.date(2023, 5, 1)
-                #startDate = date.today()
-                delta = datetime.timedelta(days=1)
-                endDate = datetime.date(2023, 11 , 30)
-                currentDate = startDate
+        sql4 = "UPDATE ticket SET hallName = ? WHERE hallName = ?"
+        data4 = (name2, name)
+        cursor.execute(sql4, data4)
 
-                while currentDate <= endDate:
-                    datelist.append(currentDate)
-                    currentDate += delta
+        # Commit the transaction
+        conn.commit()
 
-                for date1 in datelist:
-                    for time in showtimes:
-                        self.addSeats(name2, rows2, columns2, time, date1)
+        # Close the database connection
+        conn.close()
 
-                self.dialog.reject()
-                return True
-                
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
-            print(str(e))
+        self.dialog.reject()
 
     def listManagerHall(self, stackWidget, list):
         self.list = list
@@ -277,11 +240,35 @@ class cinemaHall:
         rows = cursor.fetchall()
 
         for row in rows:
-            message_box = QMessageBox()
-            message_box.setText("Hall Name: " + str(row[0]) + "\n" + "Rows : " + str(row[1]) + "\n" + "Columns: " + str(row[2]) + "\n" + "Capacity: " + str(row[3])+ "Availability: " + str(row[4]))
-            message_box.setWindowTitle(str(row[0]))
-            message_box.exec_()
+            #message_box = QMessageBox()
+            text = "Hall Name: " + str(row[0]) + "\n" + "Rows : " + str(row[1]) + "\n" + "Columns: " + str(row[2]) + "\n" + "Capacity: " + str(row[3])+ "\nAvailability: " + str(row[4])
+            hallName = str(row[0])
+            #message_box.exec_()
         
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
+
+        return text,hallName
+
+
+    def getData(self, item_name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        # Get a cursor object
+        cursor = conn.cursor()
+        query = "SELECT * FROM hall WHERE hallName = ?"
+        value1 = item_name.strip()
+        # Execute the SQL query to retrieve data from the table
+        cursor.execute(query, (value1,))
+        # Fetch all the rows that match the query
+        rows = cursor.fetchall()
+        for row in rows:
+            self.hallname = str(row[0])
+            self.rows = str(row[1])
+            self.columns = str(row[2])
+            self.avail = str(row[4])
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        return self.hallname, self.rows, self.columns, self.avail

@@ -7,41 +7,33 @@ from fnb import FnB
 class addFBController:
     def addFBC(self, stackedWidget, name , price, quantity):
         self.stackedWidget = stackedWidget
-        try:
-            if price.isnumeric() and quantity.isnumeric():
-                #13. Cinema Manager Entity
-                FnB().addFB(self.stackedWidget, name ,price, quantity)
-            else:
-                raise ValueError("Price/Quantity is not numerical")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
-
+        if price.isnumeric() and quantity.isnumeric():
+            #13. Cinema Manager Entity
+            FnB().addFB(self.stackedWidget, name ,price, quantity)
+            
 #16. Cinema Controller
-class delFBController:
-    def delFBC(self, stackedWidget, fbList):
+class susFBController:
+    def susFBC(self, stackedWidget, fbList):
         self.stackedWidget = stackedWidget
         self.fbList = fbList
-        items = [item.text() for item in self.fbList.selectedItems()]
-        try:
-            if not items:
-                raise ValueError("Please select an item.")
-            else:
-                #16. Cinema Manager Entity
-                FnB().delFB(self.stackedWidget, self.fbList)
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, 'Error', str(e))
+        items = self.fbList.currentItem()
+        if items:
+            FnB().susFB(self.stackedWidget, self.fbList)
+    
         
 #15. Cinema Manager Controller
 class editFBController:
-    def editFBC(self,dialog, stackedwidget, oldname,oldprice,oldquant, newname, newprice, newquant):
-        try:
-            if newname and newprice:
-                #15. Cinema Manager Entity
-                FnB().editFB(dialog, stackedwidget, oldname,oldprice, newname, newprice)
-            else:
-                raise ValueError("New columns are empty")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
+    def editFBC(self,dialog, stackedwidget, fbList, newname, newprice, newquant,avail2):
+        self.fbList = fbList
+        items = self.fbList.currentItem()
+        if items:
+            name = items.text()[:20].strip()
+            fb1 = FnB()
+            itemname,price,quantity,avail = fb1.getData(name)
+            print(itemname,price,quantity,avail)
+            #15. Cinema Manager Entity
+            FnB().editFB(dialog, stackedwidget, itemname,price,quantity, avail ,newname, newprice,newquant, avail2)
+            
 
 #14. Cinema Manager Controller
 class listFBController:
@@ -72,7 +64,24 @@ class PurchaseFoodController:
 
 
 class viewFBController:
-    def viewFBC(self, stackedWidget, item_name):
+    def viewFBC(self, stackedWidget, fbList):
         self.stackedWidget = stackedWidget
-        self.item_name = item_name
-        FnB().viewFB(self.stackedWidget,item_name)
+        self.fbList = fbList
+        selected_item = self.fbList.currentItem()
+        # If an item is selected, display its name
+        if selected_item is not None:
+            item_name = selected_item.text()
+            text, itemname = FnB().viewFB(self.stackedWidget,item_name)
+            return text, itemname
+        else:
+            text=None
+            itemname = None
+            return text, itemname
+        
+class FnbPurchasedController:
+    def __init__(self, stackedWidget):
+        self.entity = FnB()
+
+    def get_fnb_records(self, user_id):
+        fnb_data = self.entity.get_fnb_records(user_id)
+        return fnb_data

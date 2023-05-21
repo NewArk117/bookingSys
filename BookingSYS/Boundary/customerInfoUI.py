@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QListWidg
 from viewTicPurchasedController import TicketController
 from fnbRefundController import FnbRefundController
 from custAccController import AccountController
+from FBController import FnbPurchasedController
 
 
 
@@ -172,8 +173,11 @@ class fnbRefundUI(QWidget):
         self.order_id_label.setText("Order ID: {}".format(order_id))
         self.controller.show_food_list(order_id)  # Update the food list when order ID is set
 
+
     def go_back(self):
         self.stackedWidget.setCurrentIndex(21)
+        fnb_purchased_ui = self.stackedWidget.currentWidget()
+        fnb_purchased_ui.refresh_fnb_record()
 
     def viewTic(self):
         viewTicController.viewTicC(self, self.stackedWidget,self.ticketList)
@@ -337,9 +341,10 @@ class fnbPurchasedUI(QWidget):
 
         self.fnb_list.itemClicked.connect(self.enable_refund_button)
 
+        self.controller = FnbPurchasedController(self.stackedWidget)
+
     def setID(self, userID):
         self.userID = userID
-        print("Received 2", userID)
         self.setup_ui(self.userID)
 
     def setup_ui(self, userID):
@@ -362,28 +367,10 @@ class fnbPurchasedUI(QWidget):
         self.stackedWidget.setCurrentIndex(8)
 
     def show_fnb_record(self, userID):
-        # Clear the fnb_list before displaying new records
         self.fnb_list.clear()
 
         try:
-            conn = sqlite3.connect('SilverVillageUserAcc.db')
-            cursor = conn.cursor()
-
-            sql = '''
-            SELECT fo.order_id, t.movieName, t.showtime, t.date, GROUP_CONCAT(foi.food_name || ' (' || foi.quantity || ')'), SUM(foi.quantity), SUM(foi.quantity * food.price)
-            FROM food_orders fo
-            JOIN ticket t ON fo.ticket_id = t.ticket_ID
-            JOIN food_order_items foi ON fo.order_id = foi.order_id
-            JOIN food ON foi.food_name = food.foodName
-            WHERE fo.user_id = ?
-            GROUP BY fo.order_id, t.movieName, t.date, t.showtime
-            '''
-
-            data = (userID,)
-            cursor.execute(sql, data)
-            fnb_data = cursor.fetchall()
-
-            conn.close()
+            fnb_data = self.controller.get_fnb_records(userID)
 
             for row in fnb_data:
                 order_id, movie_name, showtime, date, food_name, quantity, total_price = row
@@ -422,14 +409,12 @@ class fnbPurchasedUI(QWidget):
         if selected_item is not None:
             selected_text = selected_item.text()
             order_id = self.extract_order_id(selected_text)
-            if order_id is not None:
-                refund_ui = fnbRefundUI(self.stackedWidget)
-                refund_ui.set_order_id(order_id)
-                self.stackedWidget.addWidget(refund_ui)
-                self.stackedWidget.setCurrentWidget(refund_ui)
+            self.show_refund_ui(order_id)
         else:
             QMessageBox.information(self, 'No Item Selected', 'Please select an item to refund.')
 
+    def refresh_fnb_record(self):
+        self.show_fnb_record(self.userID)
 
 
 class AccountInfoUI(QWidget):
@@ -496,12 +481,16 @@ class AccountInfoUI(QWidget):
         if dialog.exec_() == QDialog.Accepted:
             new_userID = user_id_input.text()
             new_username = username_input.text()
+            if(self.controller.is_user_id_exists(new_userID)):
+                QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
+            elif(self.controller.is_username_exists(new_username)):
+                QMessageBox.information(self, 'Fail', 'The provided Username already exists. Please choose a different one.')
+            else:
+                self.controller.update_account_info(self.userID, new_userID, new_username)
+                self.userID = new_userID
+                self.show_account_info(self.userID)
+                QMessageBox.information(self, 'Success', 'Account information updated successfully.')
 
-            self.controller.update_account_info(self.userID, new_userID, new_username)
-
-            self.userID = new_userID
-            self.show_account_info(self.userID)
-            QMessageBox.information(self, 'Success', 'Account information updated successfully.')
 
     def change_password(self):
         dialog = QDialog(self)
@@ -554,5 +543,24 @@ class AccountInfoUI(QWidget):
 
     def go_back(self):
         self.stackedWidget.setCurrentIndex(8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

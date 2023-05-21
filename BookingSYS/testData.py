@@ -294,8 +294,8 @@ def purchaseTic( movieName, genre, hallName, selectedDate, selectedTime,ticCount
             data2 = (userID, movieName, hallName, x[0], selectedTime, selectedDate, x[1], x[2])
             cursor.execute(sql2, data2)
 
-purchaseTic("Saw ", "Thriller" ,"Hall-1" ,"2023-05-01", 1330 ,7,[['B-4', 'Adult', 12], ['C-4', 'Adult', 12], ['D-4', 'Adult', 12], ['D-5', 'Adult', 12], ['C-6', 'Adult', 12], ['C-3', 'Adult', 12], ['B-3', 'Adult', 12]] ,84 ,"customerTest", cursor)
-purchaseTic("James Bond" ,"Action ", "Hall-2",  "2023-06-20", 1730, 7, [['B-4', 'Adult', 12], ['C-4', 'Child', 10], ['C-2', 'Adult', 12], ['B-2', 'Adult', 12], ['B-3', 'Child', 10], ['D-3', 'Child', 10], ['E-4', 'Senior', 9]], 75 ,"customerTest",cursor)
+purchaseTic("Saw", "Thriller" ,"Hall-1" ,"2023-05-01", 1330 ,7,[['B-4', 'Adult', 12], ['C-4', 'Adult', 12], ['D-4', 'Adult', 12], ['D-5', 'Adult', 12], ['C-6', 'Adult', 12], ['C-3', 'Adult', 12], ['B-3', 'Adult', 12]] ,84 ,"customerTest", cursor)
+purchaseTic("James Bond" ,"Action", "Hall-2",  "2023-06-20", 1730, 7, [['B-4', 'Adult', 12], ['C-4', 'Child', 10], ['C-2', 'Adult', 12], ['B-2', 'Adult', 12], ['B-3', 'Child', 10], ['D-3', 'Child', 10], ['E-4', 'Senior', 9]], 75 ,"customerTest",cursor)
     #conn.commit()
     #conn.close()
 
