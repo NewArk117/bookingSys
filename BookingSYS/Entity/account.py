@@ -437,4 +437,23 @@ class Account:
 
         conn.close()
 
+    def is_user_id_exists(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM account WHERE userID = ?", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result is not None
+
+    def is_username_exists(self, username):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM account WHERE userName = ?", (username,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result is not None
+
+
 
