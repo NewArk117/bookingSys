@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QListWidg
 from viewTicPurchasedController import TicketController
 from fnbRefundController import FnbRefundController
 from custAccController import AccountController
+from FBController import FnbPurchasedController
 
 
 
@@ -337,9 +338,10 @@ class fnbPurchasedUI(QWidget):
 
         self.fnb_list.itemClicked.connect(self.enable_refund_button)
 
+        self.controller = FnbPurchasedController(self.stackedWidget)
+
     def setID(self, userID):
         self.userID = userID
-        print("Received 2", userID)
         self.setup_ui(self.userID)
 
     def setup_ui(self, userID):
@@ -362,28 +364,10 @@ class fnbPurchasedUI(QWidget):
         self.stackedWidget.setCurrentIndex(8)
 
     def show_fnb_record(self, userID):
-        # Clear the fnb_list before displaying new records
         self.fnb_list.clear()
 
         try:
-            conn = sqlite3.connect('SilverVillageUserAcc.db')
-            cursor = conn.cursor()
-
-            sql = '''
-            SELECT fo.order_id, t.movieName, t.showtime, t.date, GROUP_CONCAT(foi.food_name || ' (' || foi.quantity || ')'), SUM(foi.quantity), SUM(foi.quantity * food.price)
-            FROM food_orders fo
-            JOIN ticket t ON fo.ticket_id = t.ticket_ID
-            JOIN food_order_items foi ON fo.order_id = foi.order_id
-            JOIN food ON foi.food_name = food.foodName
-            WHERE fo.user_id = ?
-            GROUP BY fo.order_id, t.movieName, t.date, t.showtime
-            '''
-
-            data = (userID,)
-            cursor.execute(sql, data)
-            fnb_data = cursor.fetchall()
-
-            conn.close()
+            fnb_data = self.controller.get_fnb_records(userID)
 
             for row in fnb_data:
                 order_id, movie_name, showtime, date, food_name, quantity, total_price = row
@@ -503,6 +487,7 @@ class AccountInfoUI(QWidget):
             self.show_account_info(self.userID)
             QMessageBox.information(self, 'Success', 'Account information updated successfully.')
 
+
     def change_password(self):
         dialog = QDialog(self)
         dialog.setWindowTitle('Change Password')
@@ -554,5 +539,8 @@ class AccountInfoUI(QWidget):
 
     def go_back(self):
         self.stackedWidget.setCurrentIndex(8)
+
+
+
 
 
