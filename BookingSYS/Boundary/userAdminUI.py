@@ -12,6 +12,7 @@ from viewAllAccController import viewAllAccountController
 from viewAccController import viewAccountController
 from searchAccController import searchAccountController
 from searchProfController import searchProfileController
+from suspendAccController import suspendAccountController
 #Admin account main page GUI
 class userAdminUI(QWidget):
     def __init__(self, stackedWidget):
@@ -28,7 +29,7 @@ class userAdminUI(QWidget):
         self.labelCust= QLabel("Profiles")
         self.AccountBox = QListWidget()
         self.buttonCreateAcc= QPushButton("Create Account")
-        self.buttonDeleteAcc = QPushButton("Delete Account")
+        self.buttonSuspendAcc = QPushButton("Suspend Account")
         self.buttonEditAcc = QPushButton("Edit Account")
         self.profBox = QListWidget()
         self.searchAccButton = QPushButton("Search Account")
@@ -41,14 +42,14 @@ class userAdminUI(QWidget):
         self.buttonEditAcc.clicked.connect(self.editAcc)
         self.searchAccButton.clicked.connect(self.searchAcc)
         self.viewAccButton.clicked.connect(self.viewAcc)
-        
+        self.buttonSuspendAcc.clicked.connect(self.suspendAcc)
 
         layoutAcc.addWidget(self.labelStaff, 0, 0)
         layoutAcc.addWidget(self.AccountBox, 1, 0)
         layoutAcc.addWidget(self.labelCust, 2, 0)
         layoutAcc.addWidget(self.profBox, 3, 0)
         layoutAcc.addWidget(self.buttonCreateAcc, 0, 1)
-        layoutAcc.addWidget(self.buttonDeleteAcc, 0 ,2)
+        layoutAcc.addWidget(self.buttonSuspendAcc, 0 ,2)
         layoutAcc.addWidget(self.buttonEditAcc, 0, 3)
         layoutAcc.addWidget(self.searchAccEdit, 1, 1)
         layoutAcc.addWidget(self.searchAccButton, 1, 2)
@@ -57,7 +58,7 @@ class userAdminUI(QWidget):
 
         #Profile
         self.buttonCreate2= QPushButton("Create Profile")
-        self.buttonDelete2 = QPushButton("Delete Profile")
+        self.buttonSuspend2 = QPushButton("Suspend Profile")
         self.buttonEdit2 = QPushButton("Edit Profile")
         self.buttonViewProfile = QPushButton("View Profile")
         self.searchProfButton = QPushButton("Search Profile")
@@ -67,15 +68,14 @@ class userAdminUI(QWidget):
         self.buttonViewProfile.clicked.connect(self.viewProfile)
         self.buttonEdit2.clicked.connect(self.editProf)
         self.searchProfButton.clicked.connect(self.searchProf)
-        
+
         layoutAcc.addWidget(self.buttonCreate2, 2 ,1)
-        layoutAcc.addWidget(self.buttonDelete2, 2 ,2)
+        layoutAcc.addWidget(self.buttonSuspend2, 2 ,2)
         layoutAcc.addWidget(self.buttonEdit2, 2 ,3)
         layoutAcc.addWidget(self.searchProfButton, 3, 2)
         layoutAcc.addWidget(self.searchProfEdit, 3 , 1)
         layoutAcc.addWidget(self.buttonViewProfile, 3 ,3)
         self.setLayout(layoutAcc)
-
 
         self.stackedWidget.currentChanged.connect(self.viewAllAcc)
         self.stackedWidget.currentChanged.connect(self.viewAllProf)
@@ -87,9 +87,18 @@ class userAdminUI(QWidget):
     def searchProf(self):
         item_name = self.searchProfEdit.text()   
         list = searchProfileController.searchProfile(self, self.stackedWidget, item_name, self.profBox)
-    def deleteAcc(self):
-        backButtonController.backButtonC(self, self.stackedWidget)
 
+    def suspendAcc(self):
+        selected_item = self.AccountBox.currentItem()
+        if selected_item is not None:
+            item_name = selected_item.text()
+            suspendAcc = suspendAccountController.suspendAccount(self, item_name)
+            if suspendAcc == "changed":
+                message_box = QMessageBox()
+                message_box.setWindowTitle(item_name)
+                message_box.setText('item_name' + 'is suspended')
+                message_box.exec_()
+                
     def goBack(self):
         self.stackedWidget.setCurrentIndex(2)
 

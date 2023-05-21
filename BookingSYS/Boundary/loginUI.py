@@ -96,6 +96,7 @@ class loginUI(QWidget):
         loginMessage = "You have successfully logged in."
         loginTitleF = "Login Error"
         loginWarning = "Wrong Username or Password."
+        loginLocked = "Your Account is locked"
         widget1 = QWidget()
         
         #Calls the loginController
@@ -110,8 +111,10 @@ class loginUI(QWidget):
         elif login == 'cinemaManager':
             QMessageBox.information(widget1, loginTitle, loginMessage)
             self.stackedWidget.setCurrentIndex(9)
+        elif login == 'locked':
+            QMessageBox.information(widget1, loginTitle, loginLocked)
         else:
-             QMessageBox.warning(widget1, loginTitleF, loginWarning)
+            QMessageBox.warning(widget1, loginTitleF, loginWarning)
              
         """
             if row[3] == 'sysAdmin':

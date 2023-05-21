@@ -25,14 +25,17 @@ class Account:
         
         row = cursor.fetchone()
 
-        if row is not None:
+        if row is None:
+            return "error"
+        elif row[3] == False:
+            return "locked"
+        else:
             user = str(row[2])
             #Close Transaction 
             cursor.close()
             conn.close()
             return user  
-        else:
-            return "error"
+            
         
     def logout(self):
         return True
@@ -54,8 +57,8 @@ class Account:
             checkPw.append(row[2])
 
         # Insert a new record into the account table
-        sql = "INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)"
-        data = (userID, password, accType)
+        sql = "INSERT INTO account (userID, password, accType, suspend) VALUES (?, ?, ?, ?)"
+        data = (userID, password, accType, True)
         if data[0] == "" or data[1] == "":
             return "emptyError"
         elif data[0] in checkID:
@@ -172,6 +175,17 @@ class Account:
             cursor.close()
             conn.close()
             return list
+    def suspendAccount(self, item_name)->str:
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        update_query = "UPDATE account SET suspend = ? WHERE userID = ?"
+        values = (False, item_name)
+        cursor.execute(update_query, values)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return "changed"
         
     def process_registration(self, stackedWidget, dialog, id, username, password, confirm_password):
         if password == confirm_password:
@@ -281,8 +295,6 @@ class Account:
 
         cursor.close()
         conn.close()
-
-
 
 
     def get_password(self, user_id):

@@ -10,13 +10,15 @@ cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS account 
                  (userID TEXT PRIMARY KEY,
                   password TEXT,
-                  accType TEXT)''')
+                  accType TEXT,
+                  suspend BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS userProfile 
                  (userID TEXT,
                   name TEXT,
                   DOB INT,
                   accType TEXT,
+                  suspend BOOLEAN,
                   FOREIGN KEY(userID) REFERENCES account(userID))''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS movies 

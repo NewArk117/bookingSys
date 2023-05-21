@@ -106,34 +106,34 @@ cursor = conn.cursor()
 #Insert 15 staff into the "account" table
 someStaff = randomStaff()
 someStaffPassword = randomStaffPassword()
-sql = "INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)"
+sql = "INSERT INTO account (userID, password, accType, suspend) VALUES (?, ?, ?, ?)"
 for i in range(10):  
     if i == 0:
-        data = ("owner", "password","cinemaOwner")
+        data = ("owner", "password","cinemaOwner", True)
         cursor.execute(sql, data) 
     elif i == 1:
-        data = ("manager", "password", "cinemaManager")
+        data = ("manager", "password", "cinemaManager", True)
         cursor.execute(sql, data) 
     elif i == 2:
-        data = ("admin", "password", "sysAdmin")
+        data = ("admin", "password", "sysAdmin", True)
         cursor.execute(sql, data) 
     elif i == 3:
-        data = ("customer", "password", "customer")
+        data = ("customer", "password", "customer", True)
         cursor.execute(sql, data) 
     elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
-        data = ("manager"+ str(i-2), someStaffPassword[i], "cinemaManager")
+        data = ("manager"+ str(i-2), someStaffPassword[i], "cinemaManager", True)
         cursor.execute(sql, data) 
     else:
-        data = ("admin"+ str(i-7), someStaffPassword[i],"sysAdmin")
+        data = ("admin"+ str(i-7), someStaffPassword[i],"sysAdmin", True)
         cursor.execute(sql, data) 
 
     
 # Insert 100 customer into the "account" table
 someCust = randomCust()
 someCustPassword = randomCustPassword()
-sql = "INSERT INTO account (userID, password,accType) VALUES (?, ?, ?)"
+sql = "INSERT INTO account (userID, password,accType,suspend) VALUES (?, ?, ?, ?)"
 for i in range(100):  
-    data = ("cust"+str(i), someCustPassword[i],"customer")
+    data = ("cust"+str(i), someCustPassword[i],"customer", True)
 
     cursor.execute(sql, data)
 
@@ -142,33 +142,33 @@ someDates1 = randomDateStaff()
 staffName = ["Gianna Hess", "Ryan Velasquez", "Alexander OlsenMoses", "FlowersGiada",
              "Vincent Gregory", "Velazquez Sydnee", "Nelson Isabell", "Murphy Ashly", "Pruitt Kelsey",
              "Long Antony", "Hester Carla", "Woods Tess", "Davidson Tanya", "Rogers Mohammad", "Kerr Jackson"]
-sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
+sql = "INSERT INTO userProfile (userID, name, DOB, accType, suspend) VALUES (?, ?, ?, ?, ?)"
 for i in range(10):  
     if i == 0:
-        data = ("owner", staffName[i], someDates1[i],"cinemaOwner")
+        data = ("owner", staffName[i], someDates1[i],"cinemaOwner", True)
         cursor.execute(sql, data) 
     elif i == 1:
-        data = ("manager", staffName[i], someDates1[i], "cinemaManager")
+        data = ("manager", staffName[i], someDates1[i], "cinemaManager", True)
         cursor.execute(sql, data) 
     elif i == 2:
-        data = ("admin", staffName[i], someDates1[i], "sysAdmin")
+        data = ("admin", staffName[i], someDates1[i], "sysAdmin", True)
         cursor.execute(sql, data) 
     elif i == 3:
-        data = ("customer", staffName[i], someDates1[i], "customer")
+        data = ("customer", staffName[i], someDates1[i], "customer", True)
         cursor.execute(sql, data) 
     elif i == 4 or i == 5 or i == 6 or i == 7 or i == 8:
-        data = ("manager"+ str(i-2), staffName[i], someDates1[i], "cinemaManager")
+        data = ("manager"+ str(i-2), staffName[i], someDates1[i], "cinemaManager", True)
         cursor.execute(sql, data) 
     else:
-        data = ("admin"+ str(i-7), staffName[i],someDates1[i],"sysAdmin")
+        data = ("admin"+ str(i-7), staffName[i],someDates1[i],"sysAdmin", True)
         cursor.execute(sql, data) 
 
 # Insert random profiles for customer into the "User profile"
 someDates2 = randomDateCust()
 custName = randomNameCust()
-sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
+sql = "INSERT INTO userProfile (userID, name, DOB, accType, suspend) VALUES (?, ?, ?, ?,?)"
 for i in range(100):  
-    data = ("cust"+str(i), custName[i], someDates2[i],"customer")
+    data = ("cust"+str(i), custName[i], someDates2[i],"customer", True)
 
     cursor.execute(sql, data)
 

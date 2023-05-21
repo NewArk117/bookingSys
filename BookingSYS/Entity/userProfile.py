@@ -24,14 +24,14 @@ class UserProfile:
 
 
         # Insert a new record into the "admin" table
-        sql = "INSERT INTO userProfile (userID, name, DOB, accType) VALUES (?, ?, ?, ?)"
+        sql = "INSERT INTO userProfile (userID, name, DOB, accType, suspend) VALUES (?, ?, ?, ?, ?)"
 
         if self.contains_integer(name):
             return "integerError"
         elif not re.fullmatch(r'\d+', DOB):
             return "stringError"
         else:
-            data = (userID, name, int(DOB), accType)
+            data = (userID, name, int(DOB), accType, True)
             cursor.execute(sql, data)
             # Commit the transaction
             conn.commit()

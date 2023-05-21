@@ -10,7 +10,4 @@ class loginController:
         #Call the entitity
         user = Account().login(userID, pw)
 
-        if user != "error":
-            return user
-        else:
-            return "error"
+        return user
