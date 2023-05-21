@@ -247,3 +247,25 @@ class FnB:
         conn.close()
 
         return self.itemname, self.price, self.quantity, self.avail
+
+    def get_fnb_records(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+            SELECT fo.order_id, t.movieName, t.showtime, t.date, GROUP_CONCAT(foi.food_name || ' (' || foi.quantity || ')'), SUM(foi.quantity), SUM(foi.quantity * food.price)
+            FROM food_orders fo
+            JOIN ticket t ON fo.ticket_id = t.ticket_ID
+            JOIN food_order_items foi ON fo.order_id = foi.order_id
+            JOIN food ON foi.food_name = food.foodName
+            WHERE fo.user_id = ?
+            GROUP BY fo.order_id, t.movieName, t.date, t.showtime
+            '''
+
+        data = (user_id,)
+        cursor.execute(sql, data)
+        fnb_data = cursor.fetchall()
+
+        conn.close()
+
+        return fnb_data

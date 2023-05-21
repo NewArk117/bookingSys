@@ -358,6 +358,55 @@ class Account:
 
         conn.close()
 
+
+    def update_food_orders_user_id(self, user_id, new_user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        UPDATE food_orders
+        SET user_id = ?
+        WHERE user_id = ?;
+        '''
+        cursor.execute(sql, (new_user_id, user_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+    def update_ticket_user_id(self, user_id, new_user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        UPDATE ticket
+        SET userID = ?
+        WHERE userID = ?;
+        '''
+        cursor.execute(sql, (new_user_id, user_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+    def update_user_profile_user_id(self, user_id, new_user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        sql = '''
+        UPDATE userProfile
+        SET userID = ?
+        WHERE userID = ?;
+        '''
+        cursor.execute(sql, (new_user_id, user_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+
+
+
     def get_password(self, user_id):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
@@ -387,4 +436,24 @@ class Account:
         conn.commit()
 
         conn.close()
+
+    def is_user_id_exists(self, user_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM account WHERE userID = ?", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result is not None
+
+    def is_username_exists(self, username):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM account WHERE userName = ?", (username,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result is not None
+
+
 
