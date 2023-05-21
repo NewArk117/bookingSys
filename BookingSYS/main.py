@@ -17,6 +17,7 @@ from createAccUI import createAccUI
 from createProfUI import createProfUI
 from purchaseFoodUI import purchaseFoodUI
 from managerUI import managerUI, manageMoviesUI, manageHallsUI, manageFBUI, manageTicTypeUI, addMovies, addTic, addFnB, addHalls, cinemaHallUI
+from ownerUI import ownerUI
 
 
 #Main class
@@ -134,10 +135,10 @@ class MainWindow(QMainWindow):
         self.AccountInfoUI = AccountInfoUI(self.stackedWidget) #23
         self.stackedWidget.addWidget(self.AccountInfoUI)
 
+        self.ownerUi = ownerUI(self.stackedWidget)#24
+        self.stackedWidget.addWidget(self.ownerUi)
 
-
-
-        #self.stackedWidget.setCurrentIndex(7)
+        self.stackedWidget.setCurrentIndex(9)
 
 
     #Go to admin login page
