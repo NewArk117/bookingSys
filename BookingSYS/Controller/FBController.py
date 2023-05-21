@@ -76,3 +76,11 @@ class viewFBController:
         self.stackedWidget = stackedWidget
         self.item_name = item_name
         FnB().viewFB(self.stackedWidget,item_name)
+
+class FnbPurchasedController:
+    def __init__(self, stackedWidget):
+        self.entity = FnB()
+
+    def get_fnb_records(self, user_id):
+        fnb_data = self.entity.get_fnb_records(user_id)
+        return fnb_data
