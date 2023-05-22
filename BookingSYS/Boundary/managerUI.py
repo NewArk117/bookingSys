@@ -308,7 +308,7 @@ class manageMoviesUI(QWidget):
 
     def searchMovie(self):
         item_name = self.searchEdit.text()
-        searchMovieController.searchMovieC(self, self.stackedWidget, item_name, self.moviesList)
+        list = searchMovieController.searchMovieC(self, self.stackedWidget, item_name, self.moviesList)
 
 
     def editMovie(self,  dialog , name2, genre2, avail2):
@@ -440,7 +440,7 @@ class manageHallsUI(QWidget):
 
     def searchHall(self):
         item_name = self.searchEdit.text()
-        searchHallController.searchHallC(self, self.stackedWidget, item_name, self.hallList)
+        list = searchHallController.searchHallC(self, self.stackedWidget, item_name, self.hallList)
 
 
     def editHall(self,  dialog, name2, avail2):
@@ -560,7 +560,6 @@ class manageFBUI(QWidget):
         #16. Cinema Manager Controller
         susFBController.susFBC(self, self.stackedWidget, self.fbList)
         self.listFB()
-
 
     def listFB(self):
         #14. Cinema Manager Controller (look for fnbcontroller.py)
@@ -970,21 +969,6 @@ class delTic(QWidget):
 
     def goBack(self):
         self.stackedWidget.setCurrentIndex(13)
-
-class no:
-    def nono(self):
-        items = [self.selectedcountry.item(i).text() for i in range(self.selectedcountry.count())]
-        items_str = ' '.join(items)
-        try:
-            if not items_str:
-                raise ValueError("No countries selected")
-            message = f'Are you sure you want to retrieve data from these countries? \nCountries: {items_str}'     
-            confirm = QMessageBox.question(self, 'Retrieve Data', message ,
-                                            QMessageBox.Yes | QMessageBox.No)
-            if confirm == QMessageBox.Yes:
-                print("ok")
-        except ValueError as e:
-            QMessageBox.warning(self, 'Error', str(e))
 
 class cinemaHallUI(QWidget):
     def __init__(self, stackedWidget):

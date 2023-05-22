@@ -47,7 +47,8 @@ class editMovieController:
 class searchMovieController:
     def searchMovieC(self, stackedWidget, item_name, list):
         self.stackedWidget = stackedWidget
-        movie().searchMovie(self.stackedWidget,item_name, list) 
+        list = movie().searchMovie(self.stackedWidget,item_name, list) 
+        return list
 
 class viewMovieController:
     def viewMovieC(self, stackedWidget, moviesList):

@@ -50,10 +50,10 @@ class listHallController:
         cinemaHall().listManagerHall(self.stackedWidget, list)
 
 class searchHallController:
-    def searchHallC(self, stackedWidget, item_name, list):
+    def searchHallC(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
-        cinemaHall().searchHall(self.stackedWidget,item_name, list) 
-
+        list = cinemaHall().searchHall(self.stackedWidget,item_name, list) 
+        return list
 class viewHallController:
     def viewHallC(self, stackedWidget, hallList):
         self.stackedWidget = stackedWidget

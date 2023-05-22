@@ -91,7 +91,15 @@ class FnB:
         foodList = []
         for row in food_data:
             foodList.append(row[0])
+        if name1 == name2:
+            # Update an existing record in the ticketType table
+            sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
+            data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            print(name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            cursor.execute(sql, data)
 
+            # Commit the transaction
+            conn.commit()
         if name1 not in foodList:  
 
             # Update an existing record in the ticketType table

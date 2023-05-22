@@ -197,11 +197,12 @@ class movie:
                 # Iterate over the rows and populate the list widget with the data
                 for row in rows:
                     item = QListWidgetItem(str(row[0]))
-                self.list.addItem(item)
+                    self.list.addItem(item)
 
                 # Close the cursor and the database connection
                 cursor.close()
                 conn.close()
+                return list
             else:
                 self.list = list
                 # Connect to the database
@@ -225,6 +226,7 @@ class movie:
                 cursor.close()
                 conn.close()
 
+                return list
     def viewMovie(self, stackedWidget, item_name):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object

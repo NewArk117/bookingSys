@@ -204,7 +204,7 @@ class cinemaHall:
         # Close the database connection
         conn.close()
 
-    def searchHall(self, stackedWidget, item_name, list):
+    def searchHall(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
         self.list = list
 
@@ -225,6 +225,8 @@ class cinemaHall:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
         else:
             self.list = list
             # Connect to the database
@@ -247,6 +249,8 @@ class cinemaHall:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
 
     def viewHall(self, stackedWidget, item_name):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
