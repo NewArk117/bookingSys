@@ -197,7 +197,7 @@ class Account:
         conn.close()
         return "changed"
         
-    def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
+    def process_registration(self, stackedWidget, dialog, id, password, confirm_password, name, age):
         if password == confirm_password:
             # Connect to thedatabase
             conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -212,6 +212,10 @@ class Account:
                     cursor.execute(
                         "INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)",
                         (id, password, 'customer'))
+                    cursor.execute(
+                        "INSERT INTO userProfile (userID, name, DOB, accType, suspend) VALUES (?, ?, ?, ?, ?)",
+                        (id, name, int(age), 'customer', 1))
+
                     conn.commit()
 
                     # Registration successful
@@ -224,35 +228,34 @@ class Account:
             # Passwords do not match
             QMessageBox.critical(dialog, 'Error', 'Passwords do not match.')
 
-    def get_username(self, user_id):
+    def get_info(self, user_id):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-
-        sql = '''
-        SELECT userName
-        FROM account
-        WHERE userID = ?
-        '''
+        sql = 'SELECT name, DOB FROM userProfile WHERE userID = ?'
         cursor.execute(sql, (user_id,))
         result = cursor.fetchone()
 
         conn.close()
+        name, Dob=result
 
-        return result[0] if result else None
+        return name,Dob
 
-    def update_account_info(self, user_id, new_user_id, new_username):
+    def update_account_info(self, user_id, new_user_id, new_username, DOB):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
         sql = '''
         UPDATE account
-        SET userID = ?,
-            userName = ?
+        SET userID = ?
         WHERE userID = ?
         '''
-        cursor.execute(sql, (new_user_id, new_username, user_id))
-        conn.commit()
+        cursor.execute(sql, (new_user_id, user_id))
+        sql = '''UPDATE userProfile
+        SET userID = ?, name = ?,DOB = ?
+        WHERE userID = ?'''
+        cursor.execute(sql, (new_user_id, new_username, int(DOB), user_id))
 
+        conn.commit()
         conn.close()
 
 
@@ -277,21 +280,6 @@ class Account:
 
         sql = '''
         UPDATE ticket
-        SET userID = ?
-        WHERE userID = ?;
-        '''
-        cursor.execute(sql, (new_user_id, user_id))
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-    def update_user_profile_user_id(self, user_id, new_user_id):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
-        sql = '''
-        UPDATE userProfile
         SET userID = ?
         WHERE userID = ?;
         '''
@@ -341,14 +329,7 @@ class Account:
         conn.close()
         return result is not None
 
-    def is_username_exists(self, username):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM account WHERE userName = ?", (username,))
-        result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        return result is not None
+
 
 
 
