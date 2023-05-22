@@ -34,13 +34,15 @@ class adminUI(QWidget):
     def callMProf(self):
         self.stackedWidget.setCurrentIndex(4)
 
+    #User Story 2
     def logOut(self):
         reply = QMessageBox.question(self, 'Confirm logout',
                                     'Are you sure you want to logout?',
                                      QMessageBox.Yes | QMessageBox.No)
         
         if reply == QMessageBox.Yes:
-            #Call the controlller
+
+            #Call the logout controlller
             logout = logOutController.loggingOut(self)
 
             if logout == True:

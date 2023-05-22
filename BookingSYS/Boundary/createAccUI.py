@@ -53,14 +53,14 @@ class createAccUI(QWidget):
     def goBack(self):
         self.stackedWidget.setCurrentIndex(3)
         
-
+    #User Story 3
     def createAccount(self):
         password = self.password_edit.text()
         userID = self.userID_edit.text()
         accType = self.accType_cBox.currentText()
         widget1 = QWidget()
         
-        #Call the controller
+        #Call the create account controller
         newAcc = createAccController.createAcc(self, userID, password, accType)
         
         emptyError = "A column is empty please fill up all the details"

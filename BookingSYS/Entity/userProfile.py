@@ -16,7 +16,8 @@ class UserProfile:
         pattern = r'\d+'
         return bool(re.search(pattern, string))
     
-    def createProfile(self, userID, name, DOB, accType)->str:
+    #User story 8
+    def createProfile(self, userID, name, age, accType)->str:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
 
         # Get a cursor object
@@ -25,13 +26,14 @@ class UserProfile:
 
         # Insert a new record into the "admin" table
         sql = "INSERT INTO userProfile (userID, name, DOB, accType, suspend) VALUES (?, ?, ?, ?, ?)"
-
-        if self.contains_integer(name):
+        if name == "" or age == "":
+            return "emptyError"
+        elif self.contains_integer(name):
             return "integerError"
-        elif not re.fullmatch(r'\d+', DOB):
+        elif not re.fullmatch(r'\d+', age):
             return "stringError"
         else:
-            data = (userID, name, int(DOB), accType, True)
+            data = (userID, name, int(age), accType, True)
             cursor.execute(sql, data)
             # Commit the transaction
             conn.commit()

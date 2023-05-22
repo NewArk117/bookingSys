@@ -1,6 +1,5 @@
 import sys 
 sys.path.append( './Entity' )
-#sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
 from account import Account
 
 class logOutController:

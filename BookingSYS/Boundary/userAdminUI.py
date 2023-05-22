@@ -83,6 +83,7 @@ class userAdminUI(QWidget):
         self.stackedWidget.currentChanged.connect(self.viewAllAcc)
         self.stackedWidget.currentChanged.connect(self.viewAllProf)
 
+    #User Story 7
     def searchAcc(self):
         item_name = self.searchAccEdit.text()
         list = searchAccountController.searchAccount(self, self.stackedWidget, item_name, self.AccountBox)
@@ -91,10 +92,13 @@ class userAdminUI(QWidget):
         item_name = self.searchProfEdit.text()   
         list = searchProfileController.searchProfile(self, self.stackedWidget, item_name, self.profBox)
 
+    #User Story 6
     def suspendAcc(self):
         selected_item = self.AccountBox.currentItem()
         if selected_item is not None:
             item_name = selected_item.text()
+
+            #Call the suspend controller
             suspendAcc = suspendAccountController.suspendAccount(self, item_name)
             if suspendAcc == "changed":
                 message_box = QMessageBox()
@@ -122,6 +126,7 @@ class userAdminUI(QWidget):
     def goCreateProf(self):
         self.stackedWidget.setCurrentIndex(5)
 
+    #User story 5
     def editAcc(self):
         selected_item = self.AccountBox.currentItem()
 
@@ -156,6 +161,7 @@ class userAdminUI(QWidget):
                 if result == QMessageBox.Ok:
                     line = line_edit.text()
                     suspended =suspend_cBox.currentText()
+                    #Call edit controller
                     edit = editAccountController.editAccount(self, item_name, line, suspended)
                     if edit:
                         success_message_box = QMessageBox()
@@ -265,13 +271,14 @@ class userAdminUI(QWidget):
                 message_box.setWindowTitle(str(profileDetails[0]))
                 message_box.exec_()
 
+    #User Story 4
     def viewAcc(self):
             selected_item = self.AccountBox.currentItem()
             # If an item is selected, display its name
             if selected_item is not None:
                 item_name = selected_item.text()
 
-                #Call the controller
+                #Call the view account controller
                 accountDetails = viewAccountController.viewAccount(self, item_name)
                 accountDetails = list(accountDetails)
                 if accountDetails[3] == True:

@@ -88,7 +88,7 @@ class loginUI(QWidget):
         self.stackedWidget = stackedWidget
         self.userRegController.process_registration(self.stackedWidget, dialog, id, username, password, confirm_password)
 
-    #Get the username and password
+    #User Story 1
     def login(self):
         userID = self.userID_edit.text()
         password = self.password_edit.text()
@@ -111,24 +111,14 @@ class loginUI(QWidget):
         elif login == 'cinemaManager':
             QMessageBox.information(widget1, loginTitle, loginMessage)
             self.stackedWidget.setCurrentIndex(9)
+        elif login == 'cinemaOwner':
+            QMessageBox.information(widget1, loginTitle, loginMessage)
+            self.stackedWidget.setCurrentIndex(24)
         elif login == 'locked':
-            QMessageBox.information(widget1, loginTitle, loginLocked)
+            QMessageBox.information(widget1, loginTitleF, loginLocked)
         else:
             QMessageBox.warning(widget1, loginTitleF, loginWarning)
              
-        """
-            if row[3] == 'sysAdmin':
-                self.stackedWidget.setCurrentIndex(2)
-                return str(row[3])
-            elif row[3] == 'customer':
-                widget = self.stackedWidget.widget(6)
-                widget.setID(row[0])
-                self.stackedWidget.setCurrentIndex(6)
-                return str(row[3])
-            elif row[3] == 'cinemaManager':
-                self.stackedWidget.setCurrentIndex(9)
-                return True
-            """
         self.userID_edit.clear()
         self.password_edit.clear()
 

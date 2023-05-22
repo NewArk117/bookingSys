@@ -73,7 +73,7 @@ class createProfUI(QWidget):
     def goBack(self):
         self.stackedWidget.setCurrentIndex(3)
 
-    #call this function to go to the entity, entity should have the SQL statements to create the account. parse the variables into the function
+    #User story 8
     def createProfile(self):
         userID = self.userID_cBox.currentText()
         name = self.name_edit.text()
@@ -81,17 +81,21 @@ class createProfUI(QWidget):
         accType = self.accType_cBox.currentText()
         widget1 = QWidget()
 
+        #Call the create profile controller controller
         newProf = createProfController.createProf(self,userID, name, age, accType)
 
         success = "Profile Created"
         Error = "Error"
         integerError = "There is integer in the name!"
         stringError = "Contain String in age"
+        emptyError = "There is empty column"
         if newProf == 'Success':
             QMessageBox.information(widget1, "Done!", success)
             self.stackedWidget.setCurrentIndex(3)
         elif newProf == "stringError":
             QMessageBox.information(widget1, Error, stringError)
+        elif newProf == "emptyError":
+            QMessageBox.information(widget1, Error, emptyError)
         else:
              QMessageBox.information(widget1, Error, integerError)
 

@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         self.ownerUi = ownerUI(self.stackedWidget)#24
         self.stackedWidget.addWidget(self.ownerUi)
 
-        self.stackedWidget.setCurrentIndex(24)
+        #self.stackedWidget.setCurrentIndex(24)
 
 
     #Go to admin login page

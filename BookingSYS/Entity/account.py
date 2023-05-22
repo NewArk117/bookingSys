@@ -10,7 +10,8 @@ import sys
 sys.path.append('./Boundary')
 
 class Account:
-    def login(self, userID, pw)->str:
+    #User Story 1
+    def login(self, userID, password)->str:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object
         cursor = conn.cursor()
@@ -18,7 +19,7 @@ class Account:
         #SQL Statement
         sql = "SELECT * FROM account WHERE userID = ? AND password = ?"
         value1 = userID
-        value2 = pw
+        value2 = password
 
         # Execute the SQL query with the values
         cursor.execute(sql, (value1, value2))
@@ -36,10 +37,11 @@ class Account:
             conn.close()
             return user  
             
-        
+    #User Story 2
     def logout(self):
         return True
-        
+
+    #User Story 3    
     def createAccount(self, userID, password, accType)->str:
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -71,6 +73,7 @@ class Account:
             conn.close()
             return "Success"
             
+    #User Story 5
     def editAccount(self, item_name, line, suspended)->bool:
         if suspended == "True":
             suspended = False
@@ -89,7 +92,7 @@ class Account:
             return True
         else:
             return False
-        
+    #User Story 4    
     def viewAccount(self, item_name)->list:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object
@@ -132,6 +135,7 @@ class Account:
         cursor.close()
         conn.close()
     
+    #User Story 7
     def searchAccount(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
         self.list = list
@@ -179,6 +183,8 @@ class Account:
             cursor.close()
             conn.close()
             return list
+    
+    #User Story 6
     def suspendAccount(self, item_name)->str:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
