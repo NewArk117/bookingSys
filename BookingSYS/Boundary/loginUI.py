@@ -46,7 +46,7 @@ class loginUI(QWidget):
         # Set the layout for the window to the stackedWidget
         self.setLayout(layoutLogin)
 
-    def register(self):
+     def register(self):
         # Handle register button click event
         register_dialog = QDialog(self)
         register_dialog.setWindowTitle('Register')
@@ -55,8 +55,6 @@ class loginUI(QWidget):
         # Create form widgets
         id_label = QLabel('UserID:')
         id_edit = QLineEdit()
-        username_label = QLabel('UserID:')
-        username_edit = QLineEdit()
         password_label = QLabel('Password:')
         password_edit = QLineEdit()
         password_edit.setEchoMode(QLineEdit.Password)
@@ -68,7 +66,6 @@ class loginUI(QWidget):
         # Create the layout for the register dialog
         layout = QFormLayout()
         layout.addRow(id_label, id_edit)
-        layout.addRow(username_label, username_edit)
         layout.addRow(password_label, password_edit)
         layout.addRow(confirm_password_label, confirm_password_edit)
         layout.addRow(register_button)
@@ -77,16 +74,16 @@ class loginUI(QWidget):
         register_dialog.setLayout(layout)
 
         register_button.clicked.connect(
-            lambda: self.process_registration(self.stackedWidget ,register_dialog, id_edit.text(), username_edit.text(),
+            lambda: self.process_registration(self.stackedWidget ,register_dialog, id_edit.text(),
                                               password_edit.text(),
                                               confirm_password_edit.text()))
 
         # Show the register dialog
         register_dialog.exec_()
 
-    def process_registration(self, stackedWidget, dialog, id, username, password, confirm_password):
+    def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
         self.stackedWidget = stackedWidget
-        self.userRegController.process_registration(self.stackedWidget, dialog, id, username, password, confirm_password)
+        self.userRegController.process_registration(self.stackedWidget, dialog, id, password, confirm_password)
 
     #User Story 1
     def login(self):
