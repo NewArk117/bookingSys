@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout
     QGridLayout, QComboBox, QListWidget, QVBoxLayout, QMessageBox, QListWidgetItem, QTableWidget, QTableWidgetItem
 from ticController import purchaseTicController, getTicController
 from logOutController import logOutController
-
+from movieController import purchaseTicketController
 class customerUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -27,7 +27,6 @@ class customerUI(QWidget):
         self.info_button = QPushButton('Account Information')
         self.info_button.clicked.connect(self.show_personal_info)
 
-
         self.logout_button = QPushButton('Logout')
         self.logout_button.clicked.connect(self.logOut)
 
@@ -39,7 +38,6 @@ class customerUI(QWidget):
 
         self.setLayout(layout)
 
-
     def buy_movie_tickets(self):
         self.stackedWidget.setCurrentIndex(7)
         widget = self.stackedWidget.widget(7)
@@ -49,6 +47,7 @@ class customerUI(QWidget):
         widget = self.stackedWidget.widget(18)
         widget.setID(self.userID)
         self.stackedWidget.setCurrentIndex(18)
+
     def show_personal_info(self):
         widget = self.stackedWidget.widget(8)
         widget.setID(self.userID)
@@ -57,12 +56,12 @@ class customerUI(QWidget):
 
     def logOut(self):
         reply = QMessageBox.question(self, 'Confirm logout',
-                                    'Are you sure you want to logout?',
+                                     'Are you sure you want to logout?',
                                      QMessageBox.Yes | QMessageBox.No)
-        
+
         if reply == QMessageBox.Yes:
 
-            #Call the logout controlller
+            # Call the logout controlller
             logout = logOutController.loggingOut(self)
 
             if logout == True:
@@ -76,6 +75,7 @@ class purchaseTicUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
         self.stackedWidget = stackedWidget
+        self.purchase_controller = purchaseTicketController(self.stackedWidget)
 
         self.setWindowTitle('SilverVillage Movie')
         self.resize(800, 600)
@@ -131,40 +131,29 @@ class purchaseTicUI(QWidget):
 
         self.setLayout(layout)
         self.show_movies()
-    
-    def setID (self, userID):
+
+    def setID(self, userID):
         self.userID = userID
 
     def go_back(self):
         self.stackedWidget.setCurrentIndex(6)
 
     def show_movies(self):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT movieName, genre, showtime, hallName FROM movie')
-        movies_data = cursor.fetchall()
-        self.movies_table.setRowCount(len(movies_data))
-        for row, data in enumerate(movies_data):
-            for col, value in enumerate(data):
-                item= QTableWidgetItem(str(value))
-                self.movies_table.setItem(row, col, item)
-        conn.close()
-
-    def search_movies(self):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        search_text = self.search_edit.text().strip()
-        if search_text:
-            cursor.execute("SELECT * FROM movie WHERE movieName LIKE ?", ('%' + search_text + '%',))
-        else:
-            cursor.execute('SELECT * FROM movie')
-        movies_data = cursor.fetchall()
+        movies_data = self.purchase_controller.get_movies()
         self.movies_table.setRowCount(len(movies_data))
         for row, data in enumerate(movies_data):
             for col, value in enumerate(data):
                 item = QTableWidgetItem(str(value))
                 self.movies_table.setItem(row, col, item)
-        conn.close()
+
+    def search_movies(self):
+        search_text = self.search_edit.text().strip()
+        movies_data = self.purchase_controller.search_movies(search_text)
+        self.movies_table.setRowCount(len(movies_data))
+        for row, data in enumerate(movies_data):
+            for col, value in enumerate(data):
+                item = QTableWidgetItem(str(value))
+                self.movies_table.setItem(row, col, item)
 
     def reset_movies(self):
         self.search_edit.setText("")
@@ -173,16 +162,12 @@ class purchaseTicUI(QWidget):
 
     def filter_movies(self):
         selected_genre = self.genre_combobox.currentText()
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM movie WHERE genre=?", (selected_genre,))
-        movies_data = cursor.fetchall()
+        movies_data = self.purchase_controller.filter_movies(selected_genre)
         self.movies_table.setRowCount(len(movies_data))
         for row, data in enumerate(movies_data):
             for col, value in enumerate(data):
                 item = QTableWidgetItem(str(value))
                 self.movies_table.setItem(row, col, item)
-        conn.close()
 
     def buy_ticket(self):
         try:
@@ -193,8 +178,8 @@ class purchaseTicUI(QWidget):
                 genre = self.movies_table.item(row, 1).text().strip()
                 time = self.movies_table.item(row, 2).text().strip()
                 print(name + " " + genre + " " + time)
-                hallname, rows, cols = self.getRowCol(name, genre)
-                datelist = self.getShowDate(name, genre)
+                hallname, rows, cols = self.purchase_controller.getRowcol(name, genre)
+                datelist = self.purchase_controller.get_show_dates(name, genre)
                 purchaseTicUI2_instance = purchaseTicUI2(self.stackedWidget)
                 purchaseTicUI2_instance.setList(name, genre, datelist, rows, cols, hallname, self.userID)
                 self.stackedWidget.addWidget(purchaseTicUI2_instance)
@@ -206,44 +191,6 @@ class purchaseTicUI(QWidget):
             QMessageBox.warning(self, 'Error', str(e))
             print(str(e))
 
-    def getShowDate(self, name ,genre):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
-        datelist = []
-        sql = " SELECT date FROM hallshowtime WHERE hallName = (SELECT hallName FROM movie WHERE movieName = ? AND genre = ?) AND date BETWEEN (SELECT startdate FROM movie WHERE movieName = ? AND genre = ?) AND (SELECT enddate FROM movie WHERE movieName = ? AND genre = ?)"
-        data = (name, genre, name, genre, name, genre)
-        cursor.execute(sql, data)
-        movie_data = cursor.fetchall()
-        for row in movie_data:
-            datelist.append(row[0])
-        #print(datelist)
-
-        conn.commit()
-        conn.close()
-
-        return datelist
-    
-    def getRowCol(self,name, genre):
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
-        hallrow = 0
-        hallcol = 0
-        sql = "SELECT hallName, rows, columns FROM hall WHERE hallName = (SELECT hallName FROM movie WHERE movieName = ? AND genre = ?)"
-        data = (name, genre)
-        cursor.execute(sql, data)
-        movie_data = cursor.fetchall()
-        for row in movie_data:
-            hallname = row[0]
-            hallrow = row[1]
-            hallcol = row[2]
-        #print(datelist)
-
-        conn.commit()
-        conn.close()
-
-        return hallname, hallrow, hallcol
 
         # Remove the widget at index 2
         #self.stackedWidget.removeWidget(self.stackedWidget.widget(20))
@@ -256,6 +203,7 @@ class purchaseTicUI2(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
         self.stackedWidget = stackedWidget
+        self.purchase_controller = purchaseTicketController(self.stackedWidget)
         self.ticnumber = 0
         self.hallName = ""
         self.name = ""
@@ -381,24 +329,10 @@ class purchaseTicUI2(QWidget):
         row_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
 
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
         seatList = []
-        sql = "SELECT seat_No, isAvailable FROM seat WHERE hallName = ? AND showtime = ? AND date =?"
         cShowtime = self.selTime_cbox.currentText()
         cDate =  self.selDate_cbox.currentText()
-        data = (self.hallName, cShowtime, cDate )
-        cursor.execute(sql,data)
-        movie_data = cursor.fetchall()
-        for row in movie_data:
-            self.seatNo = row[0]
-            self.isAvail = row[1]
-            seatList.append([self.seatNo, self.isAvail])
-
-        conn.commit()
-        conn.close()
-
+        seatList = self.purchase_controller.getSeat(self.hallName, cShowtime, cDate)
 
         # Add a button for each seat in the grid
         for row in range(self.rows):
@@ -520,25 +454,18 @@ class purchaseTicUI2(QWidget):
 
     def tictypebox(self):
         typeBox = QComboBox()
-        conn = sqlite3.connect('SilverVillageUserAcc.db')
-        cursor = conn.cursor()
-
-        self.typeList = []
-        self.priceList= []
-        sql = "SELECT * FROM ticketType"
-        cursor.execute(sql)
-        type_data = cursor.fetchall()
-        for row in type_data:
-            typename = row[0]
-            price = row[1]
-            self.typeList.append(typename)
-            self.priceList.append([typename, price])
-
-        conn.commit()
-        conn.close()
-
+        self.typeList, self.priceList = self.purchase_controller.get_ticket_types()
         typeBox.addItems(self.typeList)
         return typeBox, self.priceList
+
+
+
+    
+
+    
+    
+
+    
 
 
 
