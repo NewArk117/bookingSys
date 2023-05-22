@@ -356,7 +356,7 @@ class AccountInfoUI(QWidget):
                 new_userID = user_id_input.text()
                 new_username = username_input.text()
                 DOB = userage_input.text()
-                if(current_username == new_userID):
+                if(current_username != new_userID):
                     if self.controller.is_user_id_exists(new_userID):
                         QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
                     else:
