@@ -88,7 +88,7 @@ class loginUI(QWidget):
         self.stackedWidget = stackedWidget
         self.userRegController.process_registration(self.stackedWidget, dialog, id, username, password, confirm_password)
 
-    #User Story 1
+    #User Story 1/13
     def login(self):
         userID = self.userID_edit.text()
         password = self.password_edit.text()
