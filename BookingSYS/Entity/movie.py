@@ -267,3 +267,78 @@ class movie:
         conn.close()
 
         return self.moviename, self.genre, self.avail
+
+
+    def get_movies(self):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT movieName, genre, showtime, hallName FROM movie')
+        movies_data = cursor.fetchall()
+        conn.close()
+        return movies_data
+
+    def search_movies(self, search_text):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        if search_text:
+            cursor.execute("SELECT * FROM movie WHERE movieName LIKE ?", ('%' + search_text + '%',))
+        else:
+            cursor.execute('SELECT * FROM movie')
+        movies_data = cursor.fetchall()
+        conn.close()
+        return movies_data
+
+    def filter_movies(self, selected_genre):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM movie WHERE genre=?", (selected_genre,))
+        movies_data = cursor.fetchall()
+        conn.close()
+        return movies_data
+
+    def get_show_dates(self, name, genre):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT date FROM hallshowtime WHERE hallName = (SELECT hallName FROM movie WHERE movieName = ? AND genre = ?) AND date BETWEEN (SELECT startdate FROM movie WHERE movieName = ? AND genre = ?) AND (SELECT enddate FROM movie WHERE movieName = ? AND genre = ?)",
+            (name, genre, name, genre, name, genre))
+        show_dates = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return show_dates
+
+    def get_hall_details(self, movie_name, genre):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        hall_name = ""
+        rows = 0
+        columns = 0
+        sql = "SELECT hallName, rows, columns FROM hall WHERE hallName = (SELECT hallName FROM movie WHERE movieName = ? AND genre = ?)"
+        data = (movie_name, genre)
+        cursor.execute(sql, data)
+        movie_data = cursor.fetchall()
+        for row in movie_data:
+            hall_name = row[0]
+            rows = row[1]
+            columns = row[2]
+
+        conn.commit()
+        conn.close()
+
+        return hall_name, rows, columns
+
+    def get_seats(self, hall_name, showtime, date):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        seatList = []
+        sql = "SELECT seat_No, isAvailable FROM seat WHERE hallName = ? AND showtime = ? AND date =?"
+        data = (hall_name, showtime, date)
+        cursor.execute(sql, data)
+        movie_data = cursor.fetchall()
+        for row in movie_data:
+            self.seatNo= row[0]
+            self.isAvail = row[1]
+            seatList.append([self.seatNo, self.isAvail])
+        return seatList
+        conn.commit()
+        conn.close()
