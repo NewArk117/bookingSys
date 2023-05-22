@@ -130,6 +130,8 @@ class ticketType:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
         else:
             self.list = list
             # Connect to the database
@@ -152,6 +154,8 @@ class ticketType:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
 
     def viewTicType(self, stackedWidget, item_name):
         conn = sqlite3.connect('SilverVillageUserAcc.db')

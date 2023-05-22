@@ -48,8 +48,8 @@ class listTicTypeController:
 class searchTicTypeController:
     def searchTicTypeC(self, stackedWidget, item_name, list):
         self.stackedWidget = stackedWidget
-        ticketType().searchTicType(self.stackedWidget,item_name, list) 
-
+        list = ticketType().searchTicType(self.stackedWidget,item_name, list) 
+        return list
 
 class viewTicTypeController:
     def viewTicTypeC(self, stackedWidget, ticketList):

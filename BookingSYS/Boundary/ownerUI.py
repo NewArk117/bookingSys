@@ -145,6 +145,14 @@ class ownerUI(QWidget):
         msgBox.exec_()
 
     def logOut(self):
-        logout = logOutController.loggingOut(self)
-        if logout == True:
-            self.stackedWidget.setCurrentIndex(0)
+        reply = QMessageBox.question(self, 'Confirm logout',
+                                    'Are you sure you want to logout?',
+                                     QMessageBox.Yes | QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+
+            #Call the logout controlller
+            logout = logOutController.loggingOut(self)
+
+            if logout == True:
+                self.stackedWidget.setCurrentIndex(0)

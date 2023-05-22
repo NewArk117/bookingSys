@@ -189,7 +189,7 @@ class manageTicTypeUI(QWidget):
     
     def searchTicType(self):
         item_name = self.searchEdit.text()
-        searchTicTypeController.searchTicTypeC(self, self.stackedWidget, item_name, self.ticketList)
+        list = searchTicTypeController.searchTicTypeC(self, self.stackedWidget, item_name, self.ticketList)
     
     def editTicsUI(self):
         self.dialog = QDialog(self)
