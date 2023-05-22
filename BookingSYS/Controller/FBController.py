@@ -62,6 +62,8 @@ class PurchaseFoodController:
     def close_connection(self):
         self.food_model.close_connection()
 
+    def update_fnb(self, food_name, quantity):
+        self.food_model.update_quantity(food_name, quantity)
 
 class viewFBController:
     def viewFBC(self, stackedWidget, fbList):
@@ -85,3 +87,5 @@ class FnbPurchasedController:
     def get_fnb_records(self, user_id):
         fnb_data = self.entity.get_fnb_records(user_id)
         return fnb_data
+
+
