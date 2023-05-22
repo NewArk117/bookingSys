@@ -208,6 +208,8 @@ class FnB:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
         else:
             self.list = list
             # Connect to the database
@@ -230,6 +232,8 @@ class FnB:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
+
+            return list
 
     def viewFB(self, stackedWidget, item_name):
             conn = sqlite3.connect('SilverVillageUserAcc.db')

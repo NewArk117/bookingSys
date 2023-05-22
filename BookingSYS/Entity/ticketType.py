@@ -40,7 +40,7 @@ class ticketType:
         ticList = []
         for row in tictype_data:
             ticList.append(row[0])
-
+        
         if name not in ticList:
             
             # Insert a new record into the account table

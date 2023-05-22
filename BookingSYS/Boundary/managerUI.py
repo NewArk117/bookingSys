@@ -534,7 +534,7 @@ class manageFBUI(QWidget):
         self.backButton.clicked.connect(self.goBack)
         self.addButton.clicked.connect(self.addFB)
         self.delButton.clicked.connect(self.susFB)
-        self.editButton.clicked.connect(self.editFB)
+        self.editButton.clicked.connect(self.editFBUI)
         self.searchBtn.clicked.connect(self.searchFB)
         self.viewButton.clicked.connect(self.viewFB)
 
@@ -565,17 +565,17 @@ class manageFBUI(QWidget):
         #14. Cinema Manager Controller (look for fnbcontroller.py)
         listFBController.listFBC(self, self.stackedWidget, self.fbList)
 
-    def editFB1(self, dialog, fbList, name2, price2 , quantity2, avail2):
+    def editFB(self, dialog, fbList, name2, price2 , quantity2, avail2):
         #15. Cinema Manager Controller
         editFBController.editFBC(self, dialog, self.stackedWidget, fbList,name2, price2, quantity2,avail2 )
         self.listFB()
 
     def searchFB(self):
         item_name = self.searchEdit.text()
-        searchFBController.searchFBC(self, self.stackedWidget, item_name, self.fbList)
+        list = searchFBController.searchFBC(self, self.stackedWidget, item_name, self.fbList)
 
     #15. Cinema Manager Boundary
-    def editFB(self):
+    def editFBUI(self):
         self.dialog = QDialog(self)
         self.dialog.setWindowTitle("Edit F&B")
 
@@ -621,7 +621,7 @@ class manageFBUI(QWidget):
         layout.addWidget(self.submitButton,5 ,2)
 
         self.backButton.clicked.connect(self.dialog.reject)
-        self.submitButton.clicked.connect(lambda: (self.editFB1(self.dialog, self.fbList, self.name_edit.text(), self.price_edit.text(), self.quantity_edit.text(), self.avail_edit.text() )))
+        self.submitButton.clicked.connect(lambda: (self.editFB(self.dialog, self.fbList, self.name_edit.text(), self.price_edit.text(), self.quantity_edit.text(), self.avail_edit.text() )))
 
         self.dialog.exec_()
 

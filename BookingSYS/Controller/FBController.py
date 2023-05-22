@@ -46,8 +46,8 @@ class listFBController:
 class searchFBController:
     def searchFBC(self, stackedWidget, item_name, list):
         self.stackedWidget = stackedWidget
-        FnB().searchFB(self.stackedWidget,item_name, list)    
-
+        list = FnB().searchFB(self.stackedWidget,item_name, list)    
+        return list
 
 class PurchaseFoodController:
     def __init__(self):
