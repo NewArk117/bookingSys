@@ -5,7 +5,6 @@ from custFnBController import FoodController
 from ticController import TicketController
 from FBController import PurchaseFoodController
 
-
 class purchaseFoodUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
@@ -45,7 +44,6 @@ class purchaseFoodUI(QWidget):
         self.setLayout(vbox)
         self.controller = PurchaseFoodController()
 
-        self.refresh_ui()
 
         self.purchase_button.clicked.connect(self.purchase)
         self.back_button.clicked.connect(self.back)
@@ -54,7 +52,8 @@ class purchaseFoodUI(QWidget):
 
     def setID(self, userID):
         self.userID = userID
-        self.viewData(self.userID)
+        self.refresh_ui(userID)
+
 
     def show_food(self):
         food_data = FoodController.get_food(self)
@@ -160,7 +159,7 @@ class purchaseFoodUI(QWidget):
             for food_name, quantity in order_list:
                 self.controller.update_fnb(food_name, quantity)
             QMessageBox.information(self, 'Successful Purchase', 'Your purchase has been successfully processed.')
-            self.refresh_ui()
+            self.refresh_ui(self.userID)
         else:
             QMessageBox.information(self, 'Purchase Cancelled', 'Your purchase has been cancelled.')
 
@@ -178,9 +177,11 @@ class purchaseFoodUI(QWidget):
     def back(self):
         self.stackedWidget.setCurrentIndex(6)
 
-    def refresh_ui(self):
+    def refresh_ui(self, userID):
         self.show_food()
-        self.viewData(self.userID)
+        self.viewData(userID)
+
+
 
 
 

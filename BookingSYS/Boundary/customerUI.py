@@ -3,6 +3,7 @@ import sys
 sys.path.append('./Boundary')
 from PyQt5.QtCore import  Qt
 
+
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, \
     QGridLayout, QComboBox, QListWidget, QVBoxLayout, QMessageBox, QListWidgetItem, QTableWidget, QTableWidgetItem
 from ticController import purchaseTicController, getTicController
@@ -12,8 +13,7 @@ class customerUI(QWidget):
     def __init__(self, stackedWidget):
         super().__init__()
         self.stackedWidget = stackedWidget
-
-        self.userID = ""
+        self.userID = ''
 
         self.setWindowTitle('SilverVillage Movie')
         self.resize(600, 400)
@@ -41,7 +41,9 @@ class customerUI(QWidget):
     def buy_movie_tickets(self):
         self.stackedWidget.setCurrentIndex(7)
         widget = self.stackedWidget.widget(7)
+        print("sent", self.userID)
         widget.setID(self.userID)
+
 
     def buy_food(self):
         widget = self.stackedWidget.widget(18)
@@ -51,7 +53,6 @@ class customerUI(QWidget):
     def show_personal_info(self):
         widget = self.stackedWidget.widget(8)
         widget.setID(self.userID)
-        print("sending", self.userID)
         self.stackedWidget.setCurrentIndex(8)
 
     def logOut(self):
@@ -192,10 +193,6 @@ class purchaseTicUI(QWidget):
             print(str(e))
 
 
-        # Remove the widget at index 2
-        #self.stackedWidget.removeWidget(self.stackedWidget.widget(20))
-
-        #go to purchaseTicUI2 page
         
 
 
@@ -235,7 +232,7 @@ class purchaseTicUI2(QWidget):
         self.genre_text = QLabel(self.genre)
 
         self.confirm = QPushButton('Confirm')
-        #self.confirm.clicked.connect(self.purchaseTicket)
+
 
         self.selDate_label = QLabel("Select Date:")
         self.selDate_cbox = QComboBox()
@@ -254,20 +251,10 @@ class purchaseTicUI2(QWidget):
         self.back_button = QPushButton('Back')
         self.back_button.clicked.connect(self.goBack)
 
-        #self.selDate_cbox.currentIndexChanged.connect(self.datechanged)
-        #self.selTime_cbox.currentIndexChanged.connect(self.timechanged)
+
         self.chooseSeat.clicked.connect(self.addSeating)
         self.confirm.clicked.connect(self.pushMe)
 
-        #self.confirm.clicked.connect(self.getShowDate)
-
-        #self.ticketWidget = self.getTicketWidget(self)
-
-        #purchaseTicController.purchaseTicC(self, self.stackedWidget, self.movies_listview)
-        #print("Number of Tickets: " + self.noOfTics.currentText())
-
-        #self.ticketList.setItemDelegate(self.CustomDelegate())
-        #layout.addWidget(self.pushButton, 0 ,0 )
         self.layout.addWidget(self.empty, 0 ,0 , 9, 1)
         movielayout.addWidget(self.movie_label)
         movielayout.addWidget(self.movie_text,alignment=Qt.AlignLeft)
@@ -318,7 +305,6 @@ class purchaseTicUI2(QWidget):
         self.stackedWidget.setCurrentIndex(7)
 
     def addSeating(self):
-        # Create a grid layout to hold the seats
         grid = QGridLayout()
         screen = QLabel("Screen")
         grid.addWidget(screen, 0 ,1, 1, self.cols)
@@ -342,11 +328,9 @@ class purchaseTicUI2(QWidget):
                 grid.addWidget(seat, row+1, col)
                 seat.clicked.connect(lambda _, row=row, col=col: self.on_seat_selected(row_labels[row], col,seatList, seat))
 
-        #grid.addWidget(randomBtn, (self.rows + 4 ), 0)
 
         self.layout.addLayout(grid,5,0,2, 2)
 
-        #self.chooseSeat.hide()
 
     def seatAvail(self, row, col, seatList, seatButton):
 
@@ -365,9 +349,6 @@ class purchaseTicUI2(QWidget):
         text1 = self.selTime_cbox.currentText()
         text2 = self.selDate_cbox.currentText()
         seat = f"{row}-{col+1}"
-        #print(f"Seat {seat} selected")
-        #print(f"Time chosen: {text1}")
-        #print(f"Date chosen: {text2}")
         try:
             # Check if seat is already in the list
             for i in range(self.ticketList.count()):
@@ -398,7 +379,7 @@ class purchaseTicUI2(QWidget):
             print(str(e))
 
 
-        #print(self.ticketList.count())
+
 
     def remove_item(self):
         current_row = self.ticketList.currentRow()
@@ -430,8 +411,6 @@ class purchaseTicUI2(QWidget):
             label = item_widget.findChild(QLabel).text()
             combo_box = item_widget.findChild(QComboBox)
             combo_box_value = combo_box.currentText()
-            #print(f"Selected option for item {row}: {combo_box_value}")
-            #print(f"Label for item {row}: {label}")
 
             for x in ticketlist:
                 if x[0] == combo_box_value:
@@ -457,6 +436,24 @@ class purchaseTicUI2(QWidget):
         self.typeList, self.priceList = self.purchase_controller.get_ticket_types()
         typeBox.addItems(self.typeList)
         return typeBox, self.priceList
+
+
+
+    
+
+    
+    
+
+    
+
+
+
+    
+
+    
+    
+
+    
 
 
 
