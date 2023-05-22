@@ -13,6 +13,8 @@ from viewAccController import viewAccountController
 from searchAccController import searchAccountController
 from searchProfController import searchProfileController
 from suspendAccController import suspendAccountController
+from suspendProfController import suspendProfileController
+
 #Admin account main page GUI
 class userAdminUI(QWidget):
     def __init__(self, stackedWidget):
@@ -68,6 +70,7 @@ class userAdminUI(QWidget):
         self.buttonViewProfile.clicked.connect(self.viewProfile)
         self.buttonEdit2.clicked.connect(self.editProf)
         self.searchProfButton.clicked.connect(self.searchProf)
+        self.buttonSuspend2.clicked.connect(self.suspendProf)
 
         layoutAcc.addWidget(self.buttonCreate2, 2 ,1)
         layoutAcc.addWidget(self.buttonSuspend2, 2 ,2)
@@ -96,9 +99,20 @@ class userAdminUI(QWidget):
             if suspendAcc == "changed":
                 message_box = QMessageBox()
                 message_box.setWindowTitle(item_name)
-                message_box.setText('item_name' + 'is suspended')
+                message_box.setText(item_name + '  suspended')
                 message_box.exec_()
-                
+
+    def suspendProf(self):
+        selected_item = self.profBox.currentItem()
+        if selected_item is not None:
+            item_name = selected_item.text()
+            suspendProf = suspendProfileController.suspendProfile(self, item_name)
+            if suspendProf == "changed":
+                message_box = QMessageBox()
+                message_box.setWindowTitle(item_name)
+                message_box.setText(item_name + ' is suspended')
+                message_box.exec_()
+
     def goBack(self):
         self.stackedWidget.setCurrentIndex(2)
 
@@ -124,7 +138,14 @@ class userAdminUI(QWidget):
                 line_edit = QLineEdit()
                 layout.addWidget(label,2,0)
                 layout.addWidget(line_edit,2,1)
-            
+
+                suspendList = ["False","True"]
+                suspend_label = QLabel('Account Lock:')
+                suspend_cBox = QComboBox()
+                suspend_cBox.addItems(suspendList) 
+                layout.addWidget(suspend_label,3,0)
+                layout.addWidget(suspend_cBox,3,1)
+
                 # Create a widget to hold the layout and set it as the message box's body
                 widget = QWidget()
                 widget.setLayout(layout)
@@ -134,7 +155,8 @@ class userAdminUI(QWidget):
                 result = message_box.exec_()
                 if result == QMessageBox.Ok:
                     line = line_edit.text()
-                    edit = editAccountController.editAccount(self, item_name, line)
+                    suspended =suspend_cBox.currentText()
+                    edit = editAccountController.editAccount(self, item_name, line, suspended)
                     if edit:
                         success_message_box = QMessageBox()
                         success_message_box.setWindowTitle("Success")
@@ -181,6 +203,12 @@ class userAdminUI(QWidget):
                 layout.addWidget(accType_label,3,0)
                 layout.addWidget(accType_cBox,3,1)
 
+                suspendList = ["False","True"]
+                suspend_label = QLabel('Profile Lock:')
+                suspend_cBox = QComboBox()
+                suspend_cBox.addItems(suspendList) 
+                layout.addWidget(suspend_label,4,0)
+                layout.addWidget(suspend_cBox,4,1)
                 # Create a widget to hold the layout and set it as the message box's body
                 widget = QWidget()
                 widget.setLayout(layout)
@@ -192,7 +220,8 @@ class userAdminUI(QWidget):
                     name = line_edit1.text()
                     age = line_edit2.text()
                     accType =accType_cBox.currentText()
-                    edit = editProfileController.editProfile(self, item_name, name, age, accType)
+                    suspended =suspend_cBox.currentText()
+                    edit = editProfileController.editProfile(self, item_name, name, age, accType,suspended)
                     if edit == "Success":
                         success_message_box = QMessageBox()
                         success_message_box.setWindowTitle("Success")
@@ -224,11 +253,17 @@ class userAdminUI(QWidget):
             item_name = selected_item.text()
 
             profileDetails = viewProfileController.viewProfile(self, item_name)
-
-            message_box = QMessageBox()
-            message_box.setText("Account ID: " + str(profileDetails[0]) + "\n" + "Name: " + str(profileDetails[1]) + "\n" + "Age: " + str(profileDetails[2]) + "\n" + "Account Type: " + str(profileDetails[3]))
-            message_box.setWindowTitle(str(profileDetails[0]))
-            message_box.exec_()
+            if profileDetails == None:
+                message_box1 = QMessageBox()
+                message_box1.setText("Profile is Locked")
+                message_box1.exec_()
+            else:
+                message_box = QMessageBox()
+                message_box.setText("Account ID: " + str(profileDetails[0]) + "\n" + "Name: " + str(profileDetails[1]) 
+                                    + "\n" + "Age: " + str(profileDetails[2]) + "\n" + "Account Type: " 
+                                    + str(profileDetails[3]))
+                message_box.setWindowTitle(str(profileDetails[0]))
+                message_box.exec_()
 
     def viewAcc(self):
             selected_item = self.AccountBox.currentItem()
@@ -238,9 +273,14 @@ class userAdminUI(QWidget):
 
                 #Call the controller
                 accountDetails = viewAccountController.viewAccount(self, item_name)
-                
+                accountDetails = list(accountDetails)
+                if accountDetails[3] == True:
+                    accountDetails[3] = "Not Locked"
+                else:
+                    accountDetails[3] = "Locked"
+                accountDetails = tuple(accountDetails)
                 message_box = QMessageBox()
-                message_box.setText("Account ID: " + str(accountDetails[0]) + "\n" + "Password: " + str(accountDetails[1]) + "\n" + "Account Type: " + str(accountDetails[2]))
+                message_box.setText("Account ID: " + str(accountDetails[0]) + "\n" + "Password: " + str(accountDetails[1]) + "\n" + "Account Type: " + str(accountDetails[2] + "\n" + "Account: " + str(accountDetails[3])))
                 message_box.setWindowTitle(str(accountDetails[0]))
                 message_box.exec_()
 

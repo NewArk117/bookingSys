@@ -83,7 +83,16 @@ class managerUI(QWidget):
         self.stackedWidget.setCurrentIndex(13)
 
     def logOut(self):
-        logOutController.loggingOut(self, self.stackedWidget)
+        reply = QMessageBox.question(self, 'Confirm logout',
+                                    'Are you sure you want to logout?',
+                                     QMessageBox.Yes | QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            #Call the controlller
+            logout = logOutController.loggingOut(self)
+
+            if logout == True:
+                self.stackedWidget.setCurrentIndex(0)
 
 #Create ticket GUi
 #19. Cinema Manager Boundary

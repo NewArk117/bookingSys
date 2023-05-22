@@ -71,13 +71,17 @@ class Account:
             conn.close()
             return "Success"
             
-    def editAccount(self, item_name, line)->bool:
+    def editAccount(self, item_name, line, suspended)->bool:
+        if suspended == "True":
+            suspended = False
+        else:
+            suspended = True
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        update_query = "UPDATE account SET password = ? WHERE userID = ?"
+        update_query = "UPDATE account SET password = ?, suspend = ? WHERE userID = ?"
         if line != "":
-            values = (line, item_name)
+            values = (line, suspended, item_name)
             cursor.execute(update_query, values)
             conn.commit()
             cursor.close()

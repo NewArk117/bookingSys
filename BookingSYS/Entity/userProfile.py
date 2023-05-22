@@ -79,14 +79,20 @@ class UserProfile:
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
-
-        return profileDetails
+        if profileDetails[4] == False:
+            pass
+        else:
+            return profileDetails
     
-    def editProfile(self, item_name, name, age, accType)->str:
+    def editProfile(self, item_name, name, age, accType, suspend)->str:
+        if suspend == "True":
+            suspend = False
+        else:
+            suspend = True
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        update_query = "UPDATE userProfile SET name = ?, DOB = ?, accType = ? WHERE userID = ?"
+        update_query = "UPDATE userProfile SET name = ?, DOB = ?, accType = ?, suspend = ? WHERE userID = ?"
         
         if self.contains_integer(name):
             return "integerError"
@@ -95,7 +101,7 @@ class UserProfile:
         elif not re.fullmatch(r'\d+', age):
             return "stringError"
         else:
-            values = (item_name, name, age, accType)
+            values = (name, age, accType, suspend, item_name)
             cursor.execute(update_query, values)
             conn.commit()
             cursor.close()
@@ -149,3 +155,15 @@ class UserProfile:
             cursor.close()
             conn.close()
             return list
+        
+    def suspendProfile(self, item_name)->str:
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        update_query = "UPDATE userProfile SET suspend = ? WHERE userID = ?"
+        values = (False, item_name)
+        cursor.execute(update_query, values)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return "changed"
