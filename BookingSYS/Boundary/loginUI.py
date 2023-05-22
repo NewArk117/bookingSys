@@ -55,6 +55,10 @@ class loginUI(QWidget):
         # Create form widgets
         id_label = QLabel('UserID:')
         id_edit = QLineEdit()
+        name_label = QLabel('Name:')
+        name_edit = QLineEdit()
+        Age_label = QLabel('Age:')
+        Age_edit = QLineEdit()
         password_label = QLabel('Password:')
         password_edit = QLineEdit()
         password_edit.setEchoMode(QLineEdit.Password)
@@ -66,6 +70,8 @@ class loginUI(QWidget):
         # Create the layout for the register dialog
         layout = QFormLayout()
         layout.addRow(id_label, id_edit)
+        layout.addRow(name_label, name_edit)
+        layout.addRow(Age_label, Age_edit)
         layout.addRow(password_label, password_edit)
         layout.addRow(confirm_password_label, confirm_password_edit)
         layout.addRow(register_button)
@@ -76,14 +82,15 @@ class loginUI(QWidget):
         register_button.clicked.connect(
             lambda: self.process_registration(self.stackedWidget ,register_dialog, id_edit.text(),
                                               password_edit.text(),
-                                              confirm_password_edit.text()))
+                                              confirm_password_edit.text(), name_edit.text(), Age_edit.text()))
 
         # Show the register dialog
         register_dialog.exec_()
 
-    def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
+    def process_registration(self, stackedWidget, dialog, id, password, confirm_password, name, age):
         self.stackedWidget = stackedWidget
-        self.userRegController.process_registration(self.stackedWidget, dialog, id, password, confirm_password)
+        self.userRegController.process_registration(self.stackedWidget, dialog, id, password, confirm_password,
+                                                    name, age)
 
     #User Story 1/13
     def login(self):
@@ -104,6 +111,9 @@ class loginUI(QWidget):
             self.stackedWidget.setCurrentIndex(2)
         elif login == 'customer':
             QMessageBox.information(widget1, loginTitle, loginMessage)
+            self.stackedWidget.setCurrentIndex(6)
+            widget = self.stackedWidget.widget(6)
+            widget.setID(userID)
             self.stackedWidget.setCurrentIndex(6)
         elif login == 'cinemaManager':
             QMessageBox.information(widget1, loginTitle, loginMessage)
