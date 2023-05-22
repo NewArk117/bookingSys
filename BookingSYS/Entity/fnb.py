@@ -130,12 +130,18 @@ class FnB:
         DELETE FROM food_order_items
         WHERE order_id = ? AND food_name = ? AND quantity = ?
         '''
-
         data = (order_id, food_name, quantity)
         cursor.execute(sql, data)
 
+        # Update the quantity of the food
+        cursor.execute('UPDATE food SET quantity = quantity + ? WHERE foodName = ?', (quantity, food_name))
+
+        if quantity > 0:
+            cursor.execute('UPDATE food SET isAvailable = 1 WHERE foodName = ?', (food_name,))
+
         conn.commit()
         conn.close()
+
 
     def get_food(self):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -279,3 +285,19 @@ class FnB:
         conn.close()
 
         return fnb_data
+
+    def update_quantity(self, food_name, quantity):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT quantity FROM food WHERE foodName = ?', (food_name,))
+        current_quantity = cursor.fetchone()[0]
+        new_quantity = current_quantity - quantity
+
+        if new_quantity == 0:
+            cursor.execute('UPDATE food SET quantity = ?, isAvailable = 0 WHERE foodName = ?', (new_quantity, food_name))
+        else:
+            cursor.execute('UPDATE food SET quantity = ? WHERE foodName = ?', (new_quantity, food_name))
+
+        conn.commit()
+        conn.close()
+

@@ -79,14 +79,22 @@ class ticket:
         conn.close()
         return ticket_data
 
-
     def delete_ticket(ticket_id):
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
-        sql = 'DELETE FROM ticket WHERE ticket_ID = ?'
-        data = (ticket_id,)
-        cursor.execute(sql, data)
+        # Retrieve hallName and seat_ID associated with the ticket ID
+        cursor.execute('SELECT hallName, seat_No FROM ticket WHERE ticket_ID = ?', (ticket_id,))
+        result = cursor.fetchone()
+        hall_name, seat_id = result
+
+        # Delete the ticket from the ticket table
+        sql_delete_ticket = 'DELETE FROM ticket WHERE ticket_ID = ?'
+        cursor.execute(sql_delete_ticket, (ticket_id,))
+
+        # Update the isAvailable column in the seat table
+        sql_update_seat = 'UPDATE seat SET isAvailable = 1 WHERE hallName = ? AND seat_No = ?'
+        cursor.execute(sql_update_seat, (hall_name, seat_id))
 
         conn.commit()
         conn.close()

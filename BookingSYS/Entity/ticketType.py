@@ -196,3 +196,23 @@ class ticketType:
         conn.close()
 
         return self.ticketType, self.price, self.avail
+    
+    def get_ticket_types(self):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        type_list = []
+        price_list = []
+        sql = "SELECT * FROM ticketType"
+        cursor.execute(sql)
+        type_data = cursor.fetchall()
+        for row in type_data:
+            type_name = row[0]
+            price = row[1]
+            type_list.append(type_name)
+            price_list.append([type_name, price])
+
+        conn.commit()
+        conn.close()
+
+        return type_list, price_list

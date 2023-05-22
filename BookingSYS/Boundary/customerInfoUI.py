@@ -60,9 +60,13 @@ class customerInfoUI(QWidget):
         self.stackedWidget.setCurrentIndex(21)
 
     def show_account_info(self):
-        widget = self.stackedWidget.widget(23)
-        widget.setID(self.userID)
-        self.stackedWidget.setCurrentIndex(23)
+        try:
+            widget = self.stackedWidget.widget(23)
+            widget.setID(self.userID)
+            self.stackedWidget.setCurrentIndex(23)
+        except Exception as e:
+            print(f"An error occurred in the show_account_info method: {str(e)}")
+
 
 class ticketPurchasedUI(QWidget):
     def __init__(self, stackedWidget):
@@ -179,153 +183,7 @@ class fnbRefundUI(QWidget):
         fnb_purchased_ui = self.stackedWidget.currentWidget()
         fnb_purchased_ui.refresh_fnb_record()
 
-    def viewTic(self):
-        viewTicController.viewTicC(self, self.stackedWidget,self.ticketList)
 
-    def editTic(self):
-        self.dialog = QDialog(self)
-        self.dialog.setWindowTitle("My Dialog")
-
-        try:
-            items = [item.text() for item in self.ticketList.selectedItems()]
-            if not items:
-                raise ValueError("Please select a ticketType.")
-            
-            items = self.ticketList.currentItem()
-            
-            if items:
-                ticketID = items.text()[:10].strip() 
-                self.moviename = items.text()[11:30].strip()
-                self.hallname = items.text()[31:50].strip()
-                self.seatNo = items.text()[51:70].strip() 
-                self.showtime = items.text()[71:90].strip() 
-                self.date = items.text()[91:110].strip() 
-                type = items.text()[111:121].strip() 
-                price = items.text()[121:130].strip() 
-                #print(ticketID, moveiname, hallname, seatNo, showtime, date, type, price)
-
-                
-              
-                conn = sqlite3.connect('SilverVillageUserAcc.db')
-                cursor = conn.cursor()
-                sql = 'SELECT DISTINCT startdate, enddate FROM movie WHERE movieName = ?'
-                data = (self.moviename,)
-                cursor.execute(sql, data)
-                movies_data = cursor.fetchall()
-                for row in movies_data:
-                    startDate = row[0]
-                    endDate = row[1]
-                conn.commit()
-                conn.close()
-
-                #get list of dates
-                #startDate = datetime.datetime.strptime(startDate, '%Y-%m-%d')
-                #endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d')
-                print(startDate, endDate)
-                datelist = []
-                delta = datetime.timedelta(days=1)
-                currentDate = datetime.datetime.strptime(startDate, '%Y-%m-%d')
-                endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d')
-                while currentDate <= endDate:
-                    datelist.append(str(currentDate.date()))
-                    currentDate += delta
-
-                print(datelist)
-                layout = QGridLayout(self.dialog)
-
-                self.movieLabel = QLabel(f"Movie Name: {self.moviename}")
-
-                self.date1_label = QLabel(f'Current Date: {self.date}')
-                
-                self.time1_label = QLabel(f'Current Time:{self.showtime}')
-
-                self.date2_label = QLabel('New Date:')
-                self.date2_edit = QComboBox()
-                self.date2_edit.addItems(datelist)
-                #self.name2_edit.setPlaceholderText(self.oldname)
-                
-                showtimes = ["1330", "1530", "1730", "1930","2130"]
-                self.time2_label = QLabel('New Showtime:')
-                self.time2_edit = QComboBox()
-                self.time2_edit.addItems(showtimes)
-                #self.price2_edit.setPlaceholderText(self.oldprice)
-                
-                self.backButton = QPushButton("Back")
-                self.submitButton = QPushButton("Submit")
-
-                layout.addWidget(self.movieLabel,0,0)
-                layout.addWidget(self.date1_label, 1, 0)
-                layout.addWidget(self.time1_label,2,0)
-                layout.addWidget(self.date2_label,3,0)
-                layout.addWidget(self.date2_edit, 3, 1)
-                layout.addWidget(self.time2_label, 4, 0)
-                layout.addWidget(self.time2_edit, 4, 1)
-
-                layout.addWidget(self.backButton,6, 0 )
-                layout.addWidget(self.submitButton,6 ,2)
-
-                self.newDate = self.date2_edit.currentText()
-                self.newTime = self.time2_edit.currentText()
-                print(self.newDate, self.newTime)
-
-                self.submitButton.clicked.connect(lambda: (self.confirmText(self.dialog ,self.stackedWidget, self.date, self.showtime, self.newDate, self.newTime, self.moviename, self.hallname, self.seatNo)))
-
-                self.dialog.exec()
-
-            
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, "Error", str(e))
-
-    def confirmText(self,dialog ,stackedWidget, date, showtime, newDate, newTime, moviename, hallname, seatNo):
-        self.stackedWidget = stackedWidget
-        headingMsg = f"====== Are you sure to make these changes? =====\n"
-        oldDate = f"\nOld Date: {self.date}\n"
-        oldTime = f"Old Time: {self.showtime}\n"
-        buffer = f"--------------------\n"
-        nDate = f"New Date: {self.newDate}\n"
-        nTime = f"New Time: {self.newTime}\n"
-
-        message = headingMsg + oldDate + oldTime + buffer + nDate + nTime
-
-        confirm = QMessageBox.question(self.stackedWidget, 'Change Ticket', message ,
-                                        QMessageBox.Yes | QMessageBox.No)
-        if confirm == QMessageBox.Yes:
-            editTicController.editTicC(self,dialog ,stackedWidget, date, showtime,newDate, newTime, moviename, hallname, seatNo)
-
-        self.listData()
-
-
-    def refundTicket(self, stackedWidget,ticketList):
-        self.stackedWidget = stackedWidget
-        self.ticketList = ticketList
-
-        try:
-            items = [item.text() for item in self.ticketList.selectedItems()]
-            if not items:
-                raise ValueError("Please select a ticketType.")
-            
-            items = self.ticketList.currentItem()
-            
-            if items:
-                ticketID = items.text()[:10].strip() 
-                moviename = items.text()[11:30].strip()
-                hallname = items.text()[31:50].strip()
-                seatNo = items.text()[51:70].strip() 
-                showtime = items.text()[71:90].strip() 
-                date = items.text()[91:110].strip() 
-                type = items.text()[111:121].strip() 
-                price = items.text()[121:130].strip() 
-                
-            refundTicController.refundTic(self, self.stackedWidget , ticketID ,moviename, hallname, seatNo, showtime, date, type, price)
-
-            self.listData()
-        
-        except ValueError as e:
-            QMessageBox.warning(self.stackedWidget, "Error" , str(e))
-
-            
-                
-                #ticket().refundTic(self,dialog ,stackedWidget, date, showtime,newDate, newTime, moviename, hallname, seatNo)
 
             
 
@@ -419,131 +277,150 @@ class fnbPurchasedUI(QWidget):
 
 class AccountInfoUI(QWidget):
     def __init__(self, stackedWidget):
-        super().__init__()
-        self.stackedWidget = stackedWidget
-        self.userID = ""
+        try:
+            super().__init__()
+            self.stackedWidget = stackedWidget
+            self.userID = ""
 
-        self.setWindowTitle('Account Information')
-        self.resize(400, 300)
+            self.setWindowTitle('Account Information')
+            self.resize(400, 300)
 
-        self.account_label = QLabel()
-        self.update_button = QPushButton('Update')
-        self.change_password_button = QPushButton('Change Password')
-        self.back_button = QPushButton('Back')
+            self.account_label = QLabel()
+            self.update_button = QPushButton('Update')
+            self.change_password_button = QPushButton('Change Password')
+            self.back_button = QPushButton('Back')
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.account_label)
-        layout.addWidget(self.update_button)
-        layout.addWidget(self.change_password_button)
-        layout.addWidget(self.back_button)
+            layout = QVBoxLayout()
+            layout.addWidget(self.account_label)
+            layout.addWidget(self.update_button)
+            layout.addWidget(self.change_password_button)
+            layout.addWidget(self.back_button)
 
-        self.setLayout(layout)
+            self.setLayout(layout)
 
-        self.update_button.clicked.connect(self.update_account_info)
-        self.change_password_button.clicked.connect(self.change_password)
-        self.back_button.clicked.connect(self.go_back)
+            self.update_button.clicked.connect(self.update_account_info)
+            self.change_password_button.clicked.connect(self.change_password)
+            self.back_button.clicked.connect(self.go_back)
 
-        self.controller = AccountController()
+            self.controller = AccountController()
+        except Exception as e:
+            print(f"An error occurred in the AccountInfoUI constructor: {str(e)}")
 
     def setID(self, userID):
-        self.userID = userID
-        self.show_account_info(self.userID)
+        try:
+            self.userID = userID
+            self.show_account_info(self.userID)
+        except Exception as e:
+            print(f"An error occurred in the setID method: {str(e)}")
 
     def show_account_info(self, userID):
-        username = self.controller.get_username(userID)
-        if username:
-            self.account_label.setText(f'Account ID: {userID}\nAccount Name: {username}')
-        else:
-            self.account_label.setText('Account Name: N/A')
+        try:
+            username = self.controller.get_username(userID)
+            if username:
+                self.account_label.setText(f'Account ID: {userID}\nAccount Name: {username}')
+            else:
+                self.account_label.setText('Account Name: N/A')
+        except Exception as e:
+            print(f"An error occurred in the show_account_info method: {str(e)}")
 
     def update_account_info(self):
-        dialog = QDialog(self)
-        dialog.setWindowTitle('Update Account')
-        dialog.setFixedSize(300, 150)
+        try:
+            dialog = QDialog(self)
+            dialog.setWindowTitle('Update Account')
+            dialog.setFixedSize(300, 150)
 
-        user_id_label = QLabel('New Account ID:')
-        username_label = QLabel('New Account Name:')
-        user_id_input = QLineEdit()
-        username_input = QLineEdit()
+            user_id_label = QLabel('New Account ID:')
+            username_label = QLabel('New Account Name:')
+            user_id_input = QLineEdit()
+            username_input = QLineEdit()
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+            button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
-        layout = QVBoxLayout(dialog)
-        layout.addWidget(user_id_label)
-        layout.addWidget(user_id_input)
-        layout.addWidget(username_label)
-        layout.addWidget(username_input)
-        layout.addWidget(button_box)
+            layout = QVBoxLayout(dialog)
+            layout.addWidget(user_id_label)
+            layout.addWidget(user_id_input)
+            layout.addWidget(username_label)
+            layout.addWidget(username_input)
+            layout.addWidget(button_box)
 
-        button_box.accepted.connect(dialog.accept)
-        button_box.rejected.connect(dialog.reject)
+            button_box.accepted.connect(dialog.accept)
+            button_box.rejected.connect(dialog.reject)
 
-        if dialog.exec_() == QDialog.Accepted:
-            new_userID = user_id_input.text()
-            new_username = username_input.text()
-            if(self.controller.is_user_id_exists(new_userID)):
-                QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
-            elif(self.controller.is_username_exists(new_username)):
-                QMessageBox.information(self, 'Fail', 'The provided Username already exists. Please choose a different one.')
-            else:
-                self.controller.update_account_info(self.userID, new_userID, new_username)
-                self.userID = new_userID
-                self.show_account_info(self.userID)
-                QMessageBox.information(self, 'Success', 'Account information updated successfully.')
-
+            if dialog.exec_() == QDialog.Accepted:
+                new_userID = user_id_input.text()
+                new_username = username_input.text()
+                if self.controller.is_user_id_exists(new_userID):
+                    QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
+                elif self.controller.is_username_exists(new_username):
+                    QMessageBox.information(self, 'Fail', 'The provided Username already exists. Please choose a different one.')
+                else:
+                    self.controller.update_account_info(self.userID, new_userID, new_username)
+                    self.userID = new_userID
+                    self.show_account_info(self.userID)
+                    QMessageBox.information(self, 'Success', 'Account information updated successfully.')
+        except Exception as e:
+            print(f"An error occurred in the update_account_info method: {str(e)}")
 
     def change_password(self):
-        dialog = QDialog(self)
-        dialog.setWindowTitle('Change Password')
-        dialog.setFixedSize(400, 250)
+        try:
+            dialog = QDialog(self)
+            dialog.setWindowTitle('Change Password')
+            dialog.setFixedSize(400, 250)
 
-        old_password_label = QLabel('Old Password:')
-        new_password_label = QLabel('New Password:')
-        confirm_password_label = QLabel('Confirm Password:')
+            old_password_label = QLabel('Old Password:')
+            new_password_label = QLabel('New Password:')
+            confirm_password_label = QLabel('Confirm Password:')
 
-        old_password_input = QLineEdit()
-        old_password_input.setEchoMode(QLineEdit.Password)
+            old_password_input = QLineEdit()
+            old_password_input.setEchoMode(QLineEdit.Password)
 
-        new_password_input = QLineEdit()
-        new_password_input.setEchoMode(QLineEdit.Password)
+            new_password_input = QLineEdit()
+            new_password_input.setEchoMode(QLineEdit.Password)
 
-        confirm_password_input = QLineEdit()
-        confirm_password_input.setEchoMode(QLineEdit.Password)
+            confirm_password_input = QLineEdit()
+            confirm_password_input.setEchoMode(QLineEdit.Password)
 
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+            button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
-        layout = QVBoxLayout(dialog)
-        layout.addWidget(old_password_label)
-        layout.addWidget(old_password_input)
-        layout.addWidget(new_password_label)
-        layout.addWidget(new_password_input)
-        layout.addWidget(confirm_password_label)
-        layout.addWidget(confirm_password_input)
-        layout.addWidget(button_box)
+            layout = QVBoxLayout(dialog)
+            layout.addWidget(old_password_label)
+            layout.addWidget(old_password_input)
+            layout.addWidget(new_password_label)
+            layout.addWidget(new_password_input)
+            layout.addWidget(confirm_password_label)
+            layout.addWidget(confirm_password_input)
+            layout.addWidget(button_box)
 
-        button_box.accepted.connect(lambda: self.validate_and_change_password(dialog, old_password_input.text(), new_password_input.text(), confirm_password_input.text()))
-        button_box.rejected.connect(dialog.reject)
+            button_box.accepted.connect(lambda: self.validate_and_change_password(dialog, old_password_input.text(), new_password_input.text(), confirm_password_input.text()))
+            button_box.rejected.connect(dialog.reject)
 
-        dialog.exec_()
+            dialog.exec_()
+        except Exception as e:
+            print(f"An error occurred in the change_password method: {str(e)}")
 
     def validate_and_change_password(self, dialog, old_password, new_password, confirm_password):
-        if old_password == self.controller.get_password(self.userID):
-            if new_password == confirm_password:
-                try:
-                    self.controller.update_password(self.userID, new_password)
-                    QMessageBox.information(self, 'Success', 'Password changed successfully.')
-                except Exception as e:
-                    print(f"An error occurred while changing password: {str(e)}")
+        try:
+            if old_password == self.controller.get_password(self.userID):
+                if new_password == confirm_password:
+                    try:
+                        self.controller.update_password(self.userID, new_password)
+                        QMessageBox.information(self, 'Success', 'Password changed successfully.')
+                    except Exception as e:
+                        print(f"An error occurred while changing password: {str(e)}")
+                else:
+                    QMessageBox.warning(self, 'Error', 'New password and confirm password do not match.')
             else:
-                QMessageBox.warning(self, 'Error', 'New password and confirm password do not match.')
-        else:
-            QMessageBox.warning(self, 'Error', 'Incorrect old password.')
+                QMessageBox.warning(self, 'Error', 'Incorrect old password.')
 
-        dialog.accept()
+            dialog.accept()
+        except Exception as e:
+            print(f"An error occurred in the validate_and_change_password method: {str(e)}")
 
     def go_back(self):
-        self.stackedWidget.setCurrentIndex(8)
-
+        try:
+            self.stackedWidget.setCurrentIndex(8)
+        except Exception as e:
+            print(f"An error occurred in the go_back method: {str(e)}")
 
 
 
