@@ -197,7 +197,7 @@ class Account:
         conn.close()
         return "changed"
         
-    def process_registration(self, stackedWidget, dialog, id, username, password, confirm_password):
+     def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
         if password == confirm_password:
             # Connect to thedatabase
             conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -208,20 +208,15 @@ class Account:
                 if cursor.fetchone():
                     QMessageBox.critical(dialog, 'Error', 'ID already exists. Please enter a new ID.')
                 else:
-                    # Check if username already exists
-                    cursor.execute("SELECT * FROM account WHERE userName=?", (username,))
-                    if cursor.fetchone():
-                        QMessageBox.critical(dialog, 'Error', 'Username already exists.')
-                    else:
-                        # Insert registration details into the database
-                        cursor.execute(
-                            "INSERT INTO account (userID, userName, password, permission) VALUES (?, ?, ?, ?)",
-                            (id, username, password, 'customer'))
-                        conn.commit()
+                    # Insert registration details into the database
+                    cursor.execute(
+                        "INSERT INTO account (userID, password, accType) VALUES (?, ?, ?)",
+                        (id, password, 'customer'))
+                    conn.commit()
 
-                        # Registration successful
-                        QMessageBox.information(dialog, 'Success', 'Registration successful.')
-                        dialog.accept()
+                    # Registration successful
+                    QMessageBox.information(dialog, 'Success', 'Registration successful.')
+                    dialog.accept()
             except Exception as e:
                 # Handle database errors
                 QMessageBox.critical(dialog, 'Error', 'An error occurred during registration: {}'.format(str(e)))
