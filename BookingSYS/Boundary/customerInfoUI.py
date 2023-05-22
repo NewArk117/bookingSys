@@ -1,11 +1,14 @@
-import sqlite3
+  import sqlite3
 import sys
 import re
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 sys.path.append('./Boundary')
 
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QListWidget, QVBoxLayout, QMessageBox, \
-    QListWidgetItem, QDialog, QLineEdit, QDialogButtonBox
+    QListWidgetItem, QDialog, QLineEdit, QDialogButtonBox, QGridLayout
 from viewTicPurchasedController import TicketController
 from fnbRefundController import FnbRefundController
 from custAccController import AccountController
@@ -60,12 +63,11 @@ class customerInfoUI(QWidget):
         self.stackedWidget.setCurrentIndex(21)
 
     def show_account_info(self):
-        try:
-            widget = self.stackedWidget.widget(23)
-            widget.setID(self.userID)
-            self.stackedWidget.setCurrentIndex(23)
-        except Exception as e:
-            print(f"An error occurred in the show_account_info method: {str(e)}")
+        widget = self.stackedWidget.widget(23)
+        widget.setID(self.userID)
+        print("1231",self.userID)
+        self.stackedWidget.setCurrentIndex(23)
+
 
 
 class ticketPurchasedUI(QWidget):
@@ -84,14 +86,12 @@ class ticketPurchasedUI(QWidget):
         self.ticketList = QListWidget()
         self.viewData()
         self.ticket_delete_button = QPushButton('Refund')
-        self.ticket_update_button = QPushButton('Change')
         self.backButton = QPushButton("Back")
 
         layout = QVBoxLayout()
         layout.addWidget(self.label1)
         layout.addWidget(self.ticketList)
         hbox = QHBoxLayout()
-        hbox.addWidget(self.ticket_update_button)
         hbox.addWidget(self.ticket_delete_button)
         hbox.addWidget(self.backButton)
 
@@ -201,28 +201,22 @@ class fnbPurchasedUI(QWidget):
 
         self.controller = FnbPurchasedController(self.stackedWidget)
 
-    def setID(self, userID):
-        self.userID = userID
-        self.setup_ui(self.userID)
-
-    def setup_ui(self, userID):
-        layout = QVBoxLayout(self)
-        layout.addWidget(QLabel('F&B Purchase Record'))
-        layout.addWidget(self.fnb_list)
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(QLabel('F&B Purchase Record'))
+        self.layout.addWidget(self.fnb_list)
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.back_button)
         button_layout.addWidget(self.refund_button)
 
-        layout.addLayout(button_layout)
+        self.layout.addLayout(button_layout)
 
         self.back_button.clicked.connect(self.go_back)
         self.refund_button.clicked.connect(self.refund_ticket)
 
+    def setID(self, userID):
+        self.userID = userID
         self.show_fnb_record(userID)
-
-    def go_back(self):
-        self.stackedWidget.setCurrentIndex(8)
 
     def show_fnb_record(self, userID):
         self.fnb_list.clear()
@@ -238,6 +232,10 @@ class fnbPurchasedUI(QWidget):
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
+
+
+    def go_back(self):
+        self.stackedWidget.setCurrentIndex(8)
     def enable_refund_button(self, item):
         # Enable the refund button when a food order row is selected
         selected_text = item.text()
@@ -277,62 +275,67 @@ class fnbPurchasedUI(QWidget):
 
 class AccountInfoUI(QWidget):
     def __init__(self, stackedWidget):
-        try:
-            super().__init__()
-            self.stackedWidget = stackedWidget
-            self.userID = ""
+        super().__init__()
+        self.stackedWidget = stackedWidget
+        self.userID = ""
 
-            self.setWindowTitle('Account Information')
-            self.resize(400, 300)
+        self.setWindowTitle('Account Information')
+        self.resize(400, 300)
 
-            self.account_label = QLabel()
-            self.update_button = QPushButton('Update')
-            self.change_password_button = QPushButton('Change Password')
-            self.back_button = QPushButton('Back')
+        self.account_label = QLabel()
+        self.account_label.setAlignment(Qt.AlignCenter)
+        self.account_label.setFont(QFont("Arial", 12, QFont.Bold))
 
-            layout = QVBoxLayout()
-            layout.addWidget(self.account_label)
-            layout.addWidget(self.update_button)
-            layout.addWidget(self.change_password_button)
-            layout.addWidget(self.back_button)
+        self.update_button = QPushButton('Update')
+        self.change_password_button = QPushButton('Change Password')
+        self.back_button = QPushButton('Back')
 
-            self.setLayout(layout)
+        layout = QGridLayout()
 
-            self.update_button.clicked.connect(self.update_account_info)
-            self.change_password_button.clicked.connect(self.change_password)
-            self.back_button.clicked.connect(self.go_back)
+        # Create a horizontal layout for the account_label
+        account_layout = QHBoxLayout()
+        account_layout.addWidget(self.account_label)
+        account_layout.setAlignment(Qt.AlignCenter)
 
-            self.controller = AccountController()
-        except Exception as e:
-            print(f"An error occurred in the AccountInfoUI constructor: {str(e)}")
+        layout.addLayout(account_layout, 0, 0, 3, 2)
+        layout.addWidget(self.update_button, 3, 0, 1, 2)
+        layout.addWidget(self.change_password_button, 4, 0, 1, 2)
+        layout.addWidget(self.back_button, 5, 0, 1, 2)
+        layout.setRowStretch(6, 1)
+
+        self.setLayout(layout)
+
+        self.update_button.clicked.connect(self.update_account_info)
+        self.change_password_button.clicked.connect(self.change_password)
+        self.back_button.clicked.connect(self.go_back)
+
+        self.controller = AccountController()
 
     def setID(self, userID):
-        try:
-            self.userID = userID
-            self.show_account_info(self.userID)
-        except Exception as e:
-            print(f"An error occurred in the setID method: {str(e)}")
+        self.userID = userID
+        self.show_account_info(self.userID)
 
     def show_account_info(self, userID):
-        try:
-            username = self.controller.get_username(userID)
-            if username:
-                self.account_label.setText(f'Account ID: {userID}\nAccount Name: {username}')
-            else:
-                self.account_label.setText('Account Name: N/A')
-        except Exception as e:
-            print(f"An error occurred in the show_account_info method: {str(e)}")
+        username, DOB = self.controller.get_username(userID)
+        self.account_label.setText(f'<b>Account ID:</b> {userID}<br><b>Name:</b> {username}<br><b>Age:</b> {DOB}')
+
 
     def update_account_info(self):
         try:
             dialog = QDialog(self)
             dialog.setWindowTitle('Update Account')
-            dialog.setFixedSize(300, 150)
+            dialog.setFixedSize(300, 250)
 
             user_id_label = QLabel('New Account ID:')
-            username_label = QLabel('New Account Name:')
+            username_label = QLabel('Name:')
+            userage_label = QLabel('Age:')
             user_id_input = QLineEdit()
             username_input = QLineEdit()
+            userage_input = QLineEdit()
+            current_username, current_DOB = self.controller.get_username(self.userID)
+            user_id_input.setText(self.userID)
+            username_input.setText(current_username)
+            userage_input.setText(str(current_DOB))
 
             button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
@@ -341,6 +344,9 @@ class AccountInfoUI(QWidget):
             layout.addWidget(user_id_input)
             layout.addWidget(username_label)
             layout.addWidget(username_input)
+            layout.addWidget(userage_label)
+            layout.addWidget(userage_input)
+
             layout.addWidget(button_box)
 
             button_box.accepted.connect(dialog.accept)
@@ -349,15 +355,23 @@ class AccountInfoUI(QWidget):
             if dialog.exec_() == QDialog.Accepted:
                 new_userID = user_id_input.text()
                 new_username = username_input.text()
-                if self.controller.is_user_id_exists(new_userID):
-                    QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
-                elif self.controller.is_username_exists(new_username):
-                    QMessageBox.information(self, 'Fail', 'The provided Username already exists. Please choose a different one.')
+                DOB = userage_input.text()
+                if(current_username == new_userID):
+                    if self.controller.is_user_id_exists(new_userID):
+                        QMessageBox.information(self, 'Fail', 'The provided Account ID already exists. Please choose a different one.')
+                    else:
+                        self.controller.update_account_info(self.userID, new_userID, new_username, DOB)
+                        self.userID = new_userID
+                        self.show_account_info(self.userID)
+                        QMessageBox.information(self, 'Success',
+                                                'Account information updated successfully.Please log in again.')
+                        self.stackedWidget.setCurrentIndex(1)
                 else:
-                    self.controller.update_account_info(self.userID, new_userID, new_username)
+                    self.controller.update_account_info(self.userID, new_userID, new_username, DOB)
                     self.userID = new_userID
                     self.show_account_info(self.userID)
                     QMessageBox.information(self, 'Success', 'Account information updated successfully.')
+
         except Exception as e:
             print(f"An error occurred in the update_account_info method: {str(e)}")
 
@@ -421,8 +435,6 @@ class AccountInfoUI(QWidget):
             self.stackedWidget.setCurrentIndex(8)
         except Exception as e:
             print(f"An error occurred in the go_back method: {str(e)}")
-
-
 
 
 
