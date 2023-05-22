@@ -88,8 +88,10 @@ class userAdminUI(QWidget):
         item_name = self.searchAccEdit.text()
         list = searchAccountController.searchAccount(self, self.stackedWidget, item_name, self.AccountBox)
 
+    #User Story 12
     def searchProf(self):
-        item_name = self.searchProfEdit.text()   
+        item_name = self.searchProfEdit.text() 
+        #call the search profile controller   
         list = searchProfileController.searchProfile(self, self.stackedWidget, item_name, self.profBox)
 
     #User Story 6
@@ -105,7 +107,7 @@ class userAdminUI(QWidget):
                 message_box.setWindowTitle(item_name)
                 message_box.setText(item_name + '  suspended')
                 message_box.exec_()
-
+    #User Story 11
     def suspendProf(self):
         selected_item = self.profBox.currentItem()
         if selected_item is not None:
@@ -177,6 +179,7 @@ class userAdminUI(QWidget):
                 else:
                     break       
                 
+    #User story 10
     def editProf(self):
         selected_item = self.profBox.currentItem()
 
@@ -227,6 +230,8 @@ class userAdminUI(QWidget):
                     age = line_edit2.text()
                     accType =accType_cBox.currentText()
                     suspended =suspend_cBox.currentText()
+
+                    #call the edit profile controller
                     edit = editProfileController.editProfile(self, item_name, name, age, accType,suspended)
                     if edit == "Success":
                         success_message_box = QMessageBox()
@@ -252,12 +257,14 @@ class userAdminUI(QWidget):
                 else:
                     break       
 
+    #User story 9
     def viewProfile(self):
         selected_item = self.profBox.currentItem()
         # If an item is selected, display its name
         if selected_item is not None:
             item_name = selected_item.text()
 
+            #call the view controller 
             profileDetails = viewProfileController.viewProfile(self, item_name)
             if profileDetails == None:
                 message_box1 = QMessageBox()
