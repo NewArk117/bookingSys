@@ -56,7 +56,17 @@ class customerUI(QWidget):
         self.stackedWidget.setCurrentIndex(8)
 
     def logOut(self):
-        logOutController.loggingOut(self, self.stackedWidget)
+        reply = QMessageBox.question(self, 'Confirm logout',
+                                    'Are you sure you want to logout?',
+                                     QMessageBox.Yes | QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+
+            #Call the logout controlller
+            logout = logOutController.loggingOut(self)
+
+            if logout == True:
+                self.stackedWidget.setCurrentIndex(0)
 
     def setID(self, userID):
         self.userID = userID

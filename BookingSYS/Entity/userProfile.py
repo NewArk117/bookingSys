@@ -65,6 +65,7 @@ class UserProfile:
         cursor.close()
         conn.close()
 
+    #User story 9
     def viewProfile(self, item_name)->list:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         # Get a cursor object
@@ -86,30 +87,32 @@ class UserProfile:
         else:
             return profileDetails
     
-    def editProfile(self, item_name, name, age, accType, suspend)->str:
-        if suspend == "True":
-            suspend = False
+    #User story 6
+    def editProfile(self, item_name, name, age, accType, suspended)->str:
+        if suspended == "True":
+            suspended = False
         else:
-            suspend = True
+            suspended = True
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
 
         update_query = "UPDATE userProfile SET name = ?, DOB = ?, accType = ?, suspend = ? WHERE userID = ?"
         
-        if self.contains_integer(name):
+        if name == "" or age == "":
+            return "emptyError"
+        elif self.contains_integer(name):
             return "integerError"
-        elif name == "" or age == "":
-            return "emptyError" 
         elif not re.fullmatch(r'\d+', age):
             return "stringError"
         else:
-            values = (name, age, accType, suspend, item_name)
+            values = (name, age, accType, suspended, item_name)
             cursor.execute(update_query, values)
             conn.commit()
             cursor.close()
             conn.close()
             return "Success"
         
+    #User Story 12    
     def searchProfile(self, stackedWidget, item_name, list)->list:
         self.stackedWidget = stackedWidget
         self.list = list
@@ -158,6 +161,7 @@ class UserProfile:
             conn.close()
             return list
         
+    #User Story 11
     def suspendProfile(self, item_name)->str:
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
