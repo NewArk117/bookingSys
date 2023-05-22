@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QMessageBox
 sys.path.append( './Entity' )
 #sys.path.append('C:/Users/USER/Desktop/BookingSys/bookingSys/BookingSYS/Entity')
 from movie import movie
+from ticketType import ticketType
+
 
 #11. Cinema Manager Controller
 class susMovieController:
@@ -61,4 +63,33 @@ class viewMovieController:
             text=None
             moviename = None
             return text, moviename
+#Customer Controller
+class purchaseTicketController:
+    def __init__(self, stackedWidget):
+        self.stackedWidget = stackedWidget
+        self.movie_entity = movie()
+        self.ticket_entity = ticketType()
+
+    def get_movies(self):
+        return self.movie_entity.get_movies()
+
+    def search_movies(self, search_text):
+        return self.movie_entity.search_movies(search_text)
+
+    def filter_movies(self, selected_genre):
+        return self.movie_entity.filter_movies(selected_genre)
+
+    def get_show_dates(self, name, genre):
+        return self.movie_entity.get_show_dates(name, genre)
+
+    def getRowcol(self, movie_name, genre):
+        return self.movie_entity.get_hall_details(movie_name, genre)
+
+
+    def getSeat(self, hall_name, showtime, date):
+        return self.movie_entity.get_seats(hall_name, showtime, date)
+
+    def get_ticket_types(self):
+        return self.ticket_entity.get_ticket_types()
+
 
