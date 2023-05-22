@@ -197,7 +197,7 @@ class Account:
         conn.close()
         return "changed"
         
-     def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
+    def process_registration(self, stackedWidget, dialog, id, password, confirm_password):
         if password == confirm_password:
             # Connect to thedatabase
             conn = sqlite3.connect('SilverVillageUserAcc.db')

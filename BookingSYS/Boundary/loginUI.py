@@ -46,7 +46,7 @@ class loginUI(QWidget):
         # Set the layout for the window to the stackedWidget
         self.setLayout(layoutLogin)
 
-     def register(self):
+    def register(self):
         # Handle register button click event
         register_dialog = QDialog(self)
         register_dialog.setWindowTitle('Register')
