@@ -76,7 +76,7 @@ class FnB:
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-
+        print("1",name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
         if name2 == "":
             name2 = name1
         if price2 == "":
@@ -85,30 +85,39 @@ class FnB:
             quantity2 = quantity1
         if avail2 == "":
             avail2 = avail1
-        
+        print("2",name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
         cursor.execute('SELECT foodName FROM food')
         food_data = cursor.fetchall()
         foodList = []
         for row in food_data:
             foodList.append(row[0])
+        print(foodList)    
         if name1 == name2:
             # Update an existing record in the ticketType table
             sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
             data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            sql2 = "UPDATE food_order_items SET food_name = ? WHERE food_name = ? "
+            data2 = (name2,name1)
             print(name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
             cursor.execute(sql, data)
+            cursor.execute(sql2, data2)
+
 
             # Commit the transaction
-            conn.commit()
-        if name1 not in foodList:  
+            #.commit()
+        if name2 not in foodList:  
 
             # Update an existing record in the ticketType table
             sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
             data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            sql2 = "UPDATE food_order_items SET food_name = ? WHERE food_name = ? "
+            data2 = (name2,name1)
+            print(name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
             cursor.execute(sql, data)
+            cursor.execute(sql2, data2)
 
             # Commit the transaction
-            conn.commit()
+        conn.commit()
 
         # Close the database connection
         conn.close()
