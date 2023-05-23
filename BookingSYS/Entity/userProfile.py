@@ -78,11 +78,11 @@ class UserProfile:
         # Execute the SQL query to retrieve data from the table
         cursor.execute(query, (value1,))
         # Fetch all the rows that match the query
-        profileDetails = cursor.fetchall()
+        profileDetails = cursor.fetchone()
         # Close the cursor and the database connection
         cursor.close()
         conn.close()
-        if profileDetails[4] == False:
+        if profileDetails[2] == False:
             pass
         else:
             return profileDetails
