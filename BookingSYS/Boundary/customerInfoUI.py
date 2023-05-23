@@ -15,6 +15,7 @@ from custAccController import AccountController
 from FBController import FnbPurchasedController
 from showTicController import ShowTicketController
 from showFBController import ShowFBController
+from showAccController import ShowAccController
 
 # This class shows the record of buying tickets or food
 class customerInfoUI(QWidget):
@@ -69,10 +70,13 @@ class customerInfoUI(QWidget):
             self.stackedWidget.setCurrentIndex(21)
 
     def show_account_info(self):
-        widget = self.stackedWidget.widget(23)
-        widget.setID(self.userID)
-        print("1231",self.userID)
-        self.stackedWidget.setCurrentIndex(23)
+        #Call the showFB controlller
+        showAccount = ShowAccController.showAccC(self)
+        if showAccount == True:
+            widget = self.stackedWidget.widget(23)
+            widget.setID(self.userID)
+            print("1231",self.userID)
+            self.stackedWidget.setCurrentIndex(23)
 
 
 
@@ -359,7 +363,7 @@ class AccountInfoUI(QWidget):
         self.account_label.setAlignment(Qt.AlignCenter)
         self.account_label.setFont(QFont("Arial", 12, QFont.Bold))
 
-        self.update_button = QPushButton('Update')
+        self.update_button = QPushButton('Edit')
         self.change_password_button = QPushButton('Change Password')
         self.back_button = QPushButton('Back')
 

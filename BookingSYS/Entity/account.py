@@ -328,8 +328,6 @@ class Account:
         cursor.close()
         conn.close()
         return result is not None
-
-
-
-
-
+    
+    def showAccRecord(self):
+        return True

@@ -8,8 +8,9 @@ import sys
 sys.path.append('./Boundary')
 
 class FnB:
-    def showFBRecord(record):
+    def showFBRecord(self):
         return True
+        
     def susFB(self, stackedWidget, fbList):
         self.stackedWidget = stackedWidget
         self.fbList = fbList
