@@ -82,6 +82,7 @@ class userAdminUI(QWidget):
 
         self.stackedWidget.currentChanged.connect(self.viewAllAcc)
         self.stackedWidget.currentChanged.connect(self.viewAllProf)
+        
 
     #User Story 7
     def searchAcc(self):

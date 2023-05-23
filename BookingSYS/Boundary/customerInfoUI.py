@@ -13,8 +13,8 @@ from viewTicPurchasedController import TicketController
 from fnbRefundController import FnbRefundController
 from custAccController import AccountController
 from FBController import FnbPurchasedController
-
-
+from showTicController import ShowTicketController
+from showFBController import ShowFBController
 
 # This class shows the record of buying tickets or food
 class customerInfoUI(QWidget):
@@ -53,14 +53,20 @@ class customerInfoUI(QWidget):
         self.userID = userID
 
     def show_ticket_record_window(self):
-        widget = self.stackedWidget.widget(20)
-        widget.setID(self.userID)
-        self.stackedWidget.setCurrentIndex(20)
+        #Call the showTic controlller
+        showTicket = ShowTicketController.showTicketC(self)
+        if showTicket == True:
+            widget = self.stackedWidget.widget(20)
+            widget.setID(self.userID)
+            self.stackedWidget.setCurrentIndex(20)
 
     def show_fnb_record_window(self):
-        widget = self.stackedWidget.widget(21)
-        widget.setID(self.userID)
-        self.stackedWidget.setCurrentIndex(21)
+        #Call the showFB controlller
+        showFB = ShowFBController.showFBC(self)
+        if showFB == True:
+            widget = self.stackedWidget.widget(21)
+            widget.setID(self.userID)
+            self.stackedWidget.setCurrentIndex(21)
 
     def show_account_info(self):
         widget = self.stackedWidget.widget(23)

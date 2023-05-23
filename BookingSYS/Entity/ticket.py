@@ -8,7 +8,8 @@ import sys
 sys.path.append('./Boundary')
 
 class ticket:
-
+    def showTicketRecord(record):
+        return True
     def purchaseTic(self, stackedWidget, movieName, genre, hallName, selectedDate, selectedTime,ticCount,seatList, totalCost, userID):
         self.stackedWidget = stackedWidget
 
