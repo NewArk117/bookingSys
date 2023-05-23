@@ -147,23 +147,32 @@ class movie:
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-
+        print(name , genre,avail1, name2, genre2,avail2)
         if name2 == "":
             name2 = name
         if genre2 == "":
             genre2 = genre
         if avail2 == "":
             avail2 = avail1
-
+        print(name , genre,avail1, name2, genre2,avail2)
         cursor.execute('SELECT movieName FROM movie')
         movie_data = cursor.fetchall()
         movieList = []
         for row in movie_data:
             movieList.append(row[0])
 
+        if name == name2:
+            sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
+            data = (name2, genre2,avail2, name, genre, avail1)
+            cursor.execute(sql, data)
+
+            sql1 = "UPDATE ticket SET movieName = ? WHERE movieName = ?"
+            data1 = (name2,  name)
+            cursor.execute(sql1, data1)
+
         if name2 not in movieList:
             sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
-            data = (name2, genre2,avail1, name, genre, avail2)
+            data = (name2, genre2,avail2, name, genre, avail1)
             cursor.execute(sql, data)
 
             sql1 = "UPDATE ticket SET movieName = ? WHERE movieName = ?"

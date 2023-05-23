@@ -111,6 +111,31 @@ class cinemaHall:
         for row in hall_data:
             hallList.append(row[0])
 
+        if name2 == name:
+                      
+            
+            # Update an existing record in hall
+
+            sql = "UPDATE hall SET hallName = ?, isAvailable = ? WHERE hallName = ?"
+            data = (name2, avail2, name)
+            cursor.execute(sql, data)
+
+            sql1 = "UPDATE hallshowtime SET hallName = ? WHERE hallName = ?"
+            data1 = (name2, name)
+            cursor.execute(sql1, data1)
+
+            sql2 = "UPDATE movie SET hallName = ? WHERE hallName = ?"
+            data2 = (name2,  name)
+            cursor.execute(sql2, data2)
+
+            sql3 = "UPDATE seat SET hallName = ? WHERE hallName = ?"
+            data3 = (name2,  name)
+            cursor.execute(sql3, data3)
+
+            sql4 = "UPDATE ticket SET hallName = ? WHERE hallName = ?"
+            data4 = (name2, name)
+            cursor.execute(sql4, data4)
+
         #print(hallList)
         if name2 not in hallList:
                       
