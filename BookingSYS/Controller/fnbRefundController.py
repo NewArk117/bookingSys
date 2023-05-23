@@ -28,3 +28,9 @@ class FnbRefundController:
 
             self.show_food_list(order_id)
 
+    def update_food_quantity(self, order_id, food_name, new_quantity):
+        FnB.update_food_quantity(self,order_id, food_name, new_quantity)
+
+    def get_quantity(self, name):
+        return FnB.get_stored_quantity(self, name)
+
