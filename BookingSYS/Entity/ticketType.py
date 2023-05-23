@@ -95,6 +95,13 @@ class ticketType:
         for row in tictype_data:
             ticList.append(row[0])
 
+        if name1 == name2:
+            # Update an existing record in the ticketType table
+            sql = "UPDATE ticketType SET type = ?, price = ?, isAvailable = ? WHERE type = ? AND price = ? AND isAvailable = ?"
+            data = (name2, price2,avail2, name1, price1, avail1)
+            cursor.execute(sql, data)
+
+
         if name2 not in ticList:
             # Update an existing record in the ticketType table
             sql = "UPDATE ticketType SET type = ?, price = ?, isAvailable = ? WHERE type = ? AND price = ? AND isAvailable = ?"

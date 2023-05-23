@@ -161,6 +161,15 @@ class movie:
         for row in movie_data:
             movieList.append(row[0])
 
+        if name == name2:
+            sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
+            data = (name2, genre2,avail1, name, genre, avail2)
+            cursor.execute(sql, data)
+
+            sql1 = "UPDATE ticket SET movieName = ? WHERE movieName = ?"
+            data1 = (name2,  name)
+            cursor.execute(sql1, data1)
+
         if name2 not in movieList:
             sql = "UPDATE movie SET movieName = ?, genre = ?, isAvailable = ? WHERE movieName = ? and genre = ? AND isAvailable = ?"
             data = (name2, genre2,avail1, name, genre, avail2)
