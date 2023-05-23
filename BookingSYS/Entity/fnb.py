@@ -78,7 +78,7 @@ class FnB:
 
         conn = sqlite3.connect('SilverVillageUserAcc.db')
         cursor = conn.cursor()
-
+        print("1",name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
         if name2 == "":
             name2 = name1
         if price2 == "":
@@ -87,30 +87,39 @@ class FnB:
             quantity2 = quantity1
         if avail2 == "":
             avail2 = avail1
-        
+        print("2",name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
         cursor.execute('SELECT foodName FROM food')
         food_data = cursor.fetchall()
         foodList = []
         for row in food_data:
             foodList.append(row[0])
+        print(foodList)    
         if name1 == name2:
             # Update an existing record in the ticketType table
             sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
             data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            sql2 = "UPDATE food_order_items SET food_name = ? WHERE food_name = ? "
+            data2 = (name2,name1)
             print(name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
             cursor.execute(sql, data)
+            cursor.execute(sql2, data2)
+
 
             # Commit the transaction
-            conn.commit()
-        if name1 not in foodList:  
+            #.commit()
+        if name2 not in foodList:  
 
             # Update an existing record in the ticketType table
             sql = "UPDATE food SET foodname = ?, price = ?, quantity = ?, isAvailable = ? WHERE foodname = ? AND price = ? AND quantity = ? AND isAvailable = ?"
             data = (name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
+            sql2 = "UPDATE food_order_items SET food_name = ? WHERE food_name = ? "
+            data2 = (name2,name1)
+            print(name2, price2, quantity2, avail2, name1, price1, quantity1, avail1)
             cursor.execute(sql, data)
+            cursor.execute(sql2, data2)
 
             # Commit the transaction
-            conn.commit()
+        conn.commit()
 
         # Close the database connection
         conn.close()
@@ -210,8 +219,6 @@ class FnB:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
-
-            return list
         else:
             self.list = list
             # Connect to the database
@@ -234,8 +241,6 @@ class FnB:
             # Close the cursor and the database connection
             cursor.close()
             conn.close()
-
-            return list
 
     def viewFB(self, stackedWidget, item_name):
             conn = sqlite3.connect('SilverVillageUserAcc.db')
@@ -314,4 +319,78 @@ class FnB:
 
         conn.commit()
         conn.close()
+
+    import sqlite3
+
+    import sqlite3
+
+    def update_food_quantity(self, order_id, food_name, new_quantity):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT quantity FROM food_order_items WHERE order_id = ? AND food_name = ?", (order_id, food_name))
+        result = cursor.fetchone()
+        old_quantity = result[0]
+
+        if old_quantity > new_quantity:
+            updated_quantity = old_quantity - new_quantity
+            cursor.execute("UPDATE food SET quantity = quantity + ?, isAvailable = ?  WHERE foodName = ?",
+                           (updated_quantity, 1 , food_name))
+            conn.commit()
+        elif old_quantity < new_quantity:
+            updated_quantity = new_quantity - old_quantity
+            cursor.execute("UPDATE food SET quantity = quantity - ? WHERE foodName = ?",
+                           (updated_quantity, food_name))
+            conn.commit()
+
+        cursor.execute("UPDATE food SET isAvailable = ? WHERE quantity = ?",
+                       (0, 0))
+        conn.commit()
+
+        cursor.execute("UPDATE food_order_items SET quantity = ? WHERE order_id = ? AND food_name = ?",
+                       (new_quantity, order_id, food_name))
+        conn.commit()
+
+        if new_quantity == 0:
+            cursor.execute("DELETE FROM food_order_items WHERE order_id = ? AND food_name = ?", (order_id, food_name))
+            conn.commit()
+
+        conn.close()
+
+    def get_name_quantity(self, order_id):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT food_name, quantity FROM food_order_items WHERE order_id = ?",
+                       (order_id,))
+        result = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return result
+
+    def get_stored_quantity(self, name):
+        conn = sqlite3.connect('SilverVillageUserAcc.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT quantity FROM food WHERE foodName = ?", (name,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if result:
+            return result[0]
+        else:
+            return 0
+
+
+
+
+
+
+
+
+
 

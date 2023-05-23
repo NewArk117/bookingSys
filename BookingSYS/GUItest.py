@@ -136,6 +136,119 @@ class TestMainWindow(unittest.TestCase):
 
         print("ADMIN LOGIN UNSUCCESS TEST --- PASSED")
 
+    def test_admin_manage_account_success(self):
+        # Simulate clicking the admin button
+        admin_button = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                admin_button = widget
+                break
+        admin_button.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("admin")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is on the admin page
+        self.assertEqual(self.window.stackedWidget.currentWidget(), self.window.admin)
+
+        # Simulate clicking the manage accounts button
+        self.window.admin.pushButton1.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.userAdminUI
+        )
+
+        print("ADMIN MANAGE ACCOUNTS TEST --- PASSED")
+
+    def test_admin_create_account_success(self):
+        # Simulate clicking the admin button
+        admin_button = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                admin_button = widget
+                break
+        admin_button.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("admin")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is on the admin page
+        self.assertEqual(self.window.stackedWidget.currentWidget(), self.window.admin)
+
+        # Simulate clicking the manage accounts button
+        self.window.admin.pushButton1.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.userAdminUI
+        )
+
+        # Simulate clicking the create accounts button
+        self.window.userAdminUI.buttonCreateAcc.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.createAccUI
+        )
+
+        print("ADMIN CREATE ACCOUNTS TEST --- PASSED")
+
+    def test_admin_create_profile_success(self):
+        # Simulate clicking the admin button
+        admin_button = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                admin_button = widget
+                break
+        admin_button.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("admin")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is on the admin page
+        self.assertEqual(self.window.stackedWidget.currentWidget(), self.window.admin)
+
+        # Simulate clicking the manage accounts button
+        self.window.admin.pushButton1.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.userAdminUI
+        )
+
+        # Simulate clicking the create accounts button
+        self.window.userAdminUI.buttonCreate2.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.createProfUI
+        )
+
+        print("ADMIN CREATE PROFILE TEST --- PASSED")
+
     ### CUSTOMER LOGIN SUITE
     def test_customer_login_success(self):
         # Find the customer button
@@ -197,6 +310,114 @@ class TestMainWindow(unittest.TestCase):
 
         print("CUSTOMER LOGIN UNSUCCESS TEST --- PASSED")
 
+    def test_customer_purchase_tickets_success(self):
+        # Find the customer button
+        custButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Customer":
+                custButton = widget
+                break
+
+        # Simulate clicking the customer button
+        custButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("customer")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the admin page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.customerUI
+        )
+
+        self.window.customerUI.buy_button.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.purchaseTicUI
+        )
+
+        print("CUSTOMER PURCHASE TICKETS SUCCESS TEST --- PASSED")
+
+    def test_customer_purchase_fb_success(self):
+        # Find the customer button
+        custButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Customer":
+                custButton = widget
+                break
+
+        # Simulate clicking the customer button
+        custButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("customer")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the admin page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.customerUI
+        )
+
+        self.window.customerUI.buy_food_button.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.purchaseFoodUI
+        )
+
+        print("CUSTOMER PURCHASE FOOD SUCCESS TEST --- PASSED")
+
+    def test_customer_accountinfo_success(self):
+        # Find the customer button
+        custButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Customer":
+                custButton = widget
+                break
+
+        # Simulate clicking the customer button
+        custButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid admin credentials
+        self.window.pageLogin.userID_edit.setText("customer")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the admin page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.customerUI
+        )
+
+        self.window.customerUI.info_button.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.customerInfoUI
+        )
+
+        print("CUSTOMER ACCOUNT INFO SUCCESS TEST --- PASSED")
+
     ### CINEMA MANAGER LOGIN SUITE
     def test_manager_login_success(self):
         # Find the Staff button
@@ -257,6 +478,150 @@ class TestMainWindow(unittest.TestCase):
         )
 
         print("CINEMA MANAGER LOGIN UNSUCCESS TEST --- PASSED")
+
+    def test_manager_movies_success(self):
+        # Find the Staff button
+        adminButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                adminButton = widget
+                break
+
+        # Simulate clicking the Staff button
+        adminButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid manager credentials
+        self.window.pageLogin.userID_edit.setText("manager")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the manager page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.managerUI
+        )
+
+        self.window.managerUI.moviesButton.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.manageMoviesUI
+        )
+
+        print("CINEMA MANAGER MOVIES SUCCESS TEST --- PASSED")
+
+    def test_manager_tickets_success(self):
+        # Find the Staff button
+        adminButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                adminButton = widget
+                break
+
+        # Simulate clicking the Staff button
+        adminButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid manager credentials
+        self.window.pageLogin.userID_edit.setText("manager")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the manager page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.managerUI
+        )
+
+        self.window.managerUI.ticketsButton.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.manageTicTypeUI
+        )
+
+        print("CINEMA MANAGER TICKETS SUCCESS TEST --- PASSED")
+
+    def test_manager_hall_success(self):
+        # Find the Staff button
+        adminButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                adminButton = widget
+                break
+
+        # Simulate clicking the Staff button
+        adminButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid manager credentials
+        self.window.pageLogin.userID_edit.setText("manager")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the manager page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.managerUI
+        )
+
+        self.window.managerUI.hallButton.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.manageHallsUI
+        )
+
+        print("CINEMA MANAGER HALLS SUCCESS TEST --- PASSED")
+
+    def test_manager_food_success(self):
+        # Find the Staff button
+        adminButton = None
+        for widget in self.window.pageMain.children():
+            if isinstance(widget, QPushButton) and widget.text() == "Staff":
+                adminButton = widget
+                break
+
+        # Simulate clicking the Staff button
+        adminButton.click()
+
+        # Verify that the stacked widget is now on the login page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.pageLogin
+        )
+
+        # Enter valid manager credentials
+        self.window.pageLogin.userID_edit.setText("manager")
+        self.window.pageLogin.password_edit.setText("password")
+
+        # Simulate clicking the login button
+        self.window.pageLogin.login_button.click()
+
+        # Verify that the stacked widget is now on the manager page
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.managerUI
+        )
+
+        self.window.managerUI.fbButton.click()
+
+        self.assertEqual(
+            self.window.stackedWidget.currentWidget(), self.window.manageFBUI
+        )
+
+        print("CINEMA MANAGER FOOD AND BEVERAGE SUCCESS TEST --- PASSED")
 
     # def test_manager_edit_movie_success(self):
     #     # Find the staff button
