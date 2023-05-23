@@ -67,13 +67,13 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS seat
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS food 
                  (foodName TEXT PRIMARY KEY,
-                  price DECIMAL,
+                  price DECIMAL(10,2),
                   quantity INT,
                   isAvailable BOOLEAN)''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS ticketType 
                  (type TEXT PRIMARY KEY,
-                  price DECIMAL,
+                  price DECIMAL(10,2),
                  isAvailable BOOLEAN)''')
 
 
