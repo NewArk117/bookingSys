@@ -151,10 +151,9 @@ class fnbRefundUI(QWidget):
         self.stackedWidget = stackedWidget
         self.order_id = None
         self.order_id_label = QLabel()
-        self.refund_confirmation_button = QPushButton('Refund Confirmation')
+        self.change_button = QPushButton('Change')
+        self.refund_confirmation_button = QPushButton('Refund')
         self.back_button = QPushButton('Back')
-
-        self.back_button.clicked.connect(self.go_back)
 
         self.food_list = QListWidget()
         self.food_list.setSelectionMode(QListWidget.MultiSelection)  # Enable multi-selection mode
@@ -166,11 +165,79 @@ class fnbRefundUI(QWidget):
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.back_button)
+        button_layout.addWidget(self.change_button)
         button_layout.addWidget(self.refund_confirmation_button)
-        layout.addLayout(button_layout)
 
+        layout.addLayout(button_layout)
         self.controller = FnbRefundController(self)
         self.refund_confirmation_button.clicked.connect(self.controller.confirm_refund)
+        self.back_button.clicked.connect(self.go_back)
+        self.change_button.clicked.connect(self.show_change_dialog)
+
+    def show_change_dialog(self):
+        selected_item = self.food_list.currentItem()
+        if selected_item is not None:
+            try:
+                name_line = selected_item.text().split('\n')[0]
+                name = name_line.split(':')[1].strip()
+                quantity_line = selected_item.text().split('\n')[1]
+                quantity = quantity_line.split(':')[1].strip()
+
+                stored_quantity = self.controller.get_quantity(name)
+                print(stored_quantity)
+                stored_quantity = stored_quantity + int(quantity)
+                
+                dialog = QDialog(self)
+                dialog.setWindowTitle('Change Quantity')
+                layout = QVBoxLayout(dialog)
+                layout.addWidget(QLabel('Food Name:'))
+                food_name_label = QLabel(name)
+                layout.addWidget(food_name_label)
+                layout.addWidget(QLabel('Quantity:'))
+                quantity_label = QLabel(str(quantity))
+                layout.addWidget(quantity_label)
+
+                increase_button = QPushButton('+', dialog)
+                decrease_button = QPushButton('-', dialog)
+
+                increase_button.clicked.connect(
+                    lambda checked, quantity_label=quantity_label: self.increase_quantity(quantity_label,
+                                                                                          stored_quantity))
+                decrease_button.clicked.connect(
+                    lambda checked, quantity_label=quantity_label: self.decrease_quantity(quantity_label))
+
+                button_layout = QHBoxLayout()
+                button_layout.addWidget(decrease_button)
+                button_layout.addWidget(increase_button)
+                layout.addLayout(button_layout)
+
+                change_button = QPushButton('Change', dialog)
+                layout.addWidget(change_button)
+                change_button.clicked.connect(lambda: self.controller.update_food_quantity(self.order_id, name,
+                                                                                           int(quantity_label.text())))
+                change_button.clicked.connect(dialog.accept)
+                dialog.exec_()
+                fnbPurchasedUI.show_refund_ui(self, self.order_id)
+            except Exception as e:
+                print(e)
+        else:
+            QMessageBox.information(self, 'No Item Selected', 'Please select an item to change quantity.')
+
+    def increase_quantity(self, quantity_label, stored_quantity):
+        current_quantity = int(quantity_label.text())
+        new_quantity = current_quantity + 1
+        if new_quantity <= stored_quantity:
+            quantity_label.setText(str(new_quantity))
+        else:
+            QMessageBox.warning(self, 'Invalid Quantity', 'Cannot exceed the stored quantity.')
+
+    def decrease_quantity(self, quantity_label):
+        current_quantity = int(quantity_label.text())
+        if current_quantity > 0:
+            new_quantity = current_quantity - 1
+            quantity_label.setText(str(new_quantity))
+        else:
+            QMessageBox.warning(self, 'Invalid Quantity', 'Quantity cannot be negative.')
 
     def set_order_id(self, order_id):
         self.order_id = order_id
@@ -195,7 +262,7 @@ class fnbPurchasedUI(QWidget):
         self.order_id = None
         self.fnb_list = QListWidget()
         self.back_button = QPushButton('Back')
-        self.refund_button = QPushButton('Refund')
+        self.refund_button = QPushButton('Next')
 
         self.fnb_list.itemClicked.connect(self.enable_refund_button)
 
@@ -212,7 +279,7 @@ class fnbPurchasedUI(QWidget):
         self.layout.addLayout(button_layout)
 
         self.back_button.clicked.connect(self.go_back)
-        self.refund_button.clicked.connect(self.refund_ticket)
+        self.refund_button.clicked.connect(self.refund_food)
 
     def setID(self, userID):
         self.userID = userID
@@ -260,7 +327,7 @@ class fnbPurchasedUI(QWidget):
         self.stackedWidget.addWidget(refund_ui)
         self.stackedWidget.setCurrentWidget(refund_ui)
 
-    def refund_ticket(self):
+    def refund_food(self):
         selected_item = self.fnb_list.currentItem()
         if selected_item is not None:
             selected_text = selected_item.text()
@@ -435,6 +502,20 @@ class AccountInfoUI(QWidget):
             self.stackedWidget.setCurrentIndex(8)
         except Exception as e:
             print(f"An error occurred in the go_back method: {str(e)}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
